@@ -4,7 +4,19 @@ export function previewUrl(path: string, secret = process.env.PREVIEW_SECRET ?? 
   return `/next/preview?${params.toString()}`
 }
 
-/** Only same-site paths: no scheme, no protocol-relative or backslash tricks. */
-export function isSafeRedirectPath(path: string | null | undefined): path is string {
-  return !!path && path.startsWith('/') && !path.startsWith('//') && !path.includes('\\')
+const BASE = 'http://site.invalid'
+
+/**
+ * The path to redirect to, or null if it isn't on this site. Parsed the way a
+ * browser would, so tricks like "/\t/evil.com" (browsers strip the tab and
+ * see "//evil.com") or backslashes can't send visitors elsewhere.
+ */
+export function safeRedirectPath(path: string | null | undefined): string | null {
+  if (!path?.startsWith('/')) return null
+  try {
+    const url = new URL(path, BASE)
+    return url.origin === BASE ? `${url.pathname}${url.search}${url.hash}` : null
+  } catch {
+    return null
+  }
 }

@@ -16,21 +16,27 @@ type ChangeArgs = {
   doc: unknown
   previousDoc?: unknown
   context?: Record<string, unknown>
+  /** The write only touched drafts (`?draft=true`: draft saves and autosave). */
+  isDraftSave: boolean
 }
 
-const statusOf = (doc: unknown) =>
-  doc && typeof doc === 'object' && '_status' in doc ? doc._status : undefined
+const hasStatus = (doc: unknown) => !!doc && typeof doc === 'object' && '_status' in doc
 
 /**
  * Publishing, unpublishing, or any change to a collection without drafts
- * affects the live site. Saves that only touch drafts don't.
+ * affects the live site; draft and autosave writes don't. Decided from the
+ * request rather than `previousDoc`, because once autosave has run the
+ * previous version is a draft even when the live document is published.
  */
-export function shouldRevalidate({ doc, previousDoc, context }: ChangeArgs): boolean {
+export function shouldRevalidate({ doc, previousDoc, context, isDraftSave }: ChangeArgs): boolean {
   if (context?.disableRevalidate) return false
-  const now = statusOf(doc)
-  const before = statusOf(previousDoc)
-  if (now === undefined && before === undefined) return true
-  return now === 'published' || before === 'published'
+  if (!hasStatus(doc) && !hasStatus(previousDoc)) return true
+  return !isDraftSave
+}
+
+const isDraftSave = (req: PayloadRequest) => {
+  const draft = req.query?.draft
+  return draft === true || draft === 'true'
 }
 
 function run(revalidate: () => void, req: PayloadRequest) {
@@ -48,7 +54,9 @@ export function createRevalidateHooks(
   revalidate: () => void = () => revalidatePath('/', 'layout'),
 ) {
   const afterChange: CollectionAfterChangeHook = ({ doc, previousDoc, context, req }) => {
-    if (shouldRevalidate({ doc, previousDoc, context })) run(revalidate, req)
+    if (shouldRevalidate({ doc, previousDoc, context, isDraftSave: isDraftSave(req) })) {
+      run(revalidate, req)
+    }
     return doc
   }
 
@@ -58,7 +66,9 @@ export function createRevalidateHooks(
   }
 
   const globalAfterChange: GlobalAfterChangeHook = ({ doc, previousDoc, context, req }) => {
-    if (shouldRevalidate({ doc, previousDoc, context })) run(revalidate, req)
+    if (shouldRevalidate({ doc, previousDoc, context, isDraftSave: isDraftSave(req) })) {
+      run(revalidate, req)
+    }
     return doc
   }
 

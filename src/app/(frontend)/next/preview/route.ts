@@ -3,7 +3,7 @@ import { draftMode, headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { getPayload } from 'payload'
 
-import { isSafeRedirectPath } from '@/lib/preview'
+import { safeRedirectPath } from '@/lib/preview'
 
 /**
  * Entry point for the admin's live preview and preview button: checks the
@@ -13,13 +13,13 @@ import { isSafeRedirectPath } from '@/lib/preview'
  */
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
-  const path = searchParams.get('path')
+  const path = safeRedirectPath(searchParams.get('path'))
   const secret = process.env.PREVIEW_SECRET
 
   if (!secret || searchParams.get('previewSecret') !== secret) {
     return new Response('Invalid preview link.', { status: 403 })
   }
-  if (!isSafeRedirectPath(path)) {
+  if (!path) {
     return new Response('Invalid preview path.', { status: 400 })
   }
 

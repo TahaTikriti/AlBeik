@@ -18,14 +18,14 @@ pnpm dev                # http://localhost:3000, admin at /admin
 
 To start over with a clean database: `pnpm db:reset && pnpm seed`.
 
-| Script | What it does |
-|---|---|
-| `pnpm dev` / `pnpm build` / `pnpm start` | Next.js (the build needs the database, because pages are prerendered) |
-| `pnpm lint` / `pnpm typecheck` / `pnpm test` | Checks; the tests cover the order-link rules |
-| `pnpm migrate` | Apply database migrations |
-| `pnpm migrate:create <name>` | After changing a collection or global, create a migration and commit it |
-| `pnpm seed` | Add the scraped content. Only creates what's missing, so it's safe to re-run |
-| `pnpm db:reset` | Drop every table and re-run the migrations |
+| Script                                       | What it does                                                                 |
+| -------------------------------------------- | ---------------------------------------------------------------------------- |
+| `pnpm dev` / `pnpm build` / `pnpm start`     | Next.js (the build needs the database, because pages are prerendered)        |
+| `pnpm lint` / `pnpm typecheck` / `pnpm test` | Checks; the tests cover the order-link rules                                 |
+| `pnpm migrate`                               | Apply database migrations                                                    |
+| `pnpm migrate:create <name>`                 | After changing a collection or global, create a migration and commit it      |
+| `pnpm seed`                                  | Add the scraped content. Only creates what's missing, so it's safe to re-run |
+| `pnpm db:reset`                              | Drop every table and re-run the migrations                                   |
 
 ## Where things are
 
@@ -83,3 +83,5 @@ Vercel + the same hosted Postgres works. Two things to add first:
 - **Build command:** `pnpm migrate && pnpm build`.
 
 Set the same environment variables as in `.env.example`, with `NEXT_PUBLIC_SERVER_URL` set to the real domain.
+
+**Create the admin account before sharing the URL** (run `pnpm seed` with `SEED_ADMIN_*` set, or sign up at `/admin` yourself). Until an admin exists, anyone who opens `/admin` can create the first account.

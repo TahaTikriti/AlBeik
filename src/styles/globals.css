@@ -9,6 +9,10 @@
   html {
     -webkit-text-size-adjust: 100%;
     color-scheme: light;
+    /* Keeps anchored sections and keyboard focus clear of the sticky header,
+       category chips and bottom order bar. */
+    scroll-padding-block-start: calc(var(--sticky-offset) + var(--spacing-stack));
+    scroll-padding-block-end: calc(var(--spacing-tap) + 1.5rem + var(--safe-bottom));
   }
 
   @media (prefers-reduced-motion: no-preference) {
@@ -59,11 +63,6 @@
   :focus-visible {
     outline: 2px solid var(--color-focus);
     outline-offset: 2px;
-  }
-
-  /* Anchored sections land below the sticky header and chip bar. */
-  [data-anchor] {
-    scroll-margin-top: calc(var(--sticky-offset) + var(--spacing-stack));
   }
 
   dialog::backdrop {
