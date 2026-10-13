@@ -65,6 +65,10 @@ export const copy = {
     body: 'We couldn’t find that page.',
     cta: 'Go to the menu',
   },
+  preview: {
+    notice: 'Preview: you are seeing unpublished changes.',
+    exit: 'Exit preview',
+  },
   footer: {
     halal: '100% halal',
     follow: 'Follow us',

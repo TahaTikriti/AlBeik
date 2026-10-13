@@ -25,6 +25,14 @@ export default buildConfig({
     meta: {
       titleSuffix: ' · AlBeik admin',
     },
+    // Matches the sizes the site is checked at.
+    livePreview: {
+      breakpoints: [
+        { label: 'Phone', name: 'phone', width: 375, height: 812 },
+        { label: 'Tablet', name: 'tablet', width: 768, height: 1024 },
+        { label: 'Desktop', name: 'desktop', width: 1280, height: 800 },
+      ],
+    },
   },
   collections: [MenuItems, Categories, Testimonials, Media, Users],
   globals: [Homepage, About, SiteSettings],

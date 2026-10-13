@@ -1,5 +1,7 @@
 import type { GlobalConfig } from 'payload'
 
+import { previewUrl } from '@/lib/preview'
+
 import { authenticated, publishedOrAuthenticated } from '../access'
 import { revalidateSite } from '../hooks/revalidateSite'
 import { emphasisTextField } from '../fields/emphasisText'
@@ -8,9 +10,13 @@ import { validateHref } from '../fields/link'
 export const Homepage: GlobalConfig = {
   slug: 'homepage',
   label: 'Home page',
+  admin: {
+    livePreview: { url: () => previewUrl('/') },
+    preview: () => previewUrl('/'),
+  },
   access: { read: publishedOrAuthenticated, update: authenticated },
   versions: {
-    drafts: true,
+    drafts: { autosave: { interval: 400 } },
     max: 25,
   },
   hooks: {

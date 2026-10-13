@@ -1,11 +1,14 @@
 import '@/styles/globals.css'
 
 import type { Metadata, Viewport } from 'next'
+import { draftMode } from 'next/headers'
 import type { ReactNode } from 'react'
 
+import { PreviewBanner } from '@/components/shell/PreviewBanner'
 import { SiteShell } from '@/components/shell/SiteShell'
 import { UmamiScript } from '@/lib/analytics/UmamiScript'
 import { getSite } from '@/lib/data'
+import { LivePreviewListener } from '@/lib/preview/LivePreviewListener'
 import { restaurantJsonLd } from '@/lib/seo'
 import { JsonLd } from '@/lib/seo/JsonLd'
 import { fontClassName } from '@/theme/fonts'
@@ -27,10 +30,16 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function FrontendLayout({ children }: { children: ReactNode }) {
-  const site = await getSite()
+  const [site, { isEnabled: isDraft }] = await Promise.all([getSite(), draftMode()])
   return (
     <html lang="en" dir="ltr" className={fontClassName || undefined}>
       <body>
+        {isDraft ? (
+          <>
+            <PreviewBanner />
+            <LivePreviewListener />
+          </>
+        ) : null}
         <SiteShell site={site}>{children}</SiteShell>
         <JsonLd data={restaurantJsonLd(site)} />
         <UmamiScript />

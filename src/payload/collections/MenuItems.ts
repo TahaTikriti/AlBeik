@@ -1,5 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
+import { previewUrl } from '@/lib/preview'
+
 import { authenticated, publishedOrAuthenticated } from '../access'
 import { revalidateSite } from '../hooks/revalidateSite'
 import { orderUrlField } from '../fields/orderUrl'
@@ -21,6 +23,8 @@ export const MenuItems: CollectionConfig = {
     useAsTitle: 'name',
     defaultColumns: ['name', 'category', 'available', 'sortOrder', '_status'],
     listSearchableFields: ['name', 'shortDescription'],
+    livePreview: { url: ({ data }) => previewUrl(`/menu/${data?.slug ?? ''}`) },
+    preview: (data) => previewUrl(`/menu/${data?.slug ?? ''}`),
   },
   defaultSort: 'sortOrder',
   access: {
@@ -30,7 +34,8 @@ export const MenuItems: CollectionConfig = {
     delete: authenticated,
   },
   versions: {
-    drafts: true,
+    // Autosave drives live preview as the editor types.
+    drafts: { autosave: { interval: 400 } },
     maxPerDoc: 25,
   },
   hooks: {
