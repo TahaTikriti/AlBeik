@@ -33,7 +33,7 @@ export const Media: CollectionConfig = {
   ],
   upload: {
     // Local disk on main; production needs a storage adapter (see README).
-    staticDir: path.resolve(dirname, '../../../media'),
+    staticDir: process.env.PAYLOAD_MEDIA_DIR || path.resolve(dirname, '../../../media'),
     mimeTypes: ['image/*', 'video/mp4', 'video/webm'],
     focalPoint: true,
   },

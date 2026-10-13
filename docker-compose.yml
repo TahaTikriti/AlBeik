@@ -14,7 +14,9 @@ services:
       - albeik-pg:/var/lib/postgresql/data
       - ./docker/initdb:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U albeik -d albeik']
+      # TCP check: during first-time init Postgres runs a temporary socket-only
+      # server, which a plain pg_isready would already report as ready.
+      test: ['CMD-SHELL', 'pg_isready -h 127.0.0.1 -U albeik -d albeik']
       interval: 2s
       timeout: 3s
       retries: 30

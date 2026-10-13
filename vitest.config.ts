@@ -33,6 +33,8 @@ export default defineConfig({
               process.env.TEST_DATABASE_URL ??
               'postgres://albeik:albeik@localhost:5433/albeik_test',
             PAYLOAD_SECRET: 'integration-test-secret',
+            // Keep test uploads out of the dev site's /media folder.
+            PAYLOAD_MEDIA_DIR: fileURLToPath(new URL('./.test-media', import.meta.url)),
           },
           fileParallelism: false,
           testTimeout: 30_000,

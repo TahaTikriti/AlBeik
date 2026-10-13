@@ -1,4 +1,5 @@
 import { sql, type PostgresAdapter } from '@payloadcms/db-postgres'
+import fs from 'fs'
 import type { Migration, Payload } from 'payload'
 
 import { migrations } from '@/migrations'
@@ -15,4 +16,7 @@ export async function resetDatabase(payload: Payload) {
   }
   await db.drizzle.execute(sql`DROP SCHEMA public CASCADE; CREATE SCHEMA public;`)
   await db.migrate({ migrations: migrations as unknown as Migration[] })
+
+  const mediaDir = process.env.PAYLOAD_MEDIA_DIR
+  if (mediaDir?.endsWith('.test-media')) fs.rmSync(mediaDir, { recursive: true, force: true })
 }
