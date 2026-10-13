@@ -1,0 +1,22 @@
+# Local Postgres for development. Host port 5433 avoids clashing with a
+# Homebrew Postgres on 5432. `pnpm db:reset` drops the volume.
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: albeik
+      POSTGRES_PASSWORD: albeik
+      POSTGRES_DB: albeik
+    ports:
+      - '5433:5432'
+    volumes:
+      - albeik-pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U albeik -d albeik']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  albeik-pg:
