@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { parseEmphasis, plainText, slugify } from '.'
+import { formatPrice, parseEmphasis, plainText, slugify } from '.'
 
 describe('parseEmphasis', () => {
   it('splits a highlighted word out of a headline', () => {
@@ -75,5 +75,12 @@ describe('slugify', () => {
 
   it('trims leading and trailing separators', () => {
     expect(slugify('  --Fattoush--  ')).toBe('fattoush')
+  })
+})
+
+describe('formatPrice', () => {
+  it('formats US dollars with cents', () => {
+    expect(formatPrice(12.5)).toBe('$12.50')
+    expect(formatPrice(9)).toBe('$9.00')
   })
 })

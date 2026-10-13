@@ -34,9 +34,15 @@ export function plainText(input: string | null | undefined): string {
 export function slugify(input: string): string {
   return input
     .normalize('NFKD')
-    .replace(/[̀-ͯ]/g, '')
+    .replace(/\p{M}/gu, '')
     .toLowerCase()
     .replace(/&/g, ' and ')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
+}
+
+const USD = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
+
+export function formatPrice(value: number): string {
+  return USD.format(value)
 }
