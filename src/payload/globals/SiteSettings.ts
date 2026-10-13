@@ -53,13 +53,15 @@ export const SiteSettings: GlobalConfig = {
               name: 'doordashStoreUrl',
               label: 'DoorDash store link',
               platform: 'doordash',
-              description: 'The restaurant page on DoorDash. Used when an item has no link of its own.',
+              description:
+                'The restaurant page on DoorDash. Used when an item has no link of its own.',
             }),
             orderUrlField({
               name: 'uberEatsStoreUrl',
               label: 'Uber Eats store link',
               platform: 'ubereats',
-              description: 'The restaurant page on Uber Eats. Used when an item has no link of its own.',
+              description:
+                'The restaurant page on Uber Eats. Used when an item has no link of its own.',
             }),
           ],
         },
@@ -166,7 +168,9 @@ export const SiteSettings: GlobalConfig = {
                   type: 'upload',
                   relationTo: 'media',
                   filterOptions: { mimeType: { contains: 'image' } },
-                  admin: { description: 'Image used when the site is shared. 1200×630 works best.' },
+                  admin: {
+                    description: 'Image used when the site is shared. 1200×630 works best.',
+                  },
                 },
               ],
             },

@@ -33,7 +33,12 @@ describe('slugField', () => {
 
 describe('orderUrlField', () => {
   const validate = validateOf(
-    orderUrlField({ name: 'doordashUrl', label: 'DoorDash', platform: 'doordash', description: '' }),
+    orderUrlField({
+      name: 'doordashUrl',
+      label: 'DoorDash',
+      platform: 'doordash',
+      description: '',
+    }),
   )
 
   it('allows an empty value', () => {

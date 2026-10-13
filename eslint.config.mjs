@@ -32,7 +32,11 @@ export default defineConfig([
           ],
           patterns: [
             { group: ['payload/*', '@/payload/*'], message: boundaryMessage },
-            { group: ['@/lib/data', '@/lib/data/*'], message: boundaryMessage, allowTypeImports: true },
+            {
+              group: ['@/lib/data', '@/lib/data/*'],
+              message: boundaryMessage,
+              allowTypeImports: true,
+            },
           ],
         },
       ],

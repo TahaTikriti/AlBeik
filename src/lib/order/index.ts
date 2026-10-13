@@ -21,9 +21,7 @@ export type StoreOrderUrls = {
 }
 
 export type OrderAction =
-  | { kind: 'none' }
-  | { kind: 'direct'; link: OrderLink }
-  | { kind: 'choose'; links: OrderLink[] }
+  { kind: 'none' } | { kind: 'direct'; link: OrderLink } | { kind: 'choose'; links: OrderLink[] }
 
 /**
  * True for an https URL whose host is one of the platform's hosts or a
