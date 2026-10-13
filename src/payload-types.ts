@@ -67,14 +67,26 @@ export interface Config {
   };
   blocks: {};
   collections: {
+    'menu-items': MenuItem;
+    categories: Category;
+    testimonials: Testimonial;
+    media: Media;
     users: User;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    categories: {
+      items: 'menu-items';
+    };
+  };
   collectionsSelect: {
+    'menu-items': MenuItemsSelect<false> | MenuItemsSelect<true>;
+    categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -85,8 +97,16 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    homepage: Homepage;
+    about: About;
+    'site-settings': SiteSetting;
+  };
+  globalsSelect: {
+    homepage: HomepageSelect<false> | HomepageSelect<true>;
+    about: AboutSelect<false> | AboutSelect<true>;
+    'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -117,10 +137,124 @@ export interface UserAuthOperations {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "menu-items".
+ */
+export interface MenuItem {
+  id: number;
+  name: string;
+  /**
+   * Used in the page URL. Leave blank to generate it from the name.
+   */
+  slug: string;
+  shortDescription?: string | null;
+  category: number | Category;
+  image?: (number | null) | Media;
+  /**
+   * USD. Only shown if "Show prices" is on in Site settings.
+   */
+  price?: number | null;
+  /**
+   * Halal is site-wide, no tag needed.
+   */
+  tags?: ('spicy' | 'vegetarian' | 'popular' | 'new' | 'signature')[] | null;
+  /**
+   * In the DoorDash app, open the dish and use Share.
+   */
+  doordashUrl?: string | null;
+  /**
+   * In the Uber Eats app, open the dish and use Share.
+   */
+  uberEatsUrl?: string | null;
+  /**
+   * Untick to hide this item from the site.
+   */
+  available?: boolean | null;
+  /**
+   * Lower numbers come first.
+   */
+  sortOrder?: number | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories".
+ */
+export interface Category {
+  id: number;
+  name: string;
+  /**
+   * Used in the page URL. Leave blank to generate it from the name.
+   */
+  slug: string;
+  /**
+   * Optional icon or photo for the category.
+   */
+  image?: (number | null) | Media;
+  /**
+   * Lower numbers come first.
+   */
+  sortOrder?: number | null;
+  items?: {
+    docs?: (number | MenuItem)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: number;
+  /**
+   * Describe the photo for people who can’t see it.
+   */
+  alt: string;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials".
+ */
+export interface Testimonial {
+  id: number;
+  name: string;
+  quote: string;
+  source?: ('google' | 'yelp' | 'facebook' | 'instagram' | 'tripadvisor' | 'doordash' | 'uber-eats' | 'other') | null;
+  sourceUrl?: string | null;
+  avatar?: (number | null) | Media;
+  /**
+   * Show on the home page.
+   */
+  featured?: boolean | null;
+  /**
+   * Lower numbers come first.
+   */
+  sortOrder?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
   id: number;
+  name?: string | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -164,10 +298,27 @@ export interface PayloadKv {
  */
 export interface PayloadLockedDocument {
   id: number;
-  document?: {
-    relationTo: 'users';
-    value: number | User;
-  } | null;
+  document?:
+    | ({
+        relationTo: 'menu-items';
+        value: number | MenuItem;
+      } | null)
+    | ({
+        relationTo: 'categories';
+        value: number | Category;
+      } | null)
+    | ({
+        relationTo: 'testimonials';
+        value: number | Testimonial;
+      } | null)
+    | ({
+        relationTo: 'media';
+        value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: number | User;
+      } | null);
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
@@ -212,9 +363,76 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "menu-items_select".
+ */
+export interface MenuItemsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  shortDescription?: T;
+  category?: T;
+  image?: T;
+  price?: T;
+  tags?: T;
+  doordashUrl?: T;
+  uberEatsUrl?: T;
+  available?: T;
+  sortOrder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories_select".
+ */
+export interface CategoriesSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  image?: T;
+  sortOrder?: T;
+  items?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials_select".
+ */
+export interface TestimonialsSelect<T extends boolean = true> {
+  name?: T;
+  quote?: T;
+  source?: T;
+  sourceUrl?: T;
+  avatar?: T;
+  featured?: T;
+  sortOrder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  name?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -272,6 +490,254 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "homepage".
+ */
+export interface Homepage {
+  id: number;
+  hero: {
+    /**
+     * Wrap words in *asterisks* to highlight them, e.g. The recipe is *Lebanese*.
+     */
+    headline: string;
+    subline?: string | null;
+    media?: (number | null) | Media;
+  };
+  promise?: {
+    /**
+     * Wrap words in *asterisks* to highlight them, e.g. The recipe is *Lebanese*.
+     */
+    headline?: string | null;
+    body?: string | null;
+    media?: (number | null) | Media;
+  };
+  /**
+   * Shown on the home page in this order.
+   */
+  featuredItems?: (number | MenuItem)[] | null;
+  promo?: {
+    enabled?: boolean | null;
+    /**
+     * Wrap words in *asterisks* to highlight them, e.g. The recipe is *Lebanese*.
+     */
+    text?: string | null;
+    linkLabel?: string | null;
+    linkUrl?: string | null;
+    /**
+     * Optional. Shows a countdown to this moment.
+     */
+    countdownTo?: string | null;
+  };
+  _status?: ('draft' | 'published') | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "about".
+ */
+export interface About {
+  id: number;
+  /**
+   * Wrap words in *asterisks* to highlight them, e.g. The recipe is *Lebanese*.
+   */
+  headline?: string | null;
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  images?:
+    | {
+        image: number | Media;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings".
+ */
+export interface SiteSetting {
+  id: number;
+  siteName: string;
+  logo?: (number | null) | Media;
+  /**
+   * Show menu prices on the site. Delivery-app prices can differ, so this is off by default.
+   */
+  showPrices?: boolean | null;
+  /**
+   * IANA time zone for opening hours.
+   */
+  timezone?: string | null;
+  /**
+   * The restaurant page on DoorDash. Used when an item has no link of its own.
+   */
+  doordashStoreUrl?: string | null;
+  /**
+   * The restaurant page on Uber Eats. Used when an item has no link of its own.
+   */
+  uberEatsStoreUrl?: string | null;
+  locations?:
+    | {
+        name: string;
+        streetAddress?: string | null;
+        city?: string | null;
+        /**
+         * State, e.g. MO
+         */
+        region?: string | null;
+        postalCode?: string | null;
+        phone?: string | null;
+        /**
+         * Google Maps link
+         */
+        mapUrl?: string | null;
+        hours?:
+          | {
+              days: ('mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun')[];
+              opens: string;
+              closes: string;
+              id?: string | null;
+            }[]
+          | null;
+        /**
+         * e.g. Holiday hours
+         */
+        hoursNote?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  socials?:
+    | {
+        platform: 'instagram' | 'tiktok' | 'facebook' | 'google' | 'yelp' | 'x' | 'youtube' | 'other';
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  seo?: {
+    defaultDescription?: string | null;
+    /**
+     * Image used when the site is shared. 1200×630 works best.
+     */
+    ogImage?: (number | null) | Media;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "homepage_select".
+ */
+export interface HomepageSelect<T extends boolean = true> {
+  hero?:
+    | T
+    | {
+        headline?: T;
+        subline?: T;
+        media?: T;
+      };
+  promise?:
+    | T
+    | {
+        headline?: T;
+        body?: T;
+        media?: T;
+      };
+  featuredItems?: T;
+  promo?:
+    | T
+    | {
+        enabled?: T;
+        text?: T;
+        linkLabel?: T;
+        linkUrl?: T;
+        countdownTo?: T;
+      };
+  _status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "about_select".
+ */
+export interface AboutSelect<T extends boolean = true> {
+  headline?: T;
+  body?: T;
+  images?:
+    | T
+    | {
+        image?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings_select".
+ */
+export interface SiteSettingsSelect<T extends boolean = true> {
+  siteName?: T;
+  logo?: T;
+  showPrices?: T;
+  timezone?: T;
+  doordashStoreUrl?: T;
+  uberEatsStoreUrl?: T;
+  locations?:
+    | T
+    | {
+        name?: T;
+        streetAddress?: T;
+        city?: T;
+        region?: T;
+        postalCode?: T;
+        phone?: T;
+        mapUrl?: T;
+        hours?:
+          | T
+          | {
+              days?: T;
+              opens?: T;
+              closes?: T;
+              id?: T;
+            };
+        hoursNote?: T;
+        id?: T;
+      };
+  socials?:
+    | T
+    | {
+        platform?: T;
+        url?: T;
+        id?: T;
+      };
+  seo?:
+    | T
+    | {
+        defaultDescription?: T;
+        ogImage?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
