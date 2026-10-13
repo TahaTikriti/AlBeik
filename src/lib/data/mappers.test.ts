@@ -180,6 +180,7 @@ describe('toLocation', () => {
       phoneHref: 'tel:+18165550100',
       mapUrl: 'https://maps.google.com/?q=albeik',
       hours: [{ days: 'Mon', time: '11:00 AM – 10:00 PM' }],
+      openingHours: [{ days: ['mon'], opens: '11:00', closes: '22:00' }],
       hoursNote: null,
     })
   })
@@ -191,6 +192,7 @@ describe('toLocation', () => {
       phoneHref: null,
       mapUrl: null,
       hours: [],
+      openingHours: [],
     })
   })
 })
@@ -243,6 +245,13 @@ describe('toHomePage', () => {
       text: 'The recipe is Lebanese.',
     })
     expect(page.hero.media?.kind).toBe('image')
+    expect(page.promise).toBeNull()
+    expect(page.promo).toBeNull()
+  })
+
+  it('handles a home page that was never saved', () => {
+    const page = toHomePage({ id: 1 } as Homepage, [], [])
+    expect(page.hero).toEqual({ headline: { segments: [], text: '' }, subline: null, media: null })
     expect(page.promise).toBeNull()
     expect(page.promo).toBeNull()
   })

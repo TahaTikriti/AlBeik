@@ -17,6 +17,7 @@ export const copy = {
   order: {
     cta: 'Order',
     ctaFor: (item: string) => `Order ${item}`,
+    ctaForOn: (item: string, platform: string) => `Order ${item} on ${platform}`,
     on: (platform: string) => `Order on ${platform}`,
     sheetTitle: 'Order',
     sheetIntro: 'Pick your delivery app.',

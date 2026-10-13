@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest'
 
-import { formatDays, formatHours, formatTime, isValidTime, toSchemaOpeningHours } from '.'
+import {
+  completeHours,
+  formatDays,
+  formatHours,
+  formatTime,
+  isValidTime,
+  toSchemaOpeningHours,
+  type HoursRow,
+} from '.'
 
 describe('isValidTime', () => {
   it('accepts 24-hour HH:MM', () => {
@@ -87,5 +95,16 @@ describe('toSchemaOpeningHours', () => {
         closes: '23:30',
       },
     ])
+  })
+})
+
+describe('completeHours', () => {
+  it('keeps only complete rows, as plain day/time values', () => {
+    expect(
+      completeHours([
+        { days: ['sun', 'mon'], opens: '11:00', closes: '22:00', id: 'abc' } as HoursRow,
+        { days: ['tue'], opens: '25:00', closes: '22:00' },
+      ]),
+    ).toEqual([{ days: ['mon', 'sun'], opens: '11:00', closes: '22:00' }])
   })
 })

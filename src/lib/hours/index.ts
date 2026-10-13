@@ -66,26 +66,28 @@ export function formatDays(days: Day[]): string {
 }
 
 export function formatHours(rows: HoursRow[] | null | undefined): HoursLine[] {
-  return completeRows(rows).map((row) => ({
+  return completeHours(rows).map((row) => ({
     days: formatDays(row.days),
     time: `${formatTime(row.opens)} – ${formatTime(row.closes)}`,
   }))
 }
 
 export function toSchemaOpeningHours(rows: HoursRow[] | null | undefined) {
-  return completeRows(rows).map((row) => ({
+  return completeHours(rows).map((row) => ({
     '@type': 'OpeningHoursSpecification' as const,
-    dayOfWeek: DAYS.filter((d) => row.days.includes(d)).map((d) => SCHEMA_DAYS[d]),
+    dayOfWeek: row.days.map((d) => SCHEMA_DAYS[d]),
     opens: row.opens,
     closes: row.closes,
   }))
 }
 
-type CompleteRow = { days: Day[]; opens: string; closes: string }
+export type OpeningHours = { days: Day[]; opens: string; closes: string }
 
-function completeRows(rows: HoursRow[] | null | undefined): CompleteRow[] {
-  return (rows ?? []).filter(
-    (row): row is CompleteRow =>
-      !!row.days?.length && isValidTime(row.opens) && isValidTime(row.closes),
+/** Valid rows only, days in week order, without CMS bookkeeping fields. */
+export function completeHours(rows: HoursRow[] | null | undefined): OpeningHours[] {
+  return (rows ?? []).flatMap((row) =>
+    row.days?.length && isValidTime(row.opens) && isValidTime(row.closes)
+      ? [{ days: DAYS.filter((d) => row.days!.includes(d)), opens: row.opens, closes: row.closes }]
+      : [],
   )
 }

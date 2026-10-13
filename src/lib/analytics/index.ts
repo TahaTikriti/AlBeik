@@ -1,7 +1,7 @@
 import type { OrderLink, PlatformId } from '@/lib/order'
 
 /** Where on the site an order control was used. */
-export type Placement = 'menu' | 'item' | 'home-featured' | 'sticky'
+export type Placement = 'menu' | 'item' | 'home-hero' | 'home-featured' | 'sticky'
 
 /**
  * Every custom event the site sends. `item` is the menu item slug, or

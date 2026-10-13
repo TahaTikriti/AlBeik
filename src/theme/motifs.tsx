@@ -9,13 +9,23 @@ import type { ImageVM } from '@/lib/data/types'
 
 export function Logo({ name, image }: { name: string; image: ImageVM | null }) {
   if (image) {
-    return <Image src={image.url} alt={name} width={image.width} height={image.height} priority />
+    return (
+      <Image
+        src={image.url}
+        alt={name}
+        width={image.width}
+        height={image.height}
+        sizes="160px"
+        className="h-8 w-auto"
+        preload
+      />
+    )
   }
   return <span>{name}</span>
 }
 
 export function Divider() {
-  return <hr />
+  return <hr className="border-line" />
 }
 
 export function Loader() {

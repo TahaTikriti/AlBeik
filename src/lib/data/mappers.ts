@@ -1,4 +1,4 @@
-import { formatHours } from '@/lib/hours'
+import { completeHours, formatHours } from '@/lib/hours'
 import { resolveOrderLinks, type StoreOrderUrls } from '@/lib/order'
 import { parseEmphasis, plainText } from '@/lib/text'
 import type { Category, Homepage, Media, MenuItem, SiteSetting, Testimonial } from '@/payload-types'
@@ -128,6 +128,7 @@ export function toLocation(row: LocationRow): LocationVM {
     phoneHref: phone ? toTelHref(phone) : null,
     mapUrl: orNull(row.mapUrl),
     hours: formatHours(row.hours),
+    openingHours: completeHours(row.hours),
     hoursNote: orNull(row.hoursNote),
   }
 }
@@ -182,10 +183,11 @@ export function toHomePage(
   const promo = home.promo
 
   return {
+    // Globals that were never saved come back without their groups.
     hero: {
-      headline: toRichLine(home.hero.headline),
-      subline: orNull(home.hero.subline),
-      media: toMedia(home.hero.media),
+      headline: toRichLine(home.hero?.headline),
+      subline: orNull(home.hero?.subline),
+      media: toMedia(home.hero?.media),
     },
     promise:
       promise && (orNull(promise.headline) || orNull(promise.body) || toMedia(promise.media))

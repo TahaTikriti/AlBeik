@@ -1,11 +1,40 @@
 import '@/styles/globals.css'
 
+import type { Metadata, Viewport } from 'next'
 import type { ReactNode } from 'react'
 
-export default function FrontendLayout({ children }: { children: ReactNode }) {
+import { SiteShell } from '@/components/shell/SiteShell'
+import { UmamiScript } from '@/lib/analytics/UmamiScript'
+import { getSite } from '@/lib/data'
+import { restaurantJsonLd } from '@/lib/seo'
+import { JsonLd } from '@/lib/seo/JsonLd'
+import { fontClassName } from '@/theme/fonts'
+import { theme } from '@/theme/theme'
+
+export const viewport: Viewport = {
+  themeColor: theme.themeColor,
+  // Lets env(safe-area-inset-*) report real values on notched phones.
+  viewportFit: 'cover',
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const site = await getSite()
+  return {
+    metadataBase: new URL(site.url),
+    title: { default: site.name, template: `%s · ${site.name}` },
+    description: site.seo.description ?? undefined,
+  }
+}
+
+export default async function FrontendLayout({ children }: { children: ReactNode }) {
+  const site = await getSite()
   return (
-    <html lang="en" dir="ltr">
-      <body>{children}</body>
+    <html lang="en" dir="ltr" className={fontClassName || undefined}>
+      <body>
+        <SiteShell site={site}>{children}</SiteShell>
+        <JsonLd data={restaurantJsonLd(site)} />
+        <UmamiScript />
+      </body>
     </html>
   )
 }

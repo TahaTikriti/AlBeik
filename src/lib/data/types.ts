@@ -8,11 +8,11 @@
  */
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 
-import type { HoursLine } from '@/lib/hours'
+import type { HoursLine, OpeningHours } from '@/lib/hours'
 import type { OrderLink } from '@/lib/order'
 import type { Segment } from '@/lib/text'
 
-export type { HoursLine } from '@/lib/hours'
+export type { Day, HoursLine, OpeningHours } from '@/lib/hours'
 export type { OrderLink, PlatformId } from '@/lib/order'
 export type { Segment } from '@/lib/text'
 
@@ -89,7 +89,10 @@ export type LocationVM = {
   /** `tel:` link, or null. */
   phoneHref: string | null
   mapUrl: string | null
+  /** Display lines, e.g. { days: 'Mon–Thu', time: '11:00 AM – 10:00 PM' }. */
   hours: HoursLine[]
+  /** The same hours as data (24-hour times), for JSON-LD or an "open now" badge. */
+  openingHours: OpeningHours[]
   hoursNote: string | null
 }
 
