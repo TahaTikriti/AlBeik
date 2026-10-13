@@ -48,7 +48,5 @@ export default defineConfig([
     'src/payload-types.ts',
     'src/migrations/**',
     'src/app/(payload)/**',
-    'playwright-report/**',
-    'test-results/**',
   ]),
 ])

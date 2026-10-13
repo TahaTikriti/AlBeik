@@ -1,5 +1,7 @@
 # AlBeik: Phase 1 Foundation Plan (`main` only)
 
+> **Revised 2026-10-13 after review:** slimmed down at the user's request. No Docker (use a hosted Postgres such as Neon), no Playwright, no integration tests or test database; only the order-link unit tests remain. Everything else below still applies. See README.md for the current setup.
+
 ## Context
 
 AlBeik's current site (albeik.us) is a menu with no way to order. The new site has two jobs: make people hungry, and get them from a menu item to DoorDash or Uber Eats in as few taps as possible, mostly on phones. Phase 1 builds the foundation on `main`: Next.js + Payload 3 in one app, Postgres, the §5 content model, a seed script from `docs/content/`, the §3 order-link fallback chain, click tracking, and neutral tokens with unstyled but working pages. Phase 2 (separate sessions) builds 2–3 design POCs on their own branches. So the main goal of this phase is a data and logic layer that any visual direction can re-theme fully without touching it.

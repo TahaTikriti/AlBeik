@@ -9,7 +9,12 @@ export function LivePreviewListener() {
   return (
     <RefreshRouteOnSave
       refresh={() => router.refresh()}
-      serverURL={process.env.NEXT_PUBLIC_SERVER_URL ?? ''}
+      // The admin is served by this same app, so the page's own origin works
+      // when NEXT_PUBLIC_SERVER_URL isn't set.
+      serverURL={
+        process.env.NEXT_PUBLIC_SERVER_URL ||
+        (typeof window === 'undefined' ? '' : window.location.origin)
+      }
     />
   )
 }

@@ -1,46 +1,12 @@
 import { fileURLToPath } from 'url'
 import { defineConfig } from 'vitest/config'
 
-const src = (p = '') => fileURLToPath(new URL(`./src/${p}`, import.meta.url))
-
 export default defineConfig({
   resolve: {
-    alias: {
-      '@payload-config': src('payload.config.ts'),
-      '@': src(),
-    },
+    alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
   test: {
     environment: 'node',
-    projects: [
-      {
-        extends: true,
-        test: {
-          name: 'unit',
-          include: ['src/**/*.test.ts'],
-          exclude: ['src/**/*.int.test.ts'],
-        },
-      },
-      {
-        // Integration tests run Payload against a throwaway database
-        // (created by docker/initdb). Requires `pnpm db:up`.
-        extends: true,
-        test: {
-          name: 'int',
-          include: ['src/**/*.int.test.ts'],
-          env: {
-            DATABASE_URL:
-              process.env.TEST_DATABASE_URL ??
-              'postgres://albeik:albeik@localhost:5433/albeik_test',
-            PAYLOAD_SECRET: 'integration-test-secret',
-            // Keep test uploads out of the dev site's /media folder.
-            PAYLOAD_MEDIA_DIR: fileURLToPath(new URL('./.test-media', import.meta.url)),
-          },
-          fileParallelism: false,
-          testTimeout: 30_000,
-          hookTimeout: 120_000,
-        },
-      },
-    ],
+    include: ['src/**/*.test.ts'],
   },
 })
