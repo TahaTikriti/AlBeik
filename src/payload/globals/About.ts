@@ -13,6 +13,7 @@ import {
 import type { GlobalConfig } from 'payload'
 
 import { anyone, authenticated } from '../access'
+import { revalidateSite } from '../hooks/revalidateSite'
 import { emphasisTextField } from '../fields/emphasisText'
 
 export const aboutEditor = lexicalEditor({
@@ -33,6 +34,9 @@ export const About: GlobalConfig = {
   slug: 'about',
   label: 'About page',
   access: { read: anyone, update: authenticated },
+  hooks: {
+    afterChange: [revalidateSite.globalAfterChange],
+  },
   fields: [
     emphasisTextField({ name: 'headline' }),
     { name: 'body', type: 'richText', editor: aboutEditor },

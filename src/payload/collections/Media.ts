@@ -3,6 +3,7 @@ import type { CollectionConfig } from 'payload'
 import { fileURLToPath } from 'url'
 
 import { anyone, authenticated } from '../access'
+import { revalidateSite } from '../hooks/revalidateSite'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -17,6 +18,10 @@ export const Media: CollectionConfig = {
     create: authenticated,
     update: authenticated,
     delete: authenticated,
+  },
+  hooks: {
+    afterChange: [revalidateSite.afterChange],
+    afterDelete: [revalidateSite.afterDelete],
   },
   fields: [
     {

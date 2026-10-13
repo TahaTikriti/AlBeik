@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { authenticated, publishedOrAuthenticated } from '../access'
+import { revalidateSite } from '../hooks/revalidateSite'
 import { orderUrlField } from '../fields/orderUrl'
 import { slugField } from '../fields/slug'
 import { sortOrderField } from '../fields/sortOrder'
@@ -31,6 +32,10 @@ export const MenuItems: CollectionConfig = {
   versions: {
     drafts: true,
     maxPerDoc: 25,
+  },
+  hooks: {
+    afterChange: [revalidateSite.afterChange],
+    afterDelete: [revalidateSite.afterDelete],
   },
   fields: [
     { name: 'name', type: 'text', required: true },

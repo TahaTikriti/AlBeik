@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { anyone, authenticated } from '../access'
+import { revalidateSite } from '../hooks/revalidateSite'
 import { validateHref } from '../fields/link'
 import { sortOrderField } from '../fields/sortOrder'
 
@@ -16,6 +17,10 @@ export const Testimonials: CollectionConfig = {
     create: authenticated,
     update: authenticated,
     delete: authenticated,
+  },
+  hooks: {
+    afterChange: [revalidateSite.afterChange],
+    afterDelete: [revalidateSite.afterDelete],
   },
   fields: [
     { name: 'name', type: 'text', required: true },

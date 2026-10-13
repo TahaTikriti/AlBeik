@@ -1,6 +1,7 @@
 import type { GlobalConfig } from 'payload'
 
 import { authenticated, publishedOrAuthenticated } from '../access'
+import { revalidateSite } from '../hooks/revalidateSite'
 import { emphasisTextField } from '../fields/emphasisText'
 import { validateHref } from '../fields/link'
 
@@ -11,6 +12,9 @@ export const Homepage: GlobalConfig = {
   versions: {
     drafts: true,
     max: 25,
+  },
+  hooks: {
+    afterChange: [revalidateSite.globalAfterChange],
   },
   fields: [
     {

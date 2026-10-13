@@ -3,6 +3,7 @@ import type { GlobalConfig } from 'payload'
 import { DAYS, isValidTime } from '@/lib/hours'
 
 import { anyone, authenticated } from '../access'
+import { revalidateSite } from '../hooks/revalidateSite'
 import { validateHref } from '../fields/link'
 import { orderUrlField } from '../fields/orderUrl'
 
@@ -15,6 +16,9 @@ export const SiteSettings: GlobalConfig = {
   slug: 'site-settings',
   label: 'Site settings',
   access: { read: anyone, update: authenticated },
+  hooks: {
+    afterChange: [revalidateSite.globalAfterChange],
+  },
   fields: [
     {
       type: 'tabs',

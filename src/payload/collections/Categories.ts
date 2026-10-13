@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { anyone, authenticated } from '../access'
+import { revalidateSite } from '../hooks/revalidateSite'
 import { slugField } from '../fields/slug'
 import { sortOrderField } from '../fields/sortOrder'
 
@@ -16,6 +17,10 @@ export const Categories: CollectionConfig = {
     create: authenticated,
     update: authenticated,
     delete: authenticated,
+  },
+  hooks: {
+    afterChange: [revalidateSite.afterChange],
+    afterDelete: [revalidateSite.afterDelete],
   },
   fields: [
     { name: 'name', type: 'text', required: true },
