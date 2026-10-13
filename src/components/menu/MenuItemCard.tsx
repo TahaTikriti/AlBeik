@@ -9,15 +9,27 @@ import { OrderButton } from '../order/OrderButton'
 import { Img } from '../ui/Img'
 import { ui } from '../ui/classes'
 
-type Props = { item: MenuItemVM; placement: Placement; headingLevel?: 'h2' | 'h3' }
+type Props = {
+  item: MenuItemVM
+  placement: Placement
+  headingLevel?: 'h2' | 'h3'
+  /** Preload the photo: set on the first card above the fold (LCP). */
+  preloadImage?: boolean
+}
 
-export function MenuItemCard({ item, placement, headingLevel: Heading = 'h3' }: Props) {
+export function MenuItemCard({
+  item,
+  placement,
+  headingLevel: Heading = 'h3',
+  preloadImage = false,
+}: Props) {
   return (
     <article className="grid gap-3 rounded-card border border-line p-4">
       {item.image ? (
         <Img
           image={item.image}
           sizes="(min-width: 1024px) 22rem, (min-width: 640px) 45vw, 100vw"
+          preload={preloadImage}
           className="aspect-square w-full rounded-control object-cover"
         />
       ) : null}

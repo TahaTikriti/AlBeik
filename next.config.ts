@@ -24,4 +24,18 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default withPayload(nextConfig, { devBundleServerPackages: false })
+const config = withPayload(nextConfig, { devBundleServerPackages: false })
+const payloadHeaders = config.headers
+
+export default {
+  ...config,
+  // withPayload sends `Critical-CH: Sec-CH-Prefers-Color-Scheme` (the admin's
+  // color theme) on every route. On the public site that makes Chrome restart
+  // the first navigation, costing ~600 ms on mobile. Keep it on the admin only.
+  async headers() {
+    const rules = (await payloadHeaders?.()) ?? []
+    return rules.map((rule) =>
+      rule.source === '/:path*' ? { ...rule, source: '/admin/:path*' } : rule,
+    )
+  },
+} satisfies NextConfig

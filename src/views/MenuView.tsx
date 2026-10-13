@@ -14,8 +14,8 @@ export function MenuView({ categories }: MenuPageData) {
         <>
           <CategoryNav categories={categories.map(({ slug, name }) => ({ slug, name }))} />
           <div className={`${ui.container} grid gap-section py-section`}>
-            {categories.map((category) => (
-              <MenuSection key={category.id} category={category} />
+            {categories.map((category, i) => (
+              <MenuSection key={category.id} category={category} preloadFirst={i === 0} />
             ))}
           </div>
         </>
