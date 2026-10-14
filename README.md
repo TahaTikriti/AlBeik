@@ -13,7 +13,7 @@ pnpm install
 pnpm dev                # http://localhost:3000
 ```
 
-**Demo mode.** With no `DATABASE_URL`, the site runs on the scraped albeik.us content in `src/seed/content.ts` (photos in `public/seed/`). This also means Vercel deploys with zero environment variables. Order buttons open a DoorDash / Uber Eats search for AlBeik until real store links exist. The admin (`/admin`) needs a database.
+**Demo mode.** With no `DATABASE_URL`, the site runs on the scraped albeik.us content in `src/seed/content.ts` (photos in `public/seed/`). This also means Vercel deploys with zero environment variables. Order buttons go to AlBeik's real DoorDash and Uber Eats store pages. The admin (`/admin`) needs a database.
 
 **CMS mode.** To edit content in the admin, add a Postgres database (a free [Neon](https://neon.tech) or Supabase project works):
 
@@ -69,7 +69,7 @@ Neither platform can pre-fill a cart from a link, so each order button falls bac
 
 With one platform available the button links straight to it; with both it opens a small sheet. Links open in the same tab so the phone's app can take over.
 
-**Until store links are entered in Site settings, every order button is hidden.**
+The seed fills in AlBeik's store links (Site settings → Ordering); clear them there and every order button hides.
 
 Clicks are tracked as Umami custom events (`order_sheet_open`, `order_click` with item, platform, link level and placement) once `NEXT_PUBLIC_UMAMI_WEBSITE_ID` is set.
 
@@ -77,7 +77,7 @@ Clicks are tracked as Umami custom events (`order_sheet_open`, `order_click` wit
 
 - Full menu: Platters, Sides, Drinks and Desserts are empty (empty categories are hidden)
 - Prices, and whether to show them (Site settings → Show prices)
-- DoorDash and Uber Eats store links, plus item links if they're willing to collect them
+- Item-level DoorDash / Uber Eats links, if they're willing to collect them (optional)
 - Address, phone, opening hours, Google Maps link
 - Logo files, social links, testimonial sources
 - Dietary tags (spicy, vegetarian), to be confirmed before tagging
