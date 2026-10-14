@@ -4,11 +4,13 @@ Next.js 16 + Payload CMS 3 in one app. The public site is static (rebuilt when c
 
 ## This branch: `poc/street`
 
-Design direction 1, taken straight from AlBeik's Instagram rebrand: deep black, chili red and white, huge condensed caps (Anton) with one word in red, the mustache as the recurring mark, the fez on the 404 and Visit pages, slow smoke and steam, split-flap numerals for the signatures and menu sections, round "plate" crops that hang off red cards, a scrolling slogan strip, and a dark order sheet that slides up. Copy is in the brand's voice ("Spice bomb is waiting").
+Design direction 1 (the one chosen), taken straight from AlBeik's Instagram rebrand: deep black, the logo's fez red and white, AlBeik's real logo reversed for the dark background, huge condensed caps (Anton) with one word in red, the logo's mustache as the recurring mark, the logo's fez-and-face mark on the 404 and Visit pages, slow smoke and steam, split-flap numerals for the signatures and menu sections, round "plate" crops that hang off red cards, a scrolling slogan strip, and a dark order sheet that slides up. Copy is in the brand's voice ("Spice bomb is waiting").
 
 What changed versus `main` is presentation only: `src/theme` (tokens, fonts, motifs, copy, `brand.css`), `src/components`, `src/views` and one import in `src/styles/globals.css`. Data and logic are identical.
 
-Lighthouse mobile (production build, demo data): home and menu performance 94 / 92; accessibility, best practices and SEO 100.
+**Logo.** The client's files are in `public/brand/`. They're dark ink on white or transparent, so the theme uses white-reversed pieces derived from the stacked PNG, kept in `src/theme/brand/` (mark, wordmark, full stacked logo) plus the favicons. Swap them for the client's own vector or reversed files when those arrive.
+
+Lighthouse mobile (production build, demo data): performance home 91–92, menu 91–92, item 95; accessibility, best practices and SEO 100.
 
 ## Run it
 
@@ -54,7 +56,7 @@ src/
   views/        one layout per page                                  ┘ restyle these
 ```
 
-**Presentation boundary.** A design branch changes `src/theme`, `src/components`, `src/views` and `public/` (plus the icon in `src/app/(frontend)/icon.svg`), and nothing else. Components get ready-made view models as props (`src/lib/data/types.ts`) and ESLint stops them from importing Payload or the data loaders. If a design needs different data, change it on `main` and rebase. To check a branch:
+**Presentation boundary.** A design branch changes `src/theme`, `src/components`, `src/views` and `public/` (plus the icons `src/app/(frontend)/icon.png` and `apple-icon.png`), and nothing else. Components get ready-made view models as props (`src/lib/data/types.ts`) and ESLint stops them from importing Payload or the data loaders. If a design needs different data, change it on `main` and rebase. To check a branch:
 
 ```bash
 git diff main --stat -- src/payload src/lib src/seed src/migrations
@@ -85,7 +87,7 @@ Clicks are tracked as Umami custom events (`order_sheet_open`, `order_click` wit
 - Prices, and whether to show them (Site settings → Show prices)
 - Item-level DoorDash / Uber Eats links, if they're willing to collect them (optional)
 - Address, phone, opening hours, Google Maps link
-- Logo files, social links, testimonial sources
+- The logo as vector (SVG) files, including a white/reversed version; social links, testimonial sources
 - Dietary tags (spicy, vegetarian), to be confirmed before tagging
 - True cut-out photos, if any exist (the current ones have backgrounds)
 
