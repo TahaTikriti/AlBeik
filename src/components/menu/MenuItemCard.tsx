@@ -61,7 +61,7 @@ export function MenuItemCard({
       {/* Phones: text on top, button pinned below. From sm up the card's own rows take over. */}
       <div className="grid h-full grid-rows-[1fr_auto] gap-3 py-1 sm:contents">
         <div className="grid content-start gap-1 sm:pt-1">
-          <Heading className="line-clamp-2 text-[1.6rem] leading-[0.95] sm:text-[1.75rem]">
+          <Heading className="line-clamp-2 text-[1.6rem] leading-none sm:text-[1.75rem]">
             <Link
               href={item.href}
               className="after:absolute after:inset-0 after:rounded-card group-hover:text-red-text"

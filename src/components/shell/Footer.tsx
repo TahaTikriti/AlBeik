@@ -14,7 +14,7 @@ export function Footer({ site }: { site: SiteVM }) {
         <div className="grid gap-8 md:grid-cols-[1.5fr_1fr_1fr] md:gap-12">
           <div className="flex items-end gap-5">
             <Mark sizes="4.5rem" className="h-24 w-auto shrink-0 md:h-28" />
-            <p className="max-w-[15rem] font-display text-2xl leading-[0.95] uppercase">
+            <p className="max-w-[15rem] font-display text-2xl leading-none uppercase">
               {copy.footer.tagline}
             </p>
           </div>

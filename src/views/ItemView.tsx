@@ -10,9 +10,8 @@ import { copy } from '@/theme/copy'
 import { Smoke, Steam } from '@/theme/motifs'
 
 /**
- * Like the brand's dish posts ("FATTOUSH" over the dish on black): the name
- * in outlined red sticker type, then the dish lit in the dark. Desktop puts
- * the dish beside the name and details.
+ * Like the brand's dish posts: the name, then the dish lit in the dark.
+ * Desktop puts the dish beside the name and details.
  */
 export function ItemView({ item }: ItemPageData) {
   return (
@@ -32,7 +31,7 @@ export function ItemView({ item }: ItemPageData) {
             </Link>
           </p>
 
-          <h1 className="sticker-type text-display-1 md:col-start-2 md:self-end md:text-[clamp(3rem,1.5rem+3.4vw,5.5rem)]">
+          <h1 className="text-display-1 md:col-start-2 md:self-end md:text-[clamp(3rem,1.5rem+3.4vw,5.5rem)]">
             {item.name}
           </h1>
 

@@ -98,14 +98,6 @@
     mask-repeat: no-repeat;
   }
 
-  /* The chunky red-with-white-outline type of the "FATTOUSH" posts, for a dish's name. */
-  .sticker-type {
-    color: var(--p-red-text);
-    -webkit-text-stroke: 0.08em var(--p-white);
-    paint-order: stroke fill;
-    text-shadow: 0 0.06em 0.18em rgb(0 0 0 / 0.55);
-  }
-
   /* The hero dish fades into whatever is behind it (smoke included), so there's no seam:
      top and bottom on phones, left and bottom beside the copy. */
   .fade-photo {

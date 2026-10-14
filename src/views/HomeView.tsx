@@ -72,12 +72,12 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
         >
           <div className="grid gap-3">
             <p className="label text-red-text">{copy.home.heroKicker}</p>
-            <h1 className="grid gap-3">
+            <h1>
               <span className="text-display-1 block">
                 <Emphasis line={shout} />
               </span>
               {followUp ? (
-                <span className="block font-display text-[clamp(1.6rem,1.2rem+2vw,2.6rem)] leading-[0.95] text-ink-muted">
+                <span className="mt-[0.35em] block font-display text-[clamp(1.6rem,1.2rem+2vw,2.6rem)] leading-none text-ink-muted">
                   <Emphasis line={followUp} />
                 </span>
               ) : null}
@@ -263,7 +263,7 @@ function PromiseHeadline({ line }: { line: RichLine }) {
       <span className="outline-text block [-webkit-text-stroke-color:var(--color-white)]">
         {first}
       </span>
-      <span className="block text-[0.62em] leading-[0.9] [&_em]:text-white">
+      <span className="block text-[0.62em] leading-[0.98] [&_em]:text-white">
         <Emphasis line={restLine} />
       </span>
     </>
@@ -286,7 +286,7 @@ function SignatureCard({ item }: { item: MenuItemVM }) {
         className="absolute inset-0 -z-10 bg-[linear-gradient(to_top,var(--color-black)_10%,rgb(10_10_10/0.8)_42%,transparent_72%)]"
       />
       <div className="grid gap-3 p-5">
-        <h3 className="text-[2rem] leading-[0.92] sm:text-[2.25rem]">
+        <h3 className="text-[2rem] leading-none sm:text-[2.25rem]">
           {/* Stretched: the whole card opens the dish; the order button sits above it. */}
           <Link href={item.href} className="after:absolute after:inset-0">
             {item.name}
