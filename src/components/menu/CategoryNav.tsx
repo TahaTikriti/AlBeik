@@ -5,8 +5,6 @@ import { useEffect, useRef, useState } from 'react'
 import type { CategoryRef } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
 
-import { ui } from '../ui/classes'
-
 /**
  * Category chips that stick under the header. Plain anchor links (work
  * without JS); JS only highlights the chip for the section in view and
@@ -48,19 +46,19 @@ export function CategoryNav({ categories }: { categories: CategoryRef[] }) {
   return (
     <nav
       aria-label={copy.menu.categoriesLabel}
-      className="sticky top-header z-(--z-sticky) border-b border-line bg-surface"
+      className="sticky top-header z-(--z-sticky) bg-surface/90 backdrop-blur-md"
     >
       <ul
         ref={listRef}
-        className={`${ui.container} flex h-chipbar items-center gap-2 overflow-x-auto [scrollbar-width:none]`}
+        className="mx-auto flex h-chipbar max-w-content snap-x items-center gap-2 overflow-x-auto px-gutter [scrollbar-width:none]"
       >
         {categories.map((category) => (
-          <li key={category.slug} className="shrink-0">
+          <li key={category.slug} className="shrink-0 snap-start">
             <a
               href={`#${category.slug}`}
               data-slug={category.slug}
               aria-current={active === category.slug ? 'true' : undefined}
-              className={`${ui.chip} aria-[current=true]:bg-accent aria-[current=true]:text-accent-ink`}
+              className="pill"
             >
               {category.name}
             </a>

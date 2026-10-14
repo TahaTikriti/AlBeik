@@ -5,10 +5,9 @@ import { copy } from '@/theme/copy'
 
 import { Footer } from './Footer'
 import { Header } from './Header'
-import { StickyOrderBar, StickyOrderBarSpacer } from './StickyOrderBar'
+import { TabBar, TabBarSpacer } from './TabBar'
 
 export function SiteShell({ site, children }: { site: SiteVM; children: ReactNode }) {
-  const canOrder = site.storeOrderLinks.length > 0
   return (
     <>
       <a href="#main" className="skip-link">
@@ -19,12 +18,8 @@ export function SiteShell({ site, children }: { site: SiteVM; children: ReactNod
         {children}
       </main>
       <Footer site={site} />
-      {canOrder ? (
-        <>
-          <StickyOrderBarSpacer />
-          <StickyOrderBar links={site.storeOrderLinks} />
-        </>
-      ) : null}
+      <TabBarSpacer />
+      <TabBar storeLinks={site.storeOrderLinks} />
     </>
   )
 }

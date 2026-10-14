@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 
 import type { Placement } from '@/lib/analytics'
@@ -5,55 +7,83 @@ import type { MenuItemVM } from '@/lib/data/types'
 import { formatPrice } from '@/lib/text'
 import { copy } from '@/theme/copy'
 
-import { OrderButton } from '../order/OrderButton'
+import { PlusIcon } from '../ui/icons'
 import { Img } from '../ui/Img'
-import { ui } from '../ui/classes'
+import { useItemSheet } from './ItemSheet'
 
 type Props = {
   item: MenuItemVM
   placement: Placement
+  /** `row`: menu list. `tile`: home carousel. */
+  variant?: 'row' | 'tile'
   headingLevel?: 'h2' | 'h3'
-  /** Preload the photo: set on the first card above the fold (LCP). */
   preloadImage?: boolean
 }
 
+/**
+ * A dish. The whole card opens the item sheet (details + order buttons);
+ * without JS it's a plain link to the item page.
+ */
 export function MenuItemCard({
   item,
   placement,
+  variant = 'row',
   headingLevel: Heading = 'h3',
   preloadImage = false,
 }: Props) {
+  const openSheet = useItemSheet()
+  const canOrder = item.orderLinks.length > 0
+
   return (
-    <article className="grid gap-3 rounded-card border border-line p-4">
+    <Link
+      href={item.href}
+      onClick={(event) => {
+        if (!openSheet || event.metaKey || event.ctrlKey) return
+        event.preventDefault()
+        openSheet(item, placement)
+      }}
+      className={
+        variant === 'tile'
+          ? 'card pressable group relative grid h-full content-start gap-3 p-4 pt-5 text-center'
+          : 'card pressable group relative grid h-full grid-cols-[1fr_6.75rem] items-center gap-4 p-4'
+      }
+    >
       {item.image ? (
         <Img
           image={item.image}
-          sizes="(min-width: 1024px) 22rem, (min-width: 640px) 45vw, 100vw"
+          sizes={variant === 'tile' ? '10rem' : '6.75rem'}
           preload={preloadImage}
-          className="aspect-square w-full rounded-control object-cover"
+          className={
+            variant === 'tile'
+              ? 'plate mx-auto w-36 transition-transform duration-(--duration-slow) ease-out group-hover:rotate-6'
+              : 'plate order-2 w-full transition-transform duration-(--duration-slow) ease-out group-hover:rotate-6'
+          }
         />
       ) : null}
-      <div className="grid gap-1">
-        <Heading className="text-display-3">
-          <Link href={item.href} className="hover:underline">
-            {item.name}
-          </Link>
-        </Heading>
-        {item.description ? <p className="text-small text-ink-muted">{item.description}</p> : null}
-      </div>
-      {item.tags.length || item.price !== null ? (
-        <div className="flex flex-wrap items-center gap-2">
-          {item.tags.map((tag) => (
-            <span key={tag} className={ui.tag}>
-              {copy.item.tags[tag]}
-            </span>
-          ))}
+      <span className="grid content-start gap-1">
+        {item.tags.includes('signature') ? (
+          <span className={`label text-red ${variant === 'tile' ? '' : 'justify-self-start'}`}>
+            ★ {copy.item.tags.signature}
+          </span>
+        ) : null}
+        <Heading className="text-display-3">{item.name}</Heading>
+        {item.description ? (
+          <span className="line-clamp-2 text-small text-ink-muted">{item.description}</span>
+        ) : null}
+        <span
+          className={`mt-2 flex items-center gap-3 ${variant === 'tile' ? 'justify-center' : ''}`}
+        >
           {item.price !== null ? (
-            <span className="ms-auto font-semibold">{formatPrice(item.price)}</span>
+            <span className="font-bold">{formatPrice(item.price)}</span>
           ) : null}
-        </div>
-      ) : null}
-      <OrderButton links={item.orderLinks} item={item} placement={placement} />
-    </article>
+          {canOrder ? (
+            <span className="inline-flex min-h-9 items-center gap-1.5 rounded-full bg-red ps-3 pe-4 text-small font-bold text-white shadow-[var(--shadow-red)]">
+              <PlusIcon className="size-4" />
+              {copy.order.cta}
+            </span>
+          ) : null}
+        </span>
+      </span>
+    </Link>
   )
 }

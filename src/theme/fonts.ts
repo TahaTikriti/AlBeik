@@ -1,14 +1,20 @@
+import { Anton, Plus_Jakarta_Sans } from 'next/font/google'
+
 /**
- * Font loading. `main` uses system stacks (no downloads), so this is empty.
- *
- * A design direction loads its faces with next/font and points the tokens at
- * them, e.g.:
- *
- *   import { Anton, Inter } from 'next/font/google'
- *   const display = Anton({ weight: '400', subsets: ['latin'], variable: '--p-font-display' })
- *   const body = Inter({ subsets: ['latin'], variable: '--p-font-body' })
- *   export const fontClassName = `${display.variable} ${body.variable}`
- *
- * then in tokens.css: --font-display: var(--p-font-display), …
+ * poc/app: Plus Jakarta Sans (friendly, app-like) for everything, Anton only
+ * for the AlBeik wordmark and big numerals, so it still reads as the brand.
  */
-export const fontClassName = ''
+const body = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  variable: '--p-font-body',
+  display: 'swap',
+})
+
+const brand = Anton({
+  weight: '400',
+  subsets: ['latin'],
+  variable: '--p-font-brand',
+  display: 'swap',
+})
+
+export const fontClassName = `${body.variable} ${brand.variable}`

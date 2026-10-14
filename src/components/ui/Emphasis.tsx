@@ -1,12 +1,16 @@
 import { Fragment } from 'react'
 
 import type { RichLine } from '@/lib/data/types'
+import { parseEmphasis } from '@/lib/text'
 
-/** Renders display text; words the editor wrapped in *asterisks* become <em>. */
-export function Emphasis({ line }: { line: RichLine }) {
+type Props = { line: RichLine; text?: never } | { text: string; line?: never }
+
+/** Display text where *asterisk* words become <em>. Takes a CMS line or a UI copy string. */
+export function Emphasis(props: Props) {
+  const segments = props.line ? props.line.segments : parseEmphasis(props.text)
   return (
     <>
-      {line.segments.map((segment, i) =>
+      {segments.map((segment, i) =>
         segment.emphasis ? (
           <em key={i}>{segment.text}</em>
         ) : (

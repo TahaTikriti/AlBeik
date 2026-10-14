@@ -3,11 +3,10 @@
  * generated Open Graph image. Keep in step with tokens.css.
  */
 export const theme = {
-  /** <meta name="theme-color"> (mobile browser chrome). */
-  themeColor: '#ffffff',
+  themeColor: '#fbf6f1',
   og: {
-    background: '#ffffff',
-    foreground: '#1a1a1a',
-    accent: '#1a1a1a',
+    background: '#d9261c',
+    foreground: '#ffffff',
+    accent: '#ffffff',
   },
 } as const

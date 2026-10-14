@@ -5,31 +5,36 @@ import { usePathname } from 'next/navigation'
 
 import { copy } from '@/theme/copy'
 
-const LINKS = [
-  { href: '/', label: copy.nav.home },
-  { href: '/menu', label: copy.nav.menu },
-  { href: '/about', label: copy.nav.about },
-  { href: '/location', label: copy.nav.location },
+import { HomeIcon, MenuIcon, PinIcon, StoryIcon } from '../ui/icons'
+
+export const NAV = [
+  { href: '/', label: copy.nav.home, Icon: HomeIcon },
+  { href: '/menu', label: copy.nav.menu, Icon: MenuIcon },
+  { href: '/about', label: copy.nav.about, Icon: StoryIcon },
+  { href: '/location', label: copy.nav.location, Icon: PinIcon },
 ] as const
 
-export function NavLinks() {
+export function useIsCurrent() {
   const pathname = usePathname()
+  return (href: string) => (href === '/' ? pathname === '/' : pathname.startsWith(href))
+}
+
+/** Desktop top navigation. */
+export function NavLinks() {
+  const isCurrent = useIsCurrent()
   return (
-    <ul className="flex items-center gap-4 whitespace-nowrap">
-      {LINKS.map(({ href, label }) => {
-        const current = href === '/' ? pathname === '/' : pathname.startsWith(href)
-        return (
-          <li key={href}>
-            <Link
-              href={href}
-              aria-current={current ? 'page' : undefined}
-              className="inline-flex min-h-tap items-center aria-[current=page]:underline aria-[current=page]:underline-offset-4"
-            >
-              {label}
-            </Link>
-          </li>
-        )
-      })}
+    <ul className="flex items-center gap-1">
+      {NAV.map(({ href, label }) => (
+        <li key={href}>
+          <Link
+            href={href}
+            aria-current={isCurrent(href) ? 'page' : undefined}
+            className="inline-flex min-h-tap items-center rounded-full px-4 font-semibold text-ink-muted transition-colors hover:text-ink aria-[current=page]:bg-surface-raised aria-[current=page]:text-ink aria-[current=page]:shadow-[var(--shadow-raised)]"
+          >
+            {label}
+          </Link>
+        </li>
+      ))}
     </ul>
   )
 }

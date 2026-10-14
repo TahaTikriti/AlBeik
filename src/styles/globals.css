@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import '../theme/tokens.css';
+@import '../theme/app.css';
 
 /*
  * Base layer: functional defaults only (accessibility, layout safety,
@@ -12,7 +13,7 @@
     /* Keeps anchored sections and keyboard focus clear of the sticky header,
        category chips and bottom order bar. */
     scroll-padding-block-start: calc(var(--sticky-offset) + var(--spacing-stack));
-    scroll-padding-block-end: calc(var(--spacing-tap) + 1.5rem + var(--safe-bottom));
+    scroll-padding-block-end: calc(var(--tabbar-h) + 1rem + var(--safe-bottom));
   }
 
   @media (prefers-reduced-motion: no-preference) {

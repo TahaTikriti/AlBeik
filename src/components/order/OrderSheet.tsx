@@ -2,63 +2,44 @@
 
 import { useId, type Ref } from 'react'
 
+import type { Placement } from '@/lib/analytics'
 import type { OrderLink } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
 
-import { ui } from '../ui/classes'
+import { PlatformButtons } from './PlatformButtons'
 
 type Props = {
   ref: Ref<HTMLDialogElement>
   links: OrderLink[]
   item: { slug: string; name: string } | null
-  onChoose: (link: OrderLink) => void
+  placement: Placement
 }
 
-/**
- * The "which app?" sheet. A native modal <dialog>: focus is trapped, Esc
- * closes it, and a tap on the backdrop closes it too. Links navigate in the
- * same tab so the platform's universal link can open its app.
- */
-export function OrderSheet({ ref, links, item, onChoose }: Props) {
+/** Bottom sheet to pick a delivery app (native modal <dialog>: focus trap, Esc, tap outside). */
+export function OrderSheet({ ref, links, item, placement }: Props) {
   const titleId = useId()
-
   return (
     <dialog
       ref={ref}
       aria-labelledby={titleId}
-      className="fixed inset-x-0 top-auto bottom-0 m-0 w-full max-w-none rounded-t-sheet bg-surface p-0 text-ink shadow-sheet"
+      className="sheet fixed inset-x-0 top-auto bottom-0 m-0 w-full max-w-none rounded-t-sheet bg-surface p-0 text-ink shadow-sheet md:inset-x-auto md:right-6 md:bottom-6 md:left-auto md:w-[25rem] md:rounded-sheet"
       onClick={(event) => {
         if (event.target === event.currentTarget) event.currentTarget.close()
       }}
     >
-      <div className={`${ui.container} grid gap-stack pt-6 pb-[calc(1.5rem+var(--safe-bottom))]`}>
-        <h2 id={titleId} className="text-display-3">
-          {copy.order.sheetTitle}
-        </h2>
-        <p className="text-ink-muted">
-          {item ? copy.order.sheetIntroFor(item.name) : copy.order.sheetIntro}
-        </p>
-        <ul className="grid gap-2">
-          {links.map((link) => (
-            <li key={link.platform}>
-              <a
-                href={link.href}
-                className={`${ui.buttonPrimary} w-full flex-col py-2`}
-                onClick={(event) => {
-                  onChoose(link)
-                  event.currentTarget.closest('dialog')?.close()
-                }}
-              >
-                <span>{copy.order.on(link.label)}</span>
-                {item && link.level === 'store' ? (
-                  <span className="text-label font-normal">{copy.order.storeLevelNote}</span>
-                ) : null}
-              </a>
-            </li>
-          ))}
-        </ul>
+      <div className="grid gap-5 px-gutter pt-3 pb-[calc(1.25rem+var(--safe-bottom))]">
+        <span className="grabber md:hidden" aria-hidden />
+        <div className="grid gap-1">
+          <h2 id={titleId} className="text-display-2">
+            {copy.order.sheetTitle}
+          </h2>
+          <p className="text-ink-muted">
+            {item ? copy.order.sheetIntroFor(item.name) : copy.order.sheetIntro}
+          </p>
+        </div>
+        <PlatformButtons links={links} item={item} placement={placement} />
         <form method="dialog">
-          <button type="submit" className={`${ui.buttonSecondary} w-full`}>
+          <button type="submit" className="btn w-full text-ink-muted">
             {copy.order.close}
           </button>
         </form>

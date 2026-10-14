@@ -1,0 +1,193 @@
+/*
+ * poc/app brand layer (theme/app.css): base overrides, shared component classes, motion.
+ * Everything animated respects prefers-reduced-motion.
+ */
+
+@layer base {
+  body {
+    overflow-x: clip;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 800;
+  }
+
+  /* The highlighted word: AlBeik red. */
+  em {
+    font-style: normal;
+    color: var(--color-accent);
+  }
+
+  ::selection {
+    background: var(--p-red-tint);
+    color: var(--p-red-deep);
+  }
+}
+
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: var(--spacing-tap);
+    padding-inline: 1.4rem;
+    border-radius: var(--radius-control);
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: -0.01em;
+    transition:
+      transform var(--duration-fast) var(--ease-out),
+      background-color var(--duration-fast),
+      box-shadow var(--duration-fast);
+  }
+  .btn:active {
+    transform: scale(0.96);
+  }
+  .btn-red {
+    background: var(--color-accent);
+    color: var(--color-accent-ink);
+    box-shadow: var(--shadow-red);
+  }
+  .btn-red:hover {
+    background: var(--p-red-deep);
+  }
+  .btn-soft {
+    background: var(--color-surface-raised);
+    color: var(--color-ink);
+    box-shadow: var(--shadow-raised);
+  }
+  .btn-tint {
+    background: var(--color-accent-tint);
+    color: var(--p-red-deep);
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding-inline: 1.1rem;
+    border-radius: 9999px;
+    background: var(--color-surface-raised);
+    color: var(--color-ink);
+    font-weight: 600;
+    font-size: 0.9375rem;
+    box-shadow: var(--shadow-raised);
+    transition:
+      background-color var(--duration-fast),
+      color var(--duration-fast),
+      transform var(--duration-fast) var(--ease-out);
+  }
+  .pill[aria-current='true'] {
+    background: var(--color-accent);
+    color: var(--color-accent-ink);
+    box-shadow: var(--shadow-red);
+  }
+
+  .card {
+    border-radius: var(--radius-card);
+    background: var(--color-surface-raised);
+    box-shadow: var(--shadow-raised);
+  }
+
+  /* Cards that open something: a gentle press. */
+  .pressable {
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+  .pressable:active {
+    transform: scale(0.98);
+  }
+
+  /* Round plate: the photo as a dish seen from above. */
+  .plate {
+    border-radius: 9999px;
+    aspect-ratio: 1;
+    object-fit: cover;
+    box-shadow:
+      0 0 0 4px var(--p-white),
+      var(--shadow-plate);
+  }
+
+  .wordmark {
+    font-family: var(--font-brand);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 1;
+  }
+
+  .label {
+    font-size: var(--text-label);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* Bottom sheets slide up. */
+  .sheet {
+    translate: 0 100%;
+    transition:
+      translate var(--duration-slow) var(--ease-out),
+      overlay var(--duration-slow) allow-discrete,
+      display var(--duration-slow) allow-discrete;
+  }
+  .sheet[open] {
+    translate: 0 0;
+  }
+  .sheet::backdrop {
+    background-color: rgb(27 22 18 / 0);
+    transition:
+      background-color var(--duration-slow),
+      overlay var(--duration-slow) allow-discrete,
+      display var(--duration-slow) allow-discrete;
+  }
+  .sheet[open]::backdrop {
+    background-color: var(--color-scrim);
+    backdrop-filter: blur(2px);
+  }
+  @starting-style {
+    .sheet[open] {
+      translate: 0 100%;
+    }
+    .sheet[open]::backdrop {
+      background-color: rgb(27 22 18 / 0);
+    }
+  }
+
+  .grabber {
+    display: block;
+    width: 2.75rem;
+    height: 0.3rem;
+    margin-inline: auto;
+    border-radius: 9999px;
+    background: var(--color-line);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .float {
+    animation: float 6s ease-in-out infinite;
+  }
+  .spin-slow {
+    animation: spin 60s linear infinite;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -6px;
+  }
+}
+
+@keyframes spin {
+  to {
+    rotate: 360deg;
+  }
+}

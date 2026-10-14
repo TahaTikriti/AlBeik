@@ -2,7 +2,21 @@
 
 Next.js 16 + Payload CMS 3 in one app. The public site is static (rebuilt when content is published) and the admin lives at `/admin`. See [BRIEF.md](BRIEF.md) for the project brief.
 
-**This branch (`main`) is the foundation:** content model, seed data, order links and unstyled pages. It deliberately has no visual design; the design proofs of concept live on `poc/*` branches.
+## This branch: `poc/app`
+
+Design direction 2: a clean, app-like menu, like the delivery apps people already use, but unmistakably AlBeik. The look is a warm off-white with soft white cards, round "plate" photos, pill category chips, AlBeik red as the only accent, and Plus Jakarta Sans, with Anton kept for the wordmark.
+
+On phones it adds:
+
+- **A bottom tab bar** with a raised red Order button in the middle.
+- **A city pill** in the header.
+- **Item details in a bottom sheet:** tap a dish to see it big and order it in one more tap. Deep links still open the full item page.
+
+Copy is friendly with a bit of attitude ("What are you craving?", "Come say ahlan").
+
+What changed versus `main` is presentation only: `src/theme` (tokens, fonts, motifs, copy, `app.css`), `src/components`, `src/views` and one import in `src/styles/globals.css`. Data and logic are identical.
+
+Lighthouse mobile (production build, demo data): home and menu performance 97 / 94; accessibility, best practices and SEO 100.
 
 ## Run it
 
