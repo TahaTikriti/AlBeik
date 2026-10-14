@@ -29,7 +29,7 @@ export function StickyOrderBar({ links, item = null }: Props) {
             </span>
           </span>
         ) : (
-          <span className="label min-w-0 flex-1 text-[0.66rem] leading-tight tracking-[0.1em] text-ink-muted">
+          <span className="label min-w-0 flex-1 text-[0.66rem] leading-tight tracking-[0.1em] text-ink-muted max-[359px]:hidden">
             {copy.order.stickyKicker}
           </span>
         )}
@@ -38,7 +38,7 @@ export function StickyOrderBar({ links, item = null }: Props) {
           item={item}
           placement="sticky"
           label={item ? copy.order.cta : copy.order.stickyLabel}
-          className="btn btn-red min-h-12 shrink-0 px-6"
+          className="btn btn-red ms-auto min-h-12 shrink-0 px-6"
         />
       </div>
     </div>

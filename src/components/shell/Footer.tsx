@@ -28,7 +28,7 @@ export function Footer({ site }: { site: SiteVM }) {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="label inline-flex min-h-tap items-center hover:text-red-text"
+                    className="label inline-flex min-h-tap min-w-11 items-center hover:text-red-text"
                   >
                     {link.label}
                   </Link>

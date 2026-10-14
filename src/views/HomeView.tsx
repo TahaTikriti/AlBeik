@@ -68,7 +68,7 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
       <section className="grain relative overflow-hidden">
         <Smoke />
         <div
-          className={`${ui.container} relative z-10 grid gap-6 pt-9 lg:min-h-[min(44rem,calc(100dvh-var(--spacing-header)))] lg:content-center lg:py-20 lg:pe-[48%]`}
+          className={`${ui.container} relative z-10 grid gap-6 pt-9 lg:min-h-[min(44rem,calc(100dvh-var(--spacing-header)))] lg:grid-cols-[minmax(0,52%)_1fr] lg:content-center lg:py-20 lg:*:col-start-1`}
         >
           <div className="grid gap-3">
             <p className="label text-red-text">{copy.home.heroKicker}</p>

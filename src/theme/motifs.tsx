@@ -76,7 +76,8 @@ export function Logo() {
         eager
         className="h-11 w-auto origin-[50%_85%] transition-transform duration-(--duration-base) ease-snap group-hover:-rotate-8 group-focus-visible:-rotate-8"
       />
-      <Wordmark className="h-[1.05rem]" />
+      {/* Below 360px (small phones) the mark alone keeps the nav from overflowing. */}
+      <Wordmark className="h-[1.05rem] w-[5.65rem] max-[359px]:hidden" />
     </span>
   )
 }

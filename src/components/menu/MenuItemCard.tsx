@@ -34,7 +34,7 @@ export function MenuItemCard({
 }: Props) {
   const badge = BADGE_ORDER.find((tag) => item.tags.includes(tag))
   return (
-    <article className="group relative grid h-full grid-cols-[6.75rem_1fr] items-center gap-x-4 rounded-card bg-coal p-3 pe-4 transition-[background-color,scale] duration-(--duration-fast) hover:bg-char active:scale-[0.985] sm:grid-cols-1 sm:grid-rows-[auto_1fr_auto] sm:items-stretch sm:gap-y-4 sm:px-5 sm:pt-0 sm:pb-5 sm:text-center">
+    <article className="group relative grid h-full grid-cols-[clamp(5.25rem,25vw,6.75rem)_1fr] items-center gap-x-3.5 rounded-card bg-coal p-3 pe-4 transition-[background-color,scale] duration-(--duration-fast) hover:bg-char active:scale-[0.985] sm:grid-cols-1 sm:grid-rows-[auto_1fr_auto] sm:items-stretch sm:gap-y-4 sm:px-5 sm:pt-0 sm:pb-5 sm:text-center">
       <div className="relative sm:mx-auto sm:-mt-14 sm:w-44">
         <span
           aria-hidden
@@ -43,7 +43,7 @@ export function MenuItemCard({
         {item.image ? (
           <Img
             image={item.image}
-            sizes="(min-width: 640px) 11rem, 6.75rem"
+            sizes="(min-width: 640px) 11rem, 25vw"
             preload={preloadImage}
             className="plate relative w-full transition-transform duration-(--duration-slow) ease-out group-hover:scale-105 group-hover:-rotate-3"
           />
@@ -61,7 +61,8 @@ export function MenuItemCard({
       {/* Phones: text on top, button pinned below. From sm up the card's own rows take over. */}
       <div className="grid h-full grid-rows-[1fr_auto] gap-3 py-1 sm:contents">
         <div className="grid content-start gap-1 sm:pt-1">
-          <Heading className="line-clamp-2 text-[1.6rem] leading-none sm:text-[1.75rem]">
+          {/* Never clamped: a menu must show the whole name. Scales down on narrow phones. */}
+          <Heading className="text-[clamp(1.3rem,0.55rem+3.8vw,1.6rem)] leading-none sm:text-[1.75rem]">
             <Link
               href={item.href}
               className="after:absolute after:inset-0 after:rounded-card group-hover:text-red-text"
