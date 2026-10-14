@@ -16,7 +16,11 @@ type Props = {
   preloadImage?: boolean
 }
 
-/** A menu row: round "plate" photo that hangs off the card, big condensed name, order button. */
+/**
+ * A menu row: round "plate" photo that hangs off the card, big condensed
+ * name, order button. From two columns up, the button row is pinned to the
+ * bottom so buttons line up across a row whatever the name's length.
+ */
 export function MenuItemCard({
   item,
   placement,
@@ -24,7 +28,7 @@ export function MenuItemCard({
   preloadImage = false,
 }: Props) {
   return (
-    <article className="group relative grid h-full grid-cols-[6.5rem_1fr] gap-x-4 gap-y-3 rounded-card bg-coal p-4 ps-3 sm:grid-cols-1 sm:pt-0 sm:text-center">
+    <article className="group reveal relative grid h-full grid-cols-[6.5rem_1fr] gap-x-4 gap-y-3 rounded-card bg-coal p-4 ps-3 sm:grid-cols-1 sm:grid-rows-[auto_1fr_auto] sm:gap-y-5 sm:px-5 sm:pt-0 sm:pb-5 sm:text-center">
       <Link
         href={item.href}
         tabIndex={-1}
@@ -55,7 +59,7 @@ export function MenuItemCard({
           </ul>
         ) : null}
         <Heading className="text-[1.75rem] leading-[0.95]">
-          <Link href={item.href} className="inline-block py-1 hover:text-red">
+          <Link href={item.href} className="inline-block py-1 hover:text-red-text">
             {item.name}
           </Link>
         </Heading>

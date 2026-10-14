@@ -65,39 +65,44 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
       <section className="grain relative overflow-hidden">
         <Smoke />
         <div
-          className={`${ui.container} grid gap-10 pt-10 pb-16 md:grid-cols-[1.1fr_1fr] md:items-center md:pt-16 md:pb-24`}
+          className={`${ui.container} grid gap-9 pt-9 pb-16 md:grid-cols-[1.1fr_1fr] md:items-center md:gap-10 md:pt-16 md:pb-24`}
         >
           <div className="grid gap-6">
-            <Mustache className="h-7 w-auto self-start text-white" />
-            <p className="label text-red-text">{copy.home.heroKicker}</p>
-            <h1 className="grid gap-3">
-              <span className="text-display-1 block">
-                <Emphasis line={shout} />
-              </span>
-              {followUp ? (
-                <span className="block font-display text-[clamp(1.6rem,1.2rem+2vw,2.6rem)] leading-[0.95] text-ink-muted">
-                  <Emphasis line={followUp} />
+            <div className="grid gap-3">
+              <p className="label text-red-text">{copy.home.heroKicker}</p>
+              <h1 className="grid gap-3">
+                <span className="text-display-1 block">
+                  <Emphasis line={shout} />
                 </span>
-              ) : null}
-            </h1>
+                {followUp ? (
+                  <span className="block font-display text-[clamp(1.6rem,1.2rem+2vw,2.6rem)] leading-[0.95] text-ink-muted">
+                    <Emphasis line={followUp} />
+                  </span>
+                ) : null}
+              </h1>
+            </div>
             {hero.subline ? (
               <p className="max-w-[28ch] text-lg text-ink-muted">{hero.subline}</p>
             ) : null}
-            <div className="flex flex-wrap gap-3">
+            {/* A matched pair on phones; natural widths from sm up. */}
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-3 sm:flex sm:flex-wrap">
               <OrderButton
                 links={site.storeOrderLinks}
                 placement="home-hero"
                 label={copy.order.stickyLabel}
-                className="btn btn-red min-h-14 px-8 text-[1.5rem]"
+                className="btn btn-red min-h-14 px-3 text-[1.3rem] sm:px-8 sm:text-[1.5rem]"
               />
-              <Link href="/menu" className="btn btn-ghost min-h-14 px-7 text-[1.5rem]">
+              <Link
+                href="/menu"
+                className="btn btn-ghost min-h-14 px-3 text-[1.3rem] sm:px-7 sm:text-[1.5rem]"
+              >
                 {copy.home.seeMenu}
               </Link>
             </div>
           </div>
 
           {hero.media ? (
-            <div className="relative mx-2 mt-4 md:mx-0">
+            <div className="relative mx-2 mt-2 md:mx-0">
               <div className="absolute -inset-3 -rotate-3 rounded-[2rem] bg-red" aria-hidden />
               <div className="relative rotate-2 overflow-hidden rounded-[1.75rem] shadow-raised">
                 <Media
@@ -112,7 +117,7 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
                 />
               </div>
               <Steam />
-              <HalalSticker className="absolute -top-8 right-1 text-[0.85rem] sm:text-base" />
+              <HalalSticker className="absolute -top-7 right-2 text-[0.85rem] sm:text-base" />
             </div>
           ) : null}
         </div>
@@ -187,13 +192,15 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
                 <li key={t.id} className="w-[86%] shrink-0 snap-start md:w-auto">
                   <figure className="grid h-full content-between gap-6 rounded-card bg-black p-6 text-white">
                     <blockquote className="grid gap-3">
-                      <span aria-hidden className="font-display text-7xl leading-[0.5] text-red">
+                      <span
+                        aria-hidden
+                        className="font-display text-7xl leading-[0.5] text-red-text"
+                      >
                         “
                       </span>
                       <p className="text-lg leading-snug">{t.quote}</p>
                     </blockquote>
-                    <figcaption className="flex items-center gap-3">
-                      <Mustache className="h-3 w-auto text-red" />
+                    <figcaption className="flex flex-wrap items-baseline gap-x-3">
                       <span className="font-display text-xl uppercase">{t.name}</span>
                       {t.source ? <span className="label text-ash">{t.source}</span> : null}
                     </figcaption>
@@ -208,14 +215,16 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
       {/* VISIT */}
       <section aria-labelledby="visit-heading" className="grain relative overflow-hidden">
         <Smoke className="opacity-70" />
-        <div className={`${ui.container} ${ui.section} grid gap-6 md:grid-cols-2 md:items-end`}>
+        <div
+          className={`${ui.container} ${ui.section} grid gap-8 lg:grid-cols-[auto_1fr] lg:items-end lg:gap-12`}
+        >
           <div className="grid gap-4">
-            <h2 id="visit-heading" className="text-mega">
+            <h2 id="visit-heading" className="text-mega lg:whitespace-nowrap">
               <Emphasis text={copy.home.visitTitle} />
             </h2>
             <p className="max-w-[30ch] text-lg text-ink-muted">{copy.home.visitBody}</p>
           </div>
-          <div className="grid gap-4 md:justify-items-end md:text-right">
+          <div className="grid gap-4 lg:justify-items-end lg:text-right">
             {location ? (
               <address className="grid font-display text-display-2 not-italic uppercase">
                 {location.addressLines.map((line) => (

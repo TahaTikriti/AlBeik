@@ -3,19 +3,18 @@ import { MenuSection } from '@/components/menu/MenuSection'
 import { ui } from '@/components/ui/classes'
 import type { MenuPageData } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
-import { Mustache, Smoke } from '@/theme/motifs'
+import { Smoke } from '@/theme/motifs'
 
 export function MenuView({ categories }: MenuPageData) {
   return (
     <>
       <div className="grain relative overflow-hidden">
         <Smoke className="opacity-80" />
-        <div className={`${ui.container} grid gap-4 pt-12 pb-10 md:pt-20`}>
-          <Mustache className="h-6 w-auto self-start text-red" />
+        <div className={`${ui.container} grid gap-3 pt-10 pb-10 md:pt-20`}>
+          <p className="label text-red-text">{copy.menu.kicker}</p>
           <h1 className="text-mega">
             The <em>menu</em>
           </h1>
-          <p className="label text-ink-muted">{copy.menu.kicker}</p>
         </div>
       </div>
       {categories.length ? (
