@@ -2,7 +2,13 @@
 
 Next.js 16 + Payload CMS 3 in one app. The public site is static (rebuilt when content is published) and the admin lives at `/admin`. See [BRIEF.md](BRIEF.md) for the project brief.
 
-**This branch (`main`) is the foundation:** content model, seed data, order links and unstyled pages. It deliberately has no visual design; the design proofs of concept live on `poc/*` branches.
+## This branch: `poc/street`
+
+Design direction 1, taken straight from AlBeik's Instagram rebrand: deep black, chili red and white, huge condensed caps (Anton) with one word in red, the mustache as the recurring mark, the fez on the 404 and Visit pages, slow smoke and steam, split-flap numerals for the signatures and menu sections, round "plate" crops that hang off red cards, a scrolling slogan strip, and a dark order sheet that slides up. Copy is in the brand's voice ("Spice bomb is waiting").
+
+What changed versus `main` is presentation only: `src/theme` (tokens, fonts, motifs, copy, `brand.css`), `src/components`, `src/views` and one import in `src/styles/globals.css`. Data and logic are identical.
+
+Lighthouse mobile (production build, demo data): home and menu performance 94 / 92; accessibility, best practices and SEO 100.
 
 ## Run it
 

@@ -1,62 +1,79 @@
+import Link from 'next/link'
+
+import { Emphasis } from '@/components/ui/Emphasis'
 import { ui } from '@/components/ui/classes'
 import type { LocationPageData } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
+import { Fez, Smoke } from '@/theme/motifs'
 
 export function LocationView({ locations }: LocationPageData) {
-  const multiple = locations.length > 1
   return (
-    <div className={`${ui.container} ${ui.section} grid gap-section`}>
-      <h1 className="text-display-1">{copy.location.title}</h1>
-      {locations.map((location) => {
-        const hasDetails =
-          location.addressLines.length || location.phone || location.mapUrl || location.hours.length
-        return (
-          <section key={location.name} className="grid gap-stack" aria-label={location.name}>
-            {multiple ? <h2 className="text-display-2">{location.name}</h2> : null}
-            {location.addressLines.length ? (
-              <div className="grid gap-1">
-                <h2 className="text-label text-ink-muted">{copy.location.address}</h2>
-                <address className="grid not-italic">
+    <div className="grain relative overflow-hidden">
+      <Smoke />
+      <div className={`${ui.container} grid gap-14 pt-12 pb-section md:pt-20`}>
+        <div className="flex items-end justify-between gap-4">
+          <h1 className="text-mega">
+            <Emphasis text={copy.location.heading} />
+          </h1>
+          <Fez className="fez-bob w-24 shrink-0 -rotate-12 md:w-36" />
+        </div>
+
+        {locations.map((location) => {
+          const hasDetails =
+            location.streetAddress || location.phone || location.mapUrl || location.hours.length
+          return (
+            <section
+              key={location.name}
+              aria-label={location.name}
+              className="grid gap-10 md:grid-cols-2"
+            >
+              <div className="grid content-start gap-4">
+                <p className="label text-red-text">{copy.location.address}</p>
+                <address className="grid font-display text-display-1 not-italic uppercase">
                   {location.addressLines.map((line) => (
                     <span key={line}>{line}</span>
                   ))}
                 </address>
+                <div className="flex flex-wrap gap-3">
+                  {location.mapUrl ? (
+                    <a href={location.mapUrl} className="btn btn-red">
+                      {copy.location.directions}
+                    </a>
+                  ) : null}
+                  {location.phone && location.phoneHref ? (
+                    <a href={location.phoneHref} className="btn btn-ghost">
+                      {copy.location.call(location.phone)}
+                    </a>
+                  ) : null}
+                </div>
               </div>
-            ) : null}
-            {location.mapUrl || location.phoneHref ? (
-              <div className="flex flex-wrap gap-2">
-                {location.mapUrl ? (
-                  <a href={location.mapUrl} className={ui.buttonPrimary}>
-                    {copy.location.directions}
-                  </a>
+
+              <div className="grid content-start gap-4">
+                <p className="label text-red-text">{copy.location.hours}</p>
+                {location.hours.length ? (
+                  <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-xl">
+                    {location.hours.map((h) => (
+                      <div key={h.days} className="contents">
+                        <dt className="font-display uppercase">{h.days}</dt>
+                        <dd>{h.time}</dd>
+                      </div>
+                    ))}
+                  </dl>
                 ) : null}
-                {location.phone && location.phoneHref ? (
-                  <a href={location.phoneHref} className={ui.buttonSecondary}>
-                    {copy.location.call(location.phone)}
-                  </a>
-                ) : null}
+                {location.hoursNote ? <p className="text-ink-muted">{location.hoursNote}</p> : null}
+                {hasDetails ? null : (
+                  <div className="grid gap-5 rounded-card bg-surface-raised p-6">
+                    <p className="text-xl leading-snug">{copy.location.detailsSoon}</p>
+                    <Link href="/menu" className="btn btn-red justify-self-start">
+                      {copy.home.seeMenu}
+                    </Link>
+                  </div>
+                )}
               </div>
-            ) : null}
-            {location.hours.length ? (
-              <div className="grid gap-1">
-                <h2 className="text-label text-ink-muted">{copy.location.hours}</h2>
-                <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-1">
-                  {location.hours.map((h) => (
-                    <div key={h.days} className="contents">
-                      <dt>{h.days}</dt>
-                      <dd>{h.time}</dd>
-                    </div>
-                  ))}
-                </dl>
-                {location.hoursNote ? (
-                  <p className="text-small text-ink-muted">{location.hoursNote}</p>
-                ) : null}
-              </div>
-            ) : null}
-            {hasDetails ? null : <p>{copy.location.detailsSoon}</p>}
-          </section>
-        )
-      })}
+            </section>
+          )
+        })}
+      </div>
     </div>
   )
 }

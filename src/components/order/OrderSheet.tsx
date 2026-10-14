@@ -4,8 +4,7 @@ import { useId, type Ref } from 'react'
 
 import type { OrderLink } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
-
-import { ui } from '../ui/classes'
+import { Mustache } from '@/theme/motifs'
 
 type Props = {
   ref: Ref<HTMLDialogElement>
@@ -15,9 +14,9 @@ type Props = {
 }
 
 /**
- * The "which app?" sheet. A native modal <dialog>: focus is trapped, Esc
- * closes it, and a tap on the backdrop closes it too. Links navigate in the
- * same tab so the platform's universal link can open its app.
+ * The "which app?" sheet: a native modal <dialog> that slides up from the
+ * bottom. Focus is trapped, Esc and a tap on the backdrop close it. Links
+ * open in the same tab so the platform's app can take over.
  */
 export function OrderSheet({ ref, links, item, onChoose }: Props) {
   const titleId = useId()
@@ -26,42 +25,67 @@ export function OrderSheet({ ref, links, item, onChoose }: Props) {
     <dialog
       ref={ref}
       aria-labelledby={titleId}
-      className="fixed inset-x-0 top-auto bottom-0 m-0 w-full max-w-none rounded-t-sheet bg-surface p-0 text-ink shadow-sheet"
+      className="sheet fixed inset-x-0 top-auto bottom-0 m-0 w-full max-w-none overflow-hidden rounded-t-sheet bg-coal p-0 text-white shadow-sheet md:inset-x-auto md:right-6 md:bottom-6 md:left-auto md:w-[26rem] md:rounded-sheet"
       onClick={(event) => {
         if (event.target === event.currentTarget) event.currentTarget.close()
       }}
     >
-      <div className={`${ui.container} grid gap-stack pt-6 pb-[calc(1.5rem+var(--safe-bottom))]`}>
-        <h2 id={titleId} className="text-display-3">
-          {copy.order.sheetTitle}
-        </h2>
-        <p className="text-ink-muted">
-          {item ? copy.order.sheetIntroFor(item.name) : copy.order.sheetIntro}
-        </p>
-        <ul className="grid gap-2">
-          {links.map((link) => (
-            <li key={link.platform}>
-              <a
-                href={link.href}
-                className={`${ui.buttonPrimary} w-full flex-col py-2`}
-                onClick={(event) => {
-                  onChoose(link)
-                  event.currentTarget.closest('dialog')?.close()
-                }}
-              >
-                <span>{copy.order.on(link.label)}</span>
-                {item && link.level === 'store' ? (
-                  <span className="text-label font-normal">{copy.order.storeLevelNote}</span>
-                ) : null}
-              </a>
-            </li>
-          ))}
-        </ul>
-        <form method="dialog">
-          <button type="submit" className={`${ui.buttonSecondary} w-full`}>
-            {copy.order.close}
-          </button>
-        </form>
+      <div className="grain relative">
+        <div className="flex items-center justify-between bg-red px-gutter py-3">
+          <Mustache className="h-4 w-auto text-white" />
+          <span className="label text-white">100% halal</span>
+        </div>
+        <div className="grid gap-5 px-gutter pt-6 pb-[calc(1.5rem+var(--safe-bottom))]">
+          <div className="grid gap-2">
+            <h2 id={titleId} className="text-display-2">
+              {copy.order.sheetTitle}
+            </h2>
+            <p className="text-ink-muted">
+              {item ? copy.order.sheetIntroFor(item.name) : copy.order.sheetIntro}
+            </p>
+          </div>
+          <ul className="grid gap-3">
+            {links.map((link) => (
+              <li key={link.platform}>
+                <a
+                  href={link.href}
+                  aria-label={
+                    item && link.level === 'store'
+                      ? `${copy.order.on(link.label)}, ${copy.order.storeLevelNote}`
+                      : copy.order.on(link.label)
+                  }
+                  className="group flex min-h-[4.25rem] items-center justify-between rounded-control bg-white px-5 text-black transition-transform duration-(--duration-fast) active:scale-[0.98]"
+                  onClick={(event) => {
+                    onChoose(link)
+                    event.currentTarget.closest('dialog')?.close()
+                  }}
+                >
+                  <span className="grid">
+                    <span className="font-display text-[1.6rem] leading-none uppercase">
+                      {link.label}
+                    </span>
+                    {item && link.level === 'store' ? (
+                      <span className="text-[0.8rem] text-[#5e554d]">
+                        {copy.order.storeLevelNote}
+                      </span>
+                    ) : null}
+                  </span>
+                  <span
+                    aria-hidden
+                    className="grid size-10 place-items-center rounded-full bg-red text-white transition-transform duration-(--duration-base) group-hover:translate-x-1"
+                  >
+                    →
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+          <form method="dialog">
+            <button type="submit" className="btn btn-ghost w-full text-white">
+              {copy.order.close}
+            </button>
+          </form>
+        </div>
       </div>
     </dialog>
   )

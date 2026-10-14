@@ -1,14 +1,22 @@
+import { Anton, Barlow } from 'next/font/google'
+
 /**
- * Font loading. `main` uses system stacks (no downloads), so this is empty.
- *
- * A design direction loads its faces with next/font and points the tokens at
- * them, e.g.:
- *
- *   import { Anton, Inter } from 'next/font/google'
- *   const display = Anton({ weight: '400', subsets: ['latin'], variable: '--p-font-display' })
- *   const body = Inter({ subsets: ['latin'], variable: '--p-font-body' })
- *   export const fontClassName = `${display.variable} ${body.variable}`
- *
- * then in tokens.css: --font-display: var(--p-font-display), …
+ * poc/street: Anton for the heavy condensed caps of the Instagram rebrand,
+ * Barlow for body copy. Self-hosted by next/font (no layout shift, no
+ * request to Google at runtime).
  */
-export const fontClassName = ''
+const display = Anton({
+  weight: '400',
+  subsets: ['latin'],
+  variable: '--p-font-display',
+  display: 'swap',
+})
+
+const body = Barlow({
+  weight: ['400', '500', '600', '700'],
+  subsets: ['latin'],
+  variable: '--p-font-body',
+  display: 'swap',
+})
+
+export const fontClassName = `${display.variable} ${body.variable}`

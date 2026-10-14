@@ -1,105 +1,121 @@
 /*
- * DESIGN TOKENS: the one place a design direction re-themes the site.
+ * DESIGN TOKENS: poc/street. AlBeik's Instagram rebrand: deep black,
+ * chili red, white, heavy condensed caps, smoke.
  *
- * Three layers:
- *   1. Primitives (--p-*)   raw values. Private to this file; replace freely.
- *   2. Semantic tokens       the stable contract components use, exposed to
- *                            Tailwind via @theme (bg-surface, text-ink,
- *                            font-display, text-display-1, rounded-card, …).
- *                            Keep the names; re-point the values.
- *   3. Theme scopes          [data-theme="inverse"] re-points color roles for a
- *                            subtree (e.g. a dark hero on a light page).
- *
- * `main` is deliberately neutral: grayscale, system fonts, no brand opinion.
+ * Layers: primitives (--p-*) → semantic tokens (Tailwind theme) → theme
+ * scopes ([data-theme="inverse"] = red field, [data-theme="light"] = cream).
  */
 
 /* ── 1. Primitives ─────────────────────────────────────────────────────── */
 :root {
+  --p-black: #0a0a0a;
+  --p-coal: #161413;
+  --p-char: #221f1d;
+  --p-smoke: #3a3532;
+  --p-ash: #aaa198;
+  --p-cream: #f4ede3;
   --p-white: #ffffff;
-  --p-gray-50: #f5f5f5;
-  --p-gray-100: #e9e9e9;
-  --p-gray-300: #c4c4c4;
-  --p-gray-500: #8a8a8a;
-  --p-gray-600: #666666;
-  --p-gray-700: #444444;
-  --p-gray-900: #1a1a1a;
-  --p-black: #000000;
+  --p-red: #e1251b;
+  --p-red-deep: #c11a11;
+  --p-ember: #ff5a36;
+  /* Brighter red for small text on black: 5.9:1 (brand red is 4.2:1, large text only). */
+  --p-red-text: #ff4a3d;
 
-  --p-font-sans:
-    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --p-font-display-fallback: Impact, 'Arial Narrow Bold', 'Helvetica Neue Condensed', sans-serif;
+  --p-font-body-fallback: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* ── 2. Semantic tokens (Tailwind theme) ──────────────────────────────── */
 @theme static {
-  /* Only these tokens exist: no stray default palette or font sizes. */
   --color-*: initial;
   --font-*: initial;
   --text-*: initial;
 
   /* Color roles */
-  --color-surface: var(--p-white);
-  --color-surface-raised: var(--p-gray-50);
-  --color-surface-inverse: var(--p-gray-900);
-  --color-ink: var(--p-gray-900);
-  --color-ink-muted: var(--p-gray-600);
+  --color-surface: var(--p-black);
+  --color-surface-raised: var(--p-coal);
+  --color-surface-inverse: var(--p-red);
+  --color-ink: var(--p-white);
+  --color-ink-muted: var(--p-ash);
   --color-ink-inverse: var(--p-white);
-  --color-accent: var(--p-gray-900);
+  --color-accent: var(--p-red);
   --color-accent-ink: var(--p-white);
-  --color-line: var(--p-gray-300);
-  --color-focus: var(--p-black);
-  --color-scrim: rgb(0 0 0 / 0.5);
+  --color-line: var(--p-char);
+  --color-focus: var(--p-white);
+  --color-scrim: rgb(0 0 0 / 0.72);
+  --color-red: var(--p-red);
+  --color-red-deep: var(--p-red-deep);
+  --color-red-text: var(--p-red-text);
+  --color-black: var(--p-black);
+  --color-white: var(--p-white);
+  --color-cream: var(--p-cream);
+  --color-coal: var(--p-coal);
+  --color-char: var(--p-char);
+  --color-ash: var(--p-ash);
 
   /* Type families */
-  --font-display: var(--p-font-sans);
-  --font-body: var(--p-font-sans);
+  --font-display: var(--p-font-display), var(--p-font-display-fallback);
+  --font-body: var(--p-font-body), var(--p-font-body-fallback);
 
-  /* Type scale, phone first (fluid up to desktop) */
-  --text-display-1: clamp(2.25rem, 1.6rem + 3.2vw, 3.75rem);
-  --text-display-1--line-height: 1.05;
-  --text-display-1--letter-spacing: -0.01em;
-  --text-display-1--font-weight: 800;
-  --text-display-2: clamp(1.75rem, 1.4rem + 1.8vw, 2.5rem);
-  --text-display-2--line-height: 1.1;
-  --text-display-2--font-weight: 750;
-  --text-display-3: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
-  --text-display-3--line-height: 1.2;
-  --text-display-3--font-weight: 700;
-  --text-body: 1rem;
-  --text-body--line-height: 1.5;
-  --text-small: 0.875rem;
+  /* Type scale, phone first. Display is set in caps with tight leading. */
+  --text-mega: clamp(5rem, 2.5rem + 13vw, 13rem);
+  --text-mega--line-height: 0.82;
+  --text-display-1: clamp(3.4rem, 2.4rem + 5.5vw, 7.5rem);
+  --text-display-1--line-height: 0.86;
+  --text-display-2: clamp(2.4rem, 1.8rem + 3.2vw, 4.75rem);
+  --text-display-2--line-height: 0.9;
+  --text-display-3: clamp(1.5rem, 1.3rem + 1vw, 2.1rem);
+  --text-display-3--line-height: 0.95;
+  --text-body: 1.0625rem;
+  --text-body--line-height: 1.55;
+  --text-small: 0.9375rem;
   --text-small--line-height: 1.45;
   --text-label: 0.8125rem;
-  --text-label--line-height: 1.2;
-  --text-label--font-weight: 600;
+  --text-label--line-height: 1.1;
+  --text-label--letter-spacing: 0.12em;
+  --text-label--font-weight: 700;
+  /* Plain steps for one-off sizes */
+  --text-base: 1rem;
+  --text-base--line-height: 1.5;
+  --text-lg: 1.1875rem;
+  --text-lg--line-height: 1.5;
+  --text-xl: 1.3125rem;
+  --text-xl--line-height: 1.45;
+  --text-2xl: 1.5rem;
+  --text-2xl--line-height: 1.2;
+  --text-4xl: 2.25rem;
+  --text-4xl--line-height: 1;
+  --text-7xl: 4.5rem;
+  --text-7xl--line-height: 1;
 
   /* Shape */
-  --radius-control: 0.5rem;
-  --radius-card: 0.75rem;
-  --radius-sheet: 1rem;
+  --radius-control: 0.75rem;
+  --radius-card: 1.5rem;
+  --radius-sheet: 1.75rem;
 
   /* Elevation */
-  --shadow-raised: 0 1px 2px rgb(0 0 0 / 0.08), 0 2px 8px rgb(0 0 0 / 0.06);
-  --shadow-sheet: 0 -4px 24px rgb(0 0 0 / 0.16);
+  --shadow-raised: 0 18px 40px -12px rgb(0 0 0 / 0.65);
+  --shadow-sheet: 0 -24px 60px rgb(0 0 0 / 0.6);
+  --shadow-ember: 0 14px 40px -10px rgb(225 37 27 / 0.55);
 
-  /* Space (p-gutter, gap-stack, py-section, min-h-tap, …) */
-  --spacing-gutter: 1rem;
-  --spacing-stack: 1rem;
-  --spacing-section: 3rem;
-  --spacing-tap: 44px;
-  --spacing-header: 3.5rem;
-  --spacing-chipbar: 3.25rem;
-  --container-content: 72rem;
+  /* Space */
+  --spacing-gutter: 1.25rem;
+  --spacing-stack: 1.25rem;
+  --spacing-section: 5rem;
+  --spacing-tap: 48px;
+  --spacing-header: 4rem;
+  --spacing-chipbar: 3.75rem;
+  --container-content: 76rem;
 
-  /* Motion curves (ease-out, ease-snap) */
-  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --ease-snap: cubic-bezier(0.3, 1.4, 0.5, 1);
+  /* Motion curves */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-snap: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Plain custom properties (no Tailwind namespace): use as duration-(--duration-base), z-(--z-sheet). */
 :root {
-  --duration-fast: 120ms;
-  --duration-base: 200ms;
-  --duration-slow: 360ms;
+  --duration-fast: 140ms;
+  --duration-base: 260ms;
+  --duration-slow: 520ms;
 
   --z-sticky: 20;
   --z-header: 30;
@@ -110,20 +126,31 @@
 }
 
 /* ── 3. Theme scopes ───────────────────────────────────────────────────── */
+
+/* Chili red field. Text stays white; accents turn black. */
 [data-theme='inverse'] {
-  --color-surface: var(--p-gray-900);
-  --color-surface-raised: var(--p-gray-700);
-  --color-surface-inverse: var(--p-white);
+  --color-surface: var(--p-red);
+  --color-surface-raised: var(--p-red-deep);
   --color-ink: var(--p-white);
-  --color-ink-muted: var(--p-gray-300);
-  --color-ink-inverse: var(--p-gray-900);
-  --color-accent: var(--p-white);
-  --color-accent-ink: var(--p-gray-900);
-  --color-line: var(--p-gray-600);
+  --color-ink-muted: var(--p-white);
+  --color-accent: var(--p-black);
+  --color-accent-ink: var(--p-white);
+  --color-line: rgb(0 0 0 / 0.22);
   --color-focus: var(--p-white);
 }
 
-/* Reduced motion: every token-driven animation collapses to instant. */
+/* Cream paper, for a break from the dark. */
+[data-theme='light'] {
+  --color-surface: var(--p-cream);
+  --color-surface-raised: var(--p-white);
+  --color-ink: var(--p-black);
+  --color-ink-muted: #5e554d;
+  --color-accent: var(--p-red-deep);
+  --color-accent-ink: var(--p-white);
+  --color-line: rgb(10 10 10 / 0.14);
+  --color-focus: var(--p-black);
+}
+
 @media (prefers-reduced-motion: reduce) {
   :root {
     --duration-fast: 0ms;

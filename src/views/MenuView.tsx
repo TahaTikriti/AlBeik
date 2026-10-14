@@ -3,24 +3,39 @@ import { MenuSection } from '@/components/menu/MenuSection'
 import { ui } from '@/components/ui/classes'
 import type { MenuPageData } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
+import { Mustache, Smoke } from '@/theme/motifs'
 
 export function MenuView({ categories }: MenuPageData) {
   return (
     <>
-      <div className={`${ui.container} pt-section pb-stack`}>
-        <h1 className="text-display-1">{copy.menu.title}</h1>
+      <div className="grain relative overflow-hidden">
+        <Smoke className="opacity-80" />
+        <div className={`${ui.container} grid gap-4 pt-12 pb-10 md:pt-20`}>
+          <Mustache className="h-6 w-auto self-start text-red" />
+          <h1 className="text-mega">
+            The <em>menu</em>
+          </h1>
+          <p className="label text-ink-muted">{copy.menu.kicker}</p>
+        </div>
       </div>
       {categories.length ? (
         <>
           <CategoryNav categories={categories.map(({ slug, name }) => ({ slug, name }))} />
-          <div className={`${ui.container} grid gap-section py-section`}>
+          <div className={`${ui.container} grid gap-24 py-section`}>
             {categories.map((category, i) => (
-              <MenuSection key={category.id} category={category} preloadFirst={i === 0} />
+              <MenuSection
+                key={category.id}
+                category={category}
+                number={i + 1}
+                preloadFirst={i === 0}
+              />
             ))}
           </div>
         </>
       ) : (
-        <p className={`${ui.container} pb-section`}>{copy.menu.empty}</p>
+        <p className={`${ui.container} pb-section font-display text-display-2 uppercase`}>
+          {copy.menu.empty}
+        </p>
       )}
     </>
   )

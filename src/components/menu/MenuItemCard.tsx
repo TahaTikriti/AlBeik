@@ -7,7 +7,6 @@ import { copy } from '@/theme/copy'
 
 import { OrderButton } from '../order/OrderButton'
 import { Img } from '../ui/Img'
-import { ui } from '../ui/classes'
 
 type Props = {
   item: MenuItemVM
@@ -17,6 +16,7 @@ type Props = {
   preloadImage?: boolean
 }
 
+/** A menu row: round "plate" photo that hangs off the card, big condensed name, order button. */
 export function MenuItemCard({
   item,
   placement,
@@ -24,36 +24,58 @@ export function MenuItemCard({
   preloadImage = false,
 }: Props) {
   return (
-    <article className="grid gap-3 rounded-card border border-line p-4">
-      {item.image ? (
-        <Img
-          image={item.image}
-          sizes="(min-width: 1024px) 22rem, (min-width: 640px) 45vw, 100vw"
-          preload={preloadImage}
-          className="aspect-square w-full rounded-control object-cover"
-        />
-      ) : null}
-      <div className="grid gap-1">
-        <Heading className="text-display-3">
-          <Link href={item.href} className="hover:underline">
+    <article className="group relative grid h-full grid-cols-[6.5rem_1fr] gap-x-4 gap-y-3 rounded-card bg-coal p-4 ps-3 sm:grid-cols-1 sm:pt-0 sm:text-center">
+      <Link
+        href={item.href}
+        tabIndex={-1}
+        aria-hidden
+        className="relative -my-1 sm:mx-auto sm:-mt-14 sm:w-44"
+      >
+        {item.image ? (
+          <Img
+            image={item.image}
+            sizes="(min-width: 640px) 11rem, 6.5rem"
+            preload={preloadImage}
+            className="plate w-full transition-transform duration-(--duration-slow) ease-out group-hover:scale-105 group-hover:-rotate-3"
+          />
+        ) : (
+          <span className="plate grid w-full place-items-center bg-char font-display text-4xl">
+            {item.name.charAt(0)}
+          </span>
+        )}
+      </Link>
+      <div className="grid content-start gap-1.5">
+        {item.tags.length ? (
+          <ul className="flex flex-wrap gap-1.5 sm:justify-center">
+            {item.tags.map((tag) => (
+              <li key={tag} className="label text-[0.65rem] text-red-text">
+                ★ {copy.item.tags[tag]}
+              </li>
+            ))}
+          </ul>
+        ) : null}
+        <Heading className="text-[1.75rem] leading-[0.95]">
+          <Link href={item.href} className="inline-block py-1 hover:text-red">
             {item.name}
           </Link>
         </Heading>
-        {item.description ? <p className="text-small text-ink-muted">{item.description}</p> : null}
+        {item.description ? (
+          <p className="line-clamp-3 text-small text-ink-muted sm:line-clamp-2">
+            {item.description}
+          </p>
+        ) : null}
       </div>
-      {item.tags.length || item.price !== null ? (
-        <div className="flex flex-wrap items-center gap-2">
-          {item.tags.map((tag) => (
-            <span key={tag} className={ui.tag}>
-              {copy.item.tags[tag]}
-            </span>
-          ))}
-          {item.price !== null ? (
-            <span className="ms-auto font-semibold">{formatPrice(item.price)}</span>
-          ) : null}
-        </div>
-      ) : null}
-      <OrderButton links={item.orderLinks} item={item} placement={placement} />
+      <div className="col-span-2 flex items-center justify-end gap-3 sm:col-span-1 sm:justify-center">
+        {item.price !== null ? (
+          <span className="me-auto font-display text-2xl sm:me-0">{formatPrice(item.price)}</span>
+        ) : null}
+        <OrderButton
+          links={item.orderLinks}
+          item={item}
+          placement={placement}
+          className="btn btn-red min-h-11 px-6 text-[1.15rem] shadow-none"
+        />
+      </div>
     </article>
   )
 }

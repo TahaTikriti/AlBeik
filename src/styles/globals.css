@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import '../theme/tokens.css';
+@import '../theme/brand.css';
 
 /*
  * Base layer: functional defaults only (accessibility, layout safety,
