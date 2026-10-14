@@ -9,7 +9,8 @@ const nextConfig: NextConfig = {
   images: {
     // Payload serves uploads from the same app and may append a cache-busting
     // query string; a pattern without `search` allows any query.
-    localPatterns: [{ pathname: '/api/media/file/**' }],
+    // /seed/** holds the demo photos used when no database is configured.
+    localPatterns: [{ pathname: '/api/media/file/**' }, { pathname: '/seed/**' }],
   },
   webpack: (webpackConfig) => {
     webpackConfig.resolve.extensionAlias = {

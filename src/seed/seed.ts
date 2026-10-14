@@ -9,7 +9,7 @@ import { aboutEditor } from '@/payload/globals/About'
 
 import * as content from './content'
 
-const IMAGES_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), 'images')
+const IMAGES_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../public/seed')
 
 // Seeding runs outside Next.js, so skip on-demand revalidation.
 const context = { disableRevalidate: true }

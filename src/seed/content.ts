@@ -8,20 +8,26 @@ import type { MenuTag } from '@/lib/data/types'
 
 const S3 = 'https://s3.eu-central-1.amazonaws.com/storage.albeik.us'
 
-/** Files live in src/seed/images (committed copies of the live site's images). */
+/** Files live in public/seed (committed copies of the live site's images), served at /seed/<file>. */
 export const images = {
   hero: {
     file: 'banner.webp',
+    width: 1500,
+    height: 1000,
     alt: 'Mixed grill board with kafta, chicken tawouk and beef skewers, fries, grilled vegetables, onion salad and a side salad',
     source: `${S3}/69/conversions/albeik-banner-large.webp`,
   },
   dining: {
     file: 'hero-landscape.webp',
+    width: 1500,
+    height: 1000,
     alt: 'The AlBeik dining room, with wooden booths, the order counter and menu screens',
     source: `${S3}/70/conversions/albeik-landscape2-large.webp`,
   },
   spread: {
     file: 'table.webp',
+    width: 4000,
+    height: 5000,
     alt: 'Overhead spread of AlBeik dishes: hummus, baba ghannouj, a kafta and chicken plate, wraps, a burger, wings and fries',
     source: `${S3}/49/conversions/albeik-table-large.webp`,
   },
@@ -45,11 +51,17 @@ export type SeedItem = {
   name: string
   category: string
   description: string
-  image: { file: string; source: string }
+  image: { file: string; source: string; width: number; height: number }
   tags?: MenuTag[]
 }
 
-const photo = (file: string, path: string) => ({ file, source: `${S3}/${path}` })
+/** Item photos are square; `size` is their width and height in pixels. */
+const photo = (file: string, path: string, size: number) => ({
+  file,
+  source: `${S3}/${path}`,
+  width: size,
+  height: size,
+})
 
 /**
  * Item names are title-cased and use the "AlBeik" spelling; the live site
@@ -64,7 +76,7 @@ export const menuItems: SeedItem[] = [
     category: 'Specials',
     // fixed: "smashed smashed patty"
     description: 'Our signature smashed patty topped with cheese, caramelized onion and coleslaw',
-    image: photo('albeik-smashed-burger.jpg', '89/Screenshot_20250906_141626_Photoroom.jpg'),
+    image: photo('albeik-smashed-burger.jpg', '89/Screenshot_20250906_141626_Photoroom.jpg', 540),
     tags: ['signature'],
   },
   {
@@ -72,7 +84,7 @@ export const menuItems: SeedItem[] = [
     category: 'Specials',
     description:
       'Our signature sandwich made of grilled seasoned chicken, melted cheese, grilled green pepper and onions, and a drizzle of our Avocado sauce',
-    image: photo('albeik-chicken-sandwich.jpg', '93/Screenshot_20250906_141655_Photoroom.jpg'),
+    image: photo('albeik-chicken-sandwich.jpg', '93/Screenshot_20250906_141655_Photoroom.jpg', 505),
     tags: ['signature'],
   },
 
@@ -82,32 +94,32 @@ export const menuItems: SeedItem[] = [
     category: 'Appetizers',
     description:
       'Lebanese sujuk spread on pita bread and toasted, topped with pickles, Mayo, corn, lettuce and tomatoes',
-    image: photo('arayes-sujuk.jpg', '91/Screenshot_20250906_141427_Photoroom.jpg'),
+    image: photo('arayes-sujuk.jpg', '91/Screenshot_20250906_141427_Photoroom.jpg', 685),
   },
   {
     name: 'Arayes Kafta',
     category: 'Appetizers',
     description: 'Juicy Beef Kafta spread in pita bread and grilled',
-    image: photo('arayes-kafta.jpg', '90/Screenshot_20250906_141347_Photoroom.jpg'),
+    image: photo('arayes-kafta.jpg', '90/Screenshot_20250906_141347_Photoroom.jpg', 1080),
   },
   {
     name: 'Hummus',
     category: 'Appetizers',
     description: 'Freshly made hummus served with Pita Bread',
-    image: photo('hummus.jpg', '84/Screenshot_20250906_141713_Photoroom.jpg'),
+    image: photo('hummus.jpg', '84/Screenshot_20250906_141713_Photoroom.jpg', 569),
   },
   {
     name: 'Hummus with Beef Shawarma', // was "Hummus with Beef shawarma"
     category: 'Appetizers',
     description: 'Hummus, topped with our signature beef shawarma. Served with Lebanese Pita bread',
-    image: photo('hummus-with-beef-shawarma.png', '87/6M2A9570-%282%29.png'),
+    image: photo('hummus-with-beef-shawarma.png', '87/6M2A9570-%282%29.png', 921),
   },
   {
     name: 'Hummus with Chicken Shawarma', // was "Hummus with chicken shawarma"
     category: 'Appetizers',
     description:
       'Hummus topped with our signature chicken shawarma. Served with Lebanese Pita bread.',
-    image: photo('hummus-with-chicken-shawarma.png', '88/6M2A9570-%283%29.png'),
+    image: photo('hummus-with-chicken-shawarma.png', '88/6M2A9570-%283%29.png', 921),
   },
   {
     name: 'Baba Ghannouj',
@@ -115,7 +127,7 @@ export const menuItems: SeedItem[] = [
     // fixed: stray ")" after "bread"
     description:
       'Smoky dip made from roasted eggplant, tahini, garlic and lemon juice. Served with Lebanese Pita bread',
-    image: photo('baba-ghannouj.jpg', '86/Screenshot_20250906_141706_Photoroom.jpg'),
+    image: photo('baba-ghannouj.jpg', '86/Screenshot_20250906_141706_Photoroom.jpg', 554),
   },
 
   // ── Sandwiches
@@ -123,20 +135,20 @@ export const menuItems: SeedItem[] = [
     name: 'Beef Shawarma Sandwich',
     category: 'Sandwiches',
     description: 'Our signature beef shawarma sandwich with biwaz salad, pickles and tahini sauce',
-    image: photo('beef-shawarma-sandwich.jpg', '102/Screenshot_20250906_141508_Photoroom.jpg'),
+    image: photo('beef-shawarma-sandwich.jpg', '102/Screenshot_20250906_141508_Photoroom.jpg', 504),
   },
   {
     name: 'Francisco Sandwich', // was "Francisco sandwich"
     category: 'Sandwiches',
     description: 'Grilled chicken over melted cheese with aioli sauce, pickles, lettuce and corn.',
-    image: photo('francisco-sandwich.jpg', '101/Screenshot_20250906_141633_Photoroom.jpg'),
+    image: photo('francisco-sandwich.jpg', '101/Screenshot_20250906_141633_Photoroom.jpg', 509),
   },
   {
     name: 'Kafta Sandwich',
     category: 'Sandwiches',
     description:
       'Beef Kafta skewer wrapped in Lebanese Pita bread over hummus, biwaz, pickles, tomatoes and tahini sauce',
-    image: photo('kafta-sandwich.jpg', '94/Screenshot_20250906_141508_Photoroom.jpg'),
+    image: photo('kafta-sandwich.jpg', '94/Screenshot_20250906_141508_Photoroom.jpg', 554),
   },
   {
     name: 'Falafel Sandwich',
@@ -144,49 +156,61 @@ export const menuItems: SeedItem[] = [
     description:
       'Crispy Falafel balls served in soft Lebanese Pita Bread with Tahini sauce and Vegetables (Tomatoes, Parsley, Turnip pickles)',
     // Only a 300px thumbnail exists on the live site.
-    image: photo('falafel-sandwich.webp', '63/conversions/falafel-thumb.webp'),
+    image: photo('falafel-sandwich.webp', '63/conversions/falafel-thumb.webp', 300),
   },
   {
     name: 'Chicken Shawarma Sandwich', // was "Chicken shawarma Sandwich"
     category: 'Sandwiches',
     description:
       'Slices of Chicken shawarma with Garlic sauce and pickles wrapped in Lebanese Pita bread.',
-    image: photo('chicken-shawarma-sandwich.jpg', '75/Screenshot_20250906_143342_Photoroom.jpg'),
+    image: photo(
+      'chicken-shawarma-sandwich.jpg',
+      '75/Screenshot_20250906_143342_Photoroom.jpg',
+      490,
+    ),
   },
   {
     name: 'Kabab Orfali Sandwich',
     category: 'Sandwiches',
     description:
       'Charbroiled special beef Kabab blend, tomatoes, over hummus and Biwaz Salad. Wrapped in Lebanese Pita Bread and drizzled with Tahini sauce',
-    image: photo('kabab-orfali-sandwich.jpg', '95/Screenshot_20250906_141508_Photoroom.jpg'),
+    image: photo('kabab-orfali-sandwich.jpg', '95/Screenshot_20250906_141508_Photoroom.jpg', 534),
   },
   {
     name: 'Kabab Sandwich',
     category: 'Sandwiches',
     description:
       'Charbroiled beef Kabab, over hummus, tahini, pickles, tomatoes and Biwaz Salad. Wrapped in Lebanese Pita bread.',
-    image: photo('kabab-sandwich.jpg', '77/Screenshot_20250906_141508_Photoroom.jpg'),
+    image: photo('kabab-sandwich.jpg', '77/Screenshot_20250906_141508_Photoroom.jpg', 522),
   },
   {
     name: 'Charbroiled Rib-eye Sandwich', // fixed: "Ribe-eye"
     category: 'Sandwiches',
     description:
       'Charbroiled rib-eye beef chunks with hummus and Biwaz salad (Parsley, Onion and Sumac) wrapped in Lebanese Pita Bread',
-    image: photo('charbroiled-rib-eye-sandwich.jpg', '78/Screenshot_20250906_141523_Photoroom.jpg'),
+    image: photo(
+      'charbroiled-rib-eye-sandwich.jpg',
+      '78/Screenshot_20250906_141523_Photoroom.jpg',
+      493,
+    ),
   },
   {
     name: 'Chicken Tawouk Sandwich',
     category: 'Sandwiches',
     description:
       'Charbroiled chicken breast pieces seasoned with our special spices, over garlic sauce, pickles and wrapped in Lebanese Pita bread.',
-    image: photo('chicken-tawouk-sandwich.jpg', '81/Screenshot_20250906_141533_Photoroom.jpg'),
+    image: photo('chicken-tawouk-sandwich.jpg', '81/Screenshot_20250906_141533_Photoroom.jpg', 557),
   },
   {
     name: 'Charbroiled Chicken Sandwich', // was "Charbroiled Chicken sandwich"
     category: 'Sandwiches',
     description:
       'Charbroiled chicken with Garlic sauce, spicy garlic sauce and pickles wrapped in Lebanese Pita bread.',
-    image: photo('charbroiled-chicken-sandwich.jpg', '82/Screenshot_20250906_141516_Photoroom.jpg'),
+    image: photo(
+      'charbroiled-chicken-sandwich.jpg',
+      '82/Screenshot_20250906_141516_Photoroom.jpg',
+      559,
+    ),
   },
 ]
 
@@ -252,6 +276,16 @@ export const siteSettings = {
   defaultDescription: 'A taste of home, miles away from Beirut',
   // Only the city is known (brief: "Kansas City (State Line shops)").
   location: { name: 'Kansas City', city: 'Kansas City' },
+}
+
+/**
+ * DEMO ONLY: used when no database is configured, so the order buttons can be
+ * tried. They open a DoorDash / Uber Eats search for AlBeik. Real store links
+ * go in the CMS (Site settings → Ordering).
+ */
+export const demoStoreLinks = {
+  doordashStoreUrl: 'https://www.doordash.com/search/store/albeik/',
+  uberEatsStoreUrl: 'https://www.ubereats.com/search?q=AlBeik',
 }
 
 /** Printed after seeding; also listed in the README. */

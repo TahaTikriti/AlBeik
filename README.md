@@ -6,21 +6,29 @@ Next.js 16 + Payload CMS 3 in one app. The public site is static (rebuilt when c
 
 ## Run it
 
-You need Node 22, pnpm 10 and a Postgres database (a free [Neon](https://neon.tech) or Supabase project works).
+Needs Node 22 and pnpm 10. No database or `.env` needed to look at the site:
+
+```bash
+pnpm install
+pnpm dev                # http://localhost:3000
+```
+
+**Demo mode.** With no `DATABASE_URL`, the site runs on the scraped albeik.us content in `src/seed/content.ts` (photos in `public/seed/`). This also means Vercel deploys with zero environment variables. Order buttons open a DoorDash / Uber Eats search for AlBeik until real store links exist. The admin (`/admin`) needs a database.
+
+**CMS mode.** To edit content in the admin, add a Postgres database (a free [Neon](https://neon.tech) or Supabase project works):
 
 ```bash
 cp .env.example .env    # set DATABASE_URL and PAYLOAD_SECRET (and SEED_ADMIN_* for a login)
-pnpm install
 pnpm migrate            # create the tables
-pnpm seed               # load the content from the current albeik.us
-pnpm dev                # http://localhost:3000, admin at /admin
+pnpm seed               # load the same content into the CMS
+pnpm dev                # admin at /admin
 ```
 
 To start over with a clean database: `pnpm db:reset && pnpm seed`.
 
 | Script                                       | What it does                                                                 |
 | -------------------------------------------- | ---------------------------------------------------------------------------- |
-| `pnpm dev` / `pnpm build` / `pnpm start`     | Next.js (the build needs the database, because pages are prerendered)        |
+| `pnpm dev` / `pnpm build` / `pnpm start`     | Next.js (with a database configured, the build reads it to prerender pages)  |
 | `pnpm lint` / `pnpm typecheck` / `pnpm test` | Checks; the tests cover the order-link rules                                 |
 | `pnpm migrate`                               | Apply database migrations                                                    |
 | `pnpm migrate:create <name>`                 | After changing a collection or global, create a migration and commit it      |
@@ -75,9 +83,11 @@ Clicks are tracked as Umami custom events (`order_sheet_open`, `order_click` wit
 - Dietary tags (spicy, vegetarian), to be confirmed before tagging
 - True cut-out photos, if any exist (the current ones have backgrounds)
 
-## Deploying (later)
+## Deploying
 
-Vercel + the same hosted Postgres works. Two things to add first:
+**Demo:** import the repo in Vercel and deploy. No settings or environment variables needed.
+
+**With the CMS:** Vercel + the same hosted Postgres. Two things to add first:
 
 - **Media storage.** Uploads go to the local `media/` folder, which Vercel doesn't keep. Add Payload's S3 or Vercel Blob storage adapter.
 - **Build command:** `pnpm migrate && pnpm build`.
