@@ -15,11 +15,11 @@
   --p-ash: #aaa198;
   --p-cream: #f4ede3;
   --p-white: #ffffff;
-  --p-red: #e1251b;
-  --p-red-deep: #c11a11;
-  --p-ember: #ff5a36;
-  /* Brighter red for small text on black: 5.9:1 (brand red is 4.2:1, large text only). */
-  --p-red-text: #ff4a3d;
+  /* Both reds come from the logo's fez. */
+  --p-red: #d8262f; /* fez body: fields and buttons (white text on it: 6.7:1) */
+  --p-red-deep: #b51d26;
+  /* Fez top: red text on black (5:1, fine for small text). */
+  --p-red-text: #f4313f;
 
   --p-font-display-fallback: Impact, 'Arial Narrow Bold', 'Helvetica Neue Condensed', sans-serif;
   --p-font-body-fallback: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -40,6 +40,8 @@
   --color-ink-inverse: var(--p-white);
   --color-accent: var(--p-red);
   --color-accent-ink: var(--p-white);
+  /* The "one word in red" in headlines. */
+  --color-emphasis: var(--p-red-text);
   --color-line: var(--p-char);
   --color-focus: var(--p-white);
   --color-scrim: rgb(0 0 0 / 0.72);
@@ -96,7 +98,7 @@
   /* Elevation */
   --shadow-raised: 0 18px 40px -12px rgb(0 0 0 / 0.65);
   --shadow-sheet: 0 -24px 60px rgb(0 0 0 / 0.6);
-  --shadow-ember: 0 14px 40px -10px rgb(225 37 27 / 0.55);
+  --shadow-ember: 0 14px 40px -10px rgb(216 38 47 / 0.55);
 
   /* Space */
   --spacing-gutter: 1.25rem;
@@ -135,6 +137,7 @@
   --color-ink-muted: var(--p-white);
   --color-accent: var(--p-black);
   --color-accent-ink: var(--p-white);
+  --color-emphasis: var(--p-black);
   --color-line: rgb(0 0 0 / 0.22);
   --color-focus: var(--p-white);
 }
@@ -147,6 +150,7 @@
   --color-ink-muted: #5e554d;
   --color-accent: var(--p-red-deep);
   --color-accent-ink: var(--p-white);
+  --color-emphasis: var(--p-red-deep);
   --color-line: rgb(10 10 10 / 0.14);
   --color-focus: var(--p-black);
 }

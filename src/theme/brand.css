@@ -26,7 +26,7 @@
   /* The "one word in red" from the Instagram posts. */
   em {
     font-style: normal;
-    color: var(--color-accent);
+    color: var(--color-emphasis);
   }
 
   ::selection {
@@ -83,6 +83,19 @@
     letter-spacing: 0.16em;
     line-height: 1.1;
     text-transform: uppercase;
+  }
+
+  /* The ALBEIK wordmark from the logo, used as a mask so it takes the text color. */
+  .wordmark {
+    display: block;
+    aspect-ratio: 817 / 152;
+    background-color: currentColor;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
   }
 
   .outline-text {
@@ -169,7 +182,7 @@
     background:
       radial-gradient(38% 28% at 28% 62%, rgb(255 255 255 / 0.11), transparent 70%),
       radial-gradient(30% 24% at 72% 38%, rgb(255 255 255 / 0.08), transparent 70%),
-      radial-gradient(34% 30% at 55% 85%, rgb(225 37 27 / 0.22), transparent 70%);
+      radial-gradient(34% 30% at 55% 85%, rgb(216 38 47 / 0.22), transparent 70%);
     filter: blur(28px);
     will-change: transform;
   }
@@ -212,6 +225,19 @@
   .sheet[open] {
     translate: 0 0;
   }
+  /* Follows the finger while it's dragged down (see OrderSheet). */
+  .sheet[data-dragging] {
+    transition: none;
+  }
+  .sheet li {
+    transition:
+      opacity var(--duration-base) var(--ease-out),
+      translate var(--duration-slow) var(--ease-out);
+  }
+  .sheet :focus-visible {
+    outline: 3px solid var(--p-red-text);
+    outline-offset: 3px;
+  }
   .sheet::backdrop {
     background-color: rgb(0 0 0 / 0);
     transition:
@@ -225,6 +251,10 @@
   @starting-style {
     .sheet[open] {
       translate: 0 100%;
+    }
+    .sheet[open] li {
+      opacity: 0;
+      translate: 0 1.25rem;
     }
     .sheet[open]::backdrop {
       background-color: rgb(0 0 0 / 0);
@@ -249,6 +279,12 @@
   .marquee-track {
     animation: marquee 32s linear infinite;
   }
+  .sheet li:nth-child(2) {
+    transition-delay: 70ms;
+  }
+  .sheet li:nth-child(3) {
+    transition-delay: 140ms;
+  }
   .fez-bob {
     animation: fez-bob 3.2s ease-in-out infinite;
   }
@@ -260,7 +296,7 @@
     .reveal {
       animation: reveal linear both;
       animation-timeline: view();
-      animation-range: entry 0% cover 28%;
+      animation-range: entry 5% entry 65%;
     }
   }
 }
@@ -307,10 +343,15 @@
 @keyframes reveal {
   from {
     opacity: 0;
-    transform: translateY(48px);
+    transform: translateY(2rem);
   }
   to {
     opacity: 1;
     transform: none;
   }
+}
+
+/* An item page swaps the site-wide order bar for one that orders that dish. */
+body:has([data-order-bar='item']) [data-order-bar='site'] {
+  display: none;
 }
