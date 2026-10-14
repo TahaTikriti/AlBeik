@@ -1,8 +1,8 @@
 /**
  * Seed content, transcribed from docs/content/ (scraped from albeik.us on
  * 2026-10-12). Corrections are commented next to the original wording.
- * Nothing here is invented: unknown facts (prices, hours, address, phone,
- * store links) are left out on purpose. See TODO at the bottom.
+ * Nothing here is invented: unknown facts (prices, hours, address, phone)
+ * are left out on purpose. See TODO at the bottom.
  */
 import type { MenuTag } from '@/lib/data/types'
 
@@ -278,21 +278,17 @@ export const siteSettings = {
   location: { name: 'Kansas City', city: 'Kansas City' },
 }
 
-/**
- * DEMO ONLY: used when no database is configured, so the order buttons can be
- * tried. They open a DoorDash / Uber Eats search for AlBeik. Real store links
- * go in the CMS (Site settings → Ordering).
- */
-export const demoStoreLinks = {
-  doordashStoreUrl: 'https://www.doordash.com/search/store/albeik/',
-  uberEatsStoreUrl: 'https://www.ubereats.com/search?q=AlBeik',
+/** AlBeik's store pages, from the client (2026-10-14). Item-level links can be added per dish in the CMS. */
+export const storeLinks = {
+  doordashStoreUrl: 'https://www.doordash.com/store/albeik-kansas-city-32933201/54031354/',
+  uberEatsStoreUrl: 'https://www.ubereats.com/store/al-beik-state-line-rd/lkFhH1rNVt-gZXLRIOxHzA?diningMode=DELIVERY',
 }
 
 /** Printed after seeding; also listed in the README. */
 export const TODO = [
   'Full menu (Platters, Sides, Drinks, Desserts are empty): scrape /our-menu or get it from the client',
   'Prices (and decide whether to show them: Site settings → Show prices)',
-  'DoorDash and Uber Eats store links (Site settings → Ordering); order buttons stay hidden until set',
+  'Item-level DoorDash / Uber Eats links, if the client wants to collect them (optional)',
   'Address, phone, opening hours and Google Maps link (Site settings → Locations)',
   'Logo files and social links (Site settings)',
   'Testimonial sources (Google, Yelp…)',

@@ -37,7 +37,7 @@ function image(file: { file: string; width: number; height: number }, alt: strin
   }
 }
 
-const storeLinks = resolveOrderLinks(null, content.demoStoreLinks)
+const storeLinks = resolveOrderLinks(null, content.storeLinks)
 
 const items: MenuItemVM[] = content.menuItems.map((item, i) => {
   const slug = slugify(item.name)

@@ -179,6 +179,7 @@ export async function seed(payload: Payload, { admin, log = () => {} }: Options 
       slug: 'site-settings',
       data: {
         siteName: content.siteSettings.siteName,
+        ...content.storeLinks,
         locations: [content.siteSettings.location],
         seo: { defaultDescription: content.siteSettings.defaultDescription },
       },
