@@ -14,17 +14,20 @@ const display = Anton({
 })
 
 const body = Barlow({
-  weight: ['400', '500', '600', '700'],
+  weight: ['400', '500', '700'],
   subsets: ['latin'],
   variable: '--p-font-body',
   display: 'swap',
 })
 
+// Not preloaded: it's 50 KB for one line that fades in after the hero, and
+// preloading it competed with the hero photo for the first paint.
 const script = Caveat_Brush({
   weight: '400',
   subsets: ['latin'],
   variable: '--p-font-script',
   display: 'swap',
+  preload: false,
 })
 
 export const fontClassName = `${display.variable} ${body.variable} ${script.variable}`

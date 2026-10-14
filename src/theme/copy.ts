@@ -13,7 +13,8 @@ export const copy = {
     about: 'Story',
     location: 'Visit',
   },
-  marquee: ['100% Halal', 'Juicier. Meatier. Tastier.', 'Beirut street food', 'Kansas City'],
+  // Facts, not filler: the charcoal grill and family recipes are from press coverage.
+  marquee: ['Charcoal-grilled', 'Family recipes', 'Beirut street food', 'Kansas City'],
   order: {
     cta: 'Order',
     ctaFor: (item: string) => `Order ${item}`,
@@ -29,14 +30,13 @@ export const copy = {
   },
   menu: {
     title: 'Menu',
-    kicker: 'Beirut street food · 100% halal',
     categoriesLabel: 'Menu categories',
     empty: 'The grill is warming up.',
     count: (n: number) => (n === 1 ? '1 dish' : `${n} dishes`),
     viewItem: (item: string) => `View ${item}`,
   },
   item: {
-    backToMenu: 'Back to the menu',
+    backTo: (category: string) => `Back to ${category} on the menu`,
     tags: {
       spicy: 'Spicy',
       vegetarian: 'Vegetarian',
@@ -46,9 +46,8 @@ export const copy = {
     } satisfies Record<MenuTag, string>,
   },
   home: {
-    heroKicker: 'Lebanese street food · Kansas City',
-    halal: { amount: '100%', word: 'Halal', script: 'Juicier. Meatier. Tastier.' },
-    featuredKicker: 'Ours, and only ours',
+    heroKicker: 'Lebanese street food in Kansas City',
+    heroScript: 'Juicier. Meatier. Tastier.',
     featuredTitle: 'The *signatures*',
     seeMenu: 'See the menu',
     fullMenu: 'The whole menu',
@@ -78,8 +77,11 @@ export const copy = {
     notice: 'Preview: you are seeing unpublished changes.',
     exit: 'Exit preview',
   },
+  promo: {
+    /** Flip-clock countdown, like the "02 DAYS TO TASTEBUD TANTALIZATION" posts. */
+    left: (n: number, unit: 'day' | 'hour') => `${unit}${n === 1 ? '' : 's'} to go`,
+  },
   footer: {
-    halal: '100% halal. Always.',
     tagline: 'The recipe is Lebanese. The attitude is ours.',
     follow: 'Follow us',
   },

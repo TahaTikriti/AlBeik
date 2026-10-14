@@ -70,7 +70,12 @@ export function Wordmark({ className = '' }: SvgProps) {
 export function Logo() {
   return (
     <span className="flex items-center gap-2.5">
-      <Mark sizes="1.75rem" eager className="h-11 w-auto" />
+      {/* The Beik nods when you point at him: the one bit of character in the chrome. */}
+      <Mark
+        sizes="1.75rem"
+        eager
+        className="h-11 w-auto origin-[50%_85%] transition-transform duration-(--duration-base) ease-snap group-hover:-rotate-8 group-focus-visible:-rotate-8"
+      />
       <Wordmark className="h-[1.05rem]" />
     </span>
   )
@@ -105,37 +110,24 @@ export function FlipDigits({ value, className = '' }: { value: string; className
   )
 }
 
-/** Round "100% HALAL" sticker. */
-export function HalalSticker({ className = '' }: SvgProps) {
-  return (
-    <span className={`sticker ${className}`} aria-hidden>
-      <span className="font-display text-[1.9em] leading-[0.8]">100%</span>
-      <span className="font-display text-[1.25em] leading-[0.9] tracking-[0.06em]">HALAL</span>
-    </span>
-  )
-}
-
 /**
- * The "100% HALAL" post as a lockup: mustache, white 100%, outlined red
- * HALAL, and the handwritten "Juicier. Meatier. Tastier." Size it with
- * font-size on className.
+ * The handwritten line from the posts ("Juicier. Meatier. Tastier.") under
+ * the mustache, set on the hero dish. Size it with font-size on className.
  */
-export function HalalLockup({ className = '' }: SvgProps) {
-  const { amount, word, script } = copy.home.halal
+export function HeroScript({ className = '' }: SvgProps) {
   return (
     <p className={`isolate grid justify-items-center text-center ${className}`}>
       {/* A soft shadow pool keeps it readable over busy food. */}
       <span
         aria-hidden
-        className="absolute inset-x-[15%] -inset-y-[10%] -z-10 rounded-full bg-[radial-gradient(closest-side,rgb(0_0_0/0.5),transparent)]"
+        className="absolute inset-x-[12%] -inset-y-[35%] -z-10 rounded-full bg-[radial-gradient(closest-side,rgb(0_0_0/0.6),transparent)]"
       />
-      <Mustache className="mb-[0.35em] w-[3.4em] text-white drop-shadow-lg" />
-      <span className="font-display text-[2.6em] leading-[0.85] text-white [text-shadow:0_0.05em_0.2em_rgb(0_0_0/0.6)]">
-        {amount}
-      </span>
-      <span className="sticker-type font-display text-[4em] leading-[0.9] uppercase">{word}</span>
-      <span className="mt-[0.2em] -rotate-3 font-script text-[1.5em] leading-none text-white [text-shadow:0_0.05em_0.25em_rgb(0_0_0/0.7)]">
-        {script}
+      {/* Inner wrapper animates, so it never fights the positioning on className. */}
+      <span className="hero-follow grid justify-items-center">
+        <Mustache className="mb-[0.3em] w-[4.5em] text-white drop-shadow-lg" />
+        <span className="-rotate-3 font-script text-[2.75em] leading-none text-white [text-shadow:0_0.04em_0.2em_rgb(0_0_0/0.7)]">
+          {copy.home.heroScript}
+        </span>
       </span>
     </p>
   )
@@ -157,12 +149,12 @@ export function Steam({ className = '' }: SvgProps) {
   )
 }
 
-/** The fez moment: the logo's mark, tipped and bobbing in a cloud of smoke. */
+/** The fez moment: the logo's mark in a cloud of smoke, tipping its fez once on arrival. */
 export function FezMoment({ className = '' }: SvgProps) {
   return (
     <div className={`relative ${className}`}>
       <Smoke className="opacity-80" />
-      <Mark sizes="(min-width: 768px) 9rem, 7rem" className="fez-bob relative w-full -rotate-6" />
+      <Mark sizes="(min-width: 768px) 9rem, 7rem" className="fez-tip relative w-full -rotate-6" />
     </div>
   )
 }

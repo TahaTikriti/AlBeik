@@ -37,7 +37,6 @@ export function Footer({ site }: { site: SiteVM }) {
             </ul>
           </nav>
           <div className="grid content-start gap-2 text-small text-ink-muted">
-            <p className="label text-white">{copy.footer.halal}</p>
             {location?.addressLines.map((line) => (
               <span key={line}>{line}</span>
             ))}

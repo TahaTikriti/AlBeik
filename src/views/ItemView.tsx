@@ -7,28 +7,38 @@ import { ui } from '@/components/ui/classes'
 import type { ItemPageData } from '@/lib/data/types'
 import { formatPrice } from '@/lib/text'
 import { copy } from '@/theme/copy'
-import { HalalSticker, Smoke, Steam } from '@/theme/motifs'
+import { Smoke, Steam } from '@/theme/motifs'
 
+/**
+ * Like the brand's dish posts ("FATTOUSH" over the dish on black): the name
+ * in outlined red sticker type, then the dish lit in the dark. Desktop puts
+ * the dish beside the name and details.
+ */
 export function ItemView({ item }: ItemPageData) {
   return (
     <>
       <article className="grain relative overflow-hidden">
         <Smoke />
         <div
-          className={`${ui.container} grid gap-6 pt-4 pb-section md:grid-cols-2 md:items-center md:gap-14 md:pt-10`}
+          className={`${ui.container} grid gap-6 pt-4 pb-section md:grid-cols-2 md:grid-rows-[auto_auto_1fr] md:gap-x-14 md:pt-10`}
         >
           <p className="md:col-span-2">
             <Link
               href={`/menu#${item.category.slug}`}
+              aria-label={copy.item.backTo(item.category.name)}
               className="label inline-flex min-h-tap items-center gap-2 text-ink-muted hover:text-white"
             >
-              ← {copy.item.backToMenu}
+              ← {item.category.name}
             </Link>
           </p>
 
-          <div className="relative mx-auto w-full max-w-[18rem] md:max-w-[26rem]">
+          <h1 className="sticker-type text-display-1 md:col-start-2 md:self-end md:text-[clamp(3rem,1.5rem+3.4vw,5.5rem)]">
+            {item.name}
+          </h1>
+
+          <div className="relative mx-auto w-full max-w-[18rem] md:col-start-1 md:row-span-2 md:row-start-2 md:max-w-[26rem] md:self-center">
             <div
-              className="absolute inset-[8%] rounded-full bg-red blur-3xl opacity-40"
+              className="absolute inset-[8%] rounded-full bg-red opacity-40 blur-3xl"
               aria-hidden
             />
             {item.image ? (
@@ -40,14 +50,12 @@ export function ItemView({ item }: ItemPageData) {
               />
             ) : null}
             <Steam />
-            <HalalSticker className="absolute -right-1 -bottom-2 text-[0.8rem]" />
           </div>
 
-          <div className="grid content-start gap-5">
-            <div className="grid gap-3">
-              <p className="label text-red-text">{item.category.name}</p>
-              <h1 className="text-display-1">{item.name}</h1>
-            </div>
+          <div className="grid content-start gap-5 md:col-start-2">
+            {item.description ? (
+              <p className="max-w-[40ch] text-xl leading-snug">{item.description}</p>
+            ) : null}
             {item.tags.length ? (
               <ul className="flex flex-wrap gap-2">
                 {item.tags.map((tag) => (
@@ -57,9 +65,6 @@ export function ItemView({ item }: ItemPageData) {
                 ))}
               </ul>
             ) : null}
-            {item.description ? (
-              <p className="max-w-[40ch] text-xl leading-snug">{item.description}</p>
-            ) : null}
             {item.price !== null ? (
               <p className="font-display text-display-2">{formatPrice(item.price)}</p>
             ) : null}
@@ -68,7 +73,7 @@ export function ItemView({ item }: ItemPageData) {
               item={item}
               placement="item"
               label={copy.order.ctaFor(item.name)}
-              className="btn btn-red min-h-16 w-full text-[1.6rem] md:w-auto md:px-10"
+              className="btn btn-red min-h-16 w-full text-[1.6rem] md:w-auto md:justify-self-start md:px-10"
             />
           </div>
         </div>

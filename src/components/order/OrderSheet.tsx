@@ -58,7 +58,7 @@ export function OrderSheet({ ref, links, item, onChoose }: Props) {
     >
       <div className="grain relative">
         <div
-          className="relative flex touch-none items-center justify-between bg-red px-gutter pt-5 pb-3 select-none md:pt-3"
+          className="relative flex touch-none items-center justify-center bg-red px-gutter pt-5 pb-3 select-none md:pt-3"
           onPointerDown={onDragStart}
           onPointerMove={onDragMove}
           onPointerUp={onDragEnd}
@@ -69,7 +69,6 @@ export function OrderSheet({ ref, links, item, onChoose }: Props) {
             className="absolute top-2 left-1/2 h-1 w-10 -translate-x-1/2 rounded-full bg-white/60 md:hidden"
           />
           <Mustache className="h-4 w-auto text-white" />
-          <span className="label text-white">100% halal</span>
         </div>
         <div className="grid gap-5 px-gutter pt-6 pb-[calc(1.5rem+var(--safe-bottom))]">
           <div className="grid gap-2">

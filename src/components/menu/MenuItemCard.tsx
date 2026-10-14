@@ -34,7 +34,7 @@ export function MenuItemCard({
 }: Props) {
   const badge = BADGE_ORDER.find((tag) => item.tags.includes(tag))
   return (
-    <article className="group reveal relative grid h-full grid-cols-[6.75rem_1fr] items-center gap-x-4 rounded-card bg-coal p-3 pe-4 transition-[background-color,scale] duration-(--duration-fast) hover:bg-char active:scale-[0.985] sm:grid-cols-1 sm:grid-rows-[auto_1fr_auto] sm:items-stretch sm:gap-y-4 sm:px-5 sm:pt-0 sm:pb-5 sm:text-center">
+    <article className="group relative grid h-full grid-cols-[6.75rem_1fr] items-center gap-x-4 rounded-card bg-coal p-3 pe-4 transition-[background-color,scale] duration-(--duration-fast) hover:bg-char active:scale-[0.985] sm:grid-cols-1 sm:grid-rows-[auto_1fr_auto] sm:items-stretch sm:gap-y-4 sm:px-5 sm:pt-0 sm:pb-5 sm:text-center">
       <div className="relative sm:mx-auto sm:-mt-14 sm:w-44">
         <span
           aria-hidden

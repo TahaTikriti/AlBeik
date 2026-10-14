@@ -1,6 +1,7 @@
 import Link from 'next/link'
 
 import { OrderButton } from '@/components/order/OrderButton'
+import { Countdown } from '@/components/ui/Countdown'
 import { Emphasis } from '@/components/ui/Emphasis'
 import { Img } from '@/components/ui/Img'
 import { Marquee } from '@/components/ui/Marquee'
@@ -8,7 +9,7 @@ import { Media } from '@/components/ui/Media'
 import { ui } from '@/components/ui/classes'
 import type { HomePageData, MenuItemVM, RichLine, SiteVM } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
-import { FlipDigits, HalalLockup, Mustache, Smoke, Steam } from '@/theme/motifs'
+import { HeroScript, Smoke, Steam } from '@/theme/motifs'
 
 type Props = HomePageData & { site: SiteVM }
 
@@ -49,6 +50,7 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
           <p
             className={`${ui.container} flex min-h-11 flex-wrap items-center justify-center gap-x-3 py-2 text-center font-display text-lg uppercase`}
           >
+            {promo.countdownTo ? <Countdown to={promo.countdownTo} /> : null}
             <span>
               <Emphasis line={promo.text} />
             </span>
@@ -107,10 +109,10 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
               media={hero.media}
               sizes="(min-width: 1024px) 54vw, 100vw"
               preload
-              className="fade-photo aspect-square w-full object-cover sm:aspect-[16/10] lg:aspect-auto lg:h-full"
+              className="fade-photo hero-settle aspect-square w-full object-cover sm:aspect-[16/10] lg:aspect-auto lg:h-full"
             />
             <Steam />
-            <HalalLockup className="absolute inset-x-0 top-[38%] text-[0.8rem] sm:text-[0.95rem] lg:top-1/2 lg:left-[20%] lg:-translate-y-1/2 lg:text-base" />
+            <HeroScript className="absolute inset-x-0 top-[38%] text-[0.8rem] sm:text-[0.95rem] lg:top-1/2 lg:left-[20%] lg:-translate-y-1/2 lg:text-base" />
           </figure>
         ) : null}
       </section>
@@ -123,19 +125,16 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
           aria-labelledby="featured-heading"
           className={`${ui.container} ${ui.section} grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:grid-rows-[1fr_auto] lg:gap-x-12 lg:gap-y-6`}
         >
-          <div className="grid content-end gap-3">
-            <p className="label text-red-text">{copy.home.featuredKicker}</p>
-            <h2
-              id="featured-heading"
-              className="text-display-1 lg:text-[clamp(3.25rem,1rem+3.6vw,4.75rem)]"
-            >
-              <Emphasis text={copy.home.featuredTitle} />
-            </h2>
-          </div>
+          <h2
+            id="featured-heading"
+            className="text-display-1 lg:self-end lg:text-[clamp(3.25rem,1rem+3.6vw,4.75rem)]"
+          >
+            <Emphasis text={copy.home.featuredTitle} />
+          </h2>
           <ol className="-mx-gutter flex snap-x snap-mandatory scroll-px-gutter gap-4 overflow-x-auto px-gutter [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:px-0 lg:col-start-2 lg:row-span-2 lg:row-start-1">
-            {featured.map((item, i) => (
+            {featured.map((item) => (
               <li key={item.id} className="w-[80%] shrink-0 snap-start sm:w-auto">
-                <SignatureCard item={item} number={i + 1} />
+                <SignatureCard item={item} />
               </li>
             ))}
           </ol>
@@ -143,7 +142,7 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
             href="/menu"
             className="btn btn-ghost justify-self-start lg:col-start-1 lg:row-start-2"
           >
-            {copy.home.fullMenu} →
+            {copy.home.fullMenu}
           </Link>
         </section>
       ) : null}
@@ -167,7 +166,6 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
                   sizes="(min-width: 768px) 46vw, 100vw"
                   className="aspect-[4/5] w-full rotate-[-2deg] rounded-card object-cover shadow-raised"
                 />
-                <Mustache className="absolute -bottom-6 -left-2 h-12 w-auto text-white drop-shadow-lg" />
               </div>
             ) : null}
           </div>
@@ -185,7 +183,7 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
             <h2 id="testimonials-heading" className="text-display-1">
               <Emphasis text={copy.home.testimonialsTitle} />
             </h2>
-            <ul className="-mx-gutter flex snap-x snap-mandatory gap-4 overflow-x-auto px-gutter pb-4 [scrollbar-width:none] md:grid md:grid-cols-2 md:overflow-visible">
+            <ul className="-mx-gutter flex snap-x snap-mandatory gap-4 overflow-x-auto px-gutter pb-4 [scrollbar-width:none] md:grid md:auto-rows-fr md:grid-cols-2 md:overflow-visible">
               {testimonials.map((t) => (
                 <li key={t.id} className="w-[86%] shrink-0 snap-start md:w-auto">
                   <figure className="grid h-full content-between gap-6 rounded-card bg-black p-6 text-white">
@@ -241,7 +239,7 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
               </dl>
             ) : null}
             <Link href="/location" className="btn btn-ghost">
-              {copy.location.directions} →
+              {copy.location.directions}
             </Link>
           </div>
         </div>
@@ -273,9 +271,9 @@ function PromiseHeadline({ line }: { line: RichLine }) {
 }
 
 /** A reel card: the dish full-bleed, fading to black under its name and order button. */
-function SignatureCard({ item, number }: { item: MenuItemVM; number: number }) {
+function SignatureCard({ item }: { item: MenuItemVM }) {
   return (
-    <article className="group reveal relative isolate grid aspect-[4/5] content-end overflow-hidden rounded-card bg-coal shadow-raised">
+    <article className="group relative isolate grid aspect-[4/5] content-end overflow-hidden rounded-card bg-coal shadow-raised">
       {item.image ? (
         <Img
           image={item.image}
@@ -286,10 +284,6 @@ function SignatureCard({ item, number }: { item: MenuItemVM; number: number }) {
       <div
         aria-hidden
         className="absolute inset-0 -z-10 bg-[linear-gradient(to_top,var(--color-black)_10%,rgb(10_10_10/0.8)_42%,transparent_72%)]"
-      />
-      <FlipDigits
-        value={String(number).padStart(2, '0')}
-        className="absolute top-4 left-4 text-[1.6rem]"
       />
       <div className="grid gap-3 p-5">
         <h3 className="text-[2rem] leading-[0.92] sm:text-[2.25rem]">

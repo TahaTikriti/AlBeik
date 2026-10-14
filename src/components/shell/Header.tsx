@@ -15,7 +15,7 @@ export function Header({ site }: { site: SiteVM }) {
         <Link
           href="/"
           aria-label={`${site.name}, home`}
-          className="inline-flex min-h-tap shrink-0 items-center"
+          className="group inline-flex min-h-tap shrink-0 items-center"
         >
           <Logo />
         </Link>

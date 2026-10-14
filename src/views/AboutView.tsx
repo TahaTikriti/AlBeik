@@ -43,7 +43,7 @@ export function AboutView({ headline, body, images }: AboutPageData) {
             className="mx-auto grid max-w-[40rem] gap-6 text-xl leading-relaxed [&_h2]:pt-8 [&_h2]:text-display-2 [&_h2]:text-red-text [&_h3]:text-display-3 [&_ol]:list-decimal [&_ol]:ps-6 [&_p:first-child]:text-[1.45rem] [&_p:first-child]:leading-snug [&_p:first-child]:font-medium [&_p:first-child]:text-white [&_ul]:list-disc [&_ul]:ps-6"
           />
           {/* The logo signs off the story. */}
-          <StackedLogo alt="" className="reveal mx-auto mt-16 w-24 md:w-28" />
+          <StackedLogo alt="" className="mx-auto mt-16 w-24 md:w-28" />
         </div>
       ) : null}
 
