@@ -47,6 +47,7 @@ export const copy = {
   },
   home: {
     heroKicker: 'Lebanese street food · Kansas City',
+    halal: { amount: '100%', word: 'Halal', script: 'Juicier. Meatier. Tastier.' },
     featuredKicker: 'Ours, and only ours',
     featuredTitle: 'The *signatures*',
     seeMenu: 'See the menu',

@@ -26,7 +26,8 @@ export function MenuSection({
           </h2>
         </div>
       </header>
-      <ul className="grid gap-4 sm:mt-12 sm:grid-cols-2 sm:gap-x-5 sm:gap-y-20 lg:grid-cols-3">
+      {/* Equal rows: every card in the list is the same size. */}
+      <ul className="grid auto-rows-fr gap-3 sm:mt-12 sm:grid-cols-2 sm:gap-x-5 sm:gap-y-20 lg:grid-cols-3">
         {category.items.map((item, i) => (
           <li key={item.id} className="min-w-0">
             <MenuItemCard item={item} placement="menu" preloadImage={preloadFirst && i === 0} />

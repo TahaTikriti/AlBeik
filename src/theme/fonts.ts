@@ -1,8 +1,9 @@
-import { Anton, Barlow } from 'next/font/google'
+import { Anton, Barlow, Caveat_Brush } from 'next/font/google'
 
 /**
  * poc/street: Anton for the heavy condensed caps of the Instagram rebrand,
- * Barlow for body copy. Self-hosted by next/font (no layout shift, no
+ * Barlow for body copy, Caveat Brush for the handwritten accent line
+ * ("Juicier. Meatier. Tastier."), used sparingly. Self-hosted by next/font (no layout shift, no
  * request to Google at runtime).
  */
 const display = Anton({
@@ -19,4 +20,11 @@ const body = Barlow({
   display: 'swap',
 })
 
-export const fontClassName = `${display.variable} ${body.variable}`
+const script = Caveat_Brush({
+  weight: '400',
+  subsets: ['latin'],
+  variable: '--p-font-script',
+  display: 'swap',
+})
+
+export const fontClassName = `${display.variable} ${body.variable} ${script.variable}`

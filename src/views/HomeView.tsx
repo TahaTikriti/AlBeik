@@ -8,7 +8,7 @@ import { Media } from '@/components/ui/Media'
 import { ui } from '@/components/ui/classes'
 import type { HomePageData, MenuItemVM, RichLine, SiteVM } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
-import { FlipDigits, HalalSticker, Mustache, Smoke, Steam } from '@/theme/motifs'
+import { FlipDigits, HalalLockup, Mustache, Smoke, Steam } from '@/theme/motifs'
 
 type Props = HomePageData & { site: SiteVM }
 
@@ -61,90 +61,88 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
         </aside>
       ) : null}
 
-      {/* HERO */}
+      {/* HERO: the brand's reels on a page. Copy and the order button come first;
+          the dish rises out of the dark below (beside it from lg). */}
       <section className="grain relative overflow-hidden">
         <Smoke />
         <div
-          className={`${ui.container} grid gap-9 pt-9 pb-16 md:grid-cols-[1.1fr_1fr] md:items-center md:gap-10 md:pt-16 md:pb-24`}
+          className={`${ui.container} relative z-10 grid gap-6 pt-9 lg:min-h-[min(44rem,calc(100dvh-var(--spacing-header)))] lg:content-center lg:py-20 lg:pe-[48%]`}
         >
-          <div className="grid gap-6">
-            <div className="grid gap-3">
-              <p className="label text-red-text">{copy.home.heroKicker}</p>
-              <h1 className="grid gap-3">
-                <span className="text-display-1 block">
-                  <Emphasis line={shout} />
+          <div className="grid gap-3">
+            <p className="label text-red-text">{copy.home.heroKicker}</p>
+            <h1 className="grid gap-3">
+              <span className="text-display-1 block">
+                <Emphasis line={shout} />
+              </span>
+              {followUp ? (
+                <span className="block font-display text-[clamp(1.6rem,1.2rem+2vw,2.6rem)] leading-[0.95] text-ink-muted">
+                  <Emphasis line={followUp} />
                 </span>
-                {followUp ? (
-                  <span className="block font-display text-[clamp(1.6rem,1.2rem+2vw,2.6rem)] leading-[0.95] text-ink-muted">
-                    <Emphasis line={followUp} />
-                  </span>
-                ) : null}
-              </h1>
-            </div>
-            {hero.subline ? (
-              <p className="max-w-[28ch] text-lg text-ink-muted">{hero.subline}</p>
-            ) : null}
-            {/* A matched pair on phones; natural widths from sm up. */}
-            <div className="grid grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-3 sm:flex sm:flex-wrap">
-              <OrderButton
-                links={site.storeOrderLinks}
-                placement="home-hero"
-                label={copy.order.stickyLabel}
-                className="btn btn-red min-h-14 px-3 text-[1.3rem] sm:px-8 sm:text-[1.5rem]"
-              />
-              <Link
-                href="/menu"
-                className="btn btn-ghost min-h-14 px-3 text-[1.3rem] sm:px-7 sm:text-[1.5rem]"
-              >
-                {copy.home.seeMenu}
-              </Link>
-            </div>
+              ) : null}
+            </h1>
           </div>
-
-          {hero.media ? (
-            <div className="relative mx-2 mt-2 md:mx-0">
-              <div className="absolute -inset-3 -rotate-3 rounded-[2rem] bg-red" aria-hidden />
-              <div className="relative rotate-2 overflow-hidden rounded-[1.75rem] shadow-raised">
-                <Media
-                  media={hero.media}
-                  sizes="(min-width: 768px) 46vw, 92vw"
-                  preload
-                  className="aspect-[4/3] w-full object-cover"
-                />
-                <div
-                  className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"
-                  aria-hidden
-                />
-              </div>
-              <Steam />
-              <HalalSticker className="absolute -top-7 right-2 text-[0.85rem] sm:text-base" />
-            </div>
+          {hero.subline ? (
+            <p className="max-w-[28ch] text-lg text-ink-muted">{hero.subline}</p>
           ) : null}
+          {/* A matched pair on phones; natural widths from sm up. */}
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-3 sm:flex sm:flex-wrap">
+            <OrderButton
+              links={site.storeOrderLinks}
+              placement="home-hero"
+              label={copy.order.stickyLabel}
+              className="btn btn-red min-h-14 px-3 text-[1.3rem] sm:px-8 sm:text-[1.5rem]"
+            />
+            <Link
+              href="/menu"
+              className="btn btn-ghost min-h-14 px-3 text-[1.3rem] sm:px-7 sm:text-[1.5rem]"
+            >
+              {copy.home.seeMenu}
+            </Link>
+          </div>
         </div>
+
+        {hero.media ? (
+          <figure className="relative -mt-6 lg:absolute lg:inset-y-0 lg:right-0 lg:mt-0 lg:w-[54%]">
+            <Media
+              media={hero.media}
+              sizes="(min-width: 1024px) 54vw, 100vw"
+              preload
+              className="fade-photo aspect-square w-full object-cover sm:aspect-[16/10] lg:aspect-auto lg:h-full"
+            />
+            <Steam />
+            <HalalLockup className="absolute inset-x-0 top-[38%] text-[0.8rem] sm:text-[0.95rem] lg:top-1/2 lg:left-[20%] lg:-translate-y-1/2 lg:text-base" />
+          </figure>
+        ) : null}
       </section>
 
       <Marquee items={copy.marquee} />
 
-      {/* SIGNATURES */}
+      {/* SIGNATURES: same-size reel cards; a swipeable row on phones. */}
       {featured.length ? (
         <section
           aria-labelledby="featured-heading"
-          className={`${ui.container} ${ui.section} grid gap-14`}
+          className={`${ui.container} ${ui.section} grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:grid-rows-[1fr_auto] lg:gap-x-12 lg:gap-y-6`}
         >
-          <div className="grid gap-3">
+          <div className="grid content-end gap-3">
             <p className="label text-red-text">{copy.home.featuredKicker}</p>
-            <h2 id="featured-heading" className="text-display-1">
+            <h2
+              id="featured-heading"
+              className="text-display-1 lg:text-[clamp(3.25rem,1rem+3.6vw,4.75rem)]"
+            >
               <Emphasis text={copy.home.featuredTitle} />
             </h2>
           </div>
-          <ol className="grid gap-24 pt-14 md:grid-cols-2 md:gap-8 md:pt-16">
+          <ol className="-mx-gutter flex snap-x snap-mandatory scroll-px-gutter gap-4 overflow-x-auto px-gutter [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:px-0 lg:col-start-2 lg:row-span-2 lg:row-start-1">
             {featured.map((item, i) => (
-              <li key={item.id}>
+              <li key={item.id} className="w-[80%] shrink-0 snap-start sm:w-auto">
                 <SignatureCard item={item} number={i + 1} />
               </li>
             ))}
           </ol>
-          <Link href="/menu" className="btn btn-ghost justify-self-start">
+          <Link
+            href="/menu"
+            className="btn btn-ghost justify-self-start lg:col-start-1 lg:row-start-2"
+          >
             {copy.home.fullMenu} →
           </Link>
         </section>
@@ -274,44 +272,42 @@ function PromiseHeadline({ line }: { line: RichLine }) {
   )
 }
 
+/** A reel card: the dish full-bleed, fading to black under its name and order button. */
 function SignatureCard({ item, number }: { item: MenuItemVM; number: number }) {
   return (
-    <article
-      data-theme="inverse"
-      className="reveal relative grid gap-5 rounded-[2rem] px-6 pt-44 pb-6 sm:pt-52"
-    >
+    <article className="group reveal relative isolate grid aspect-[4/5] content-end overflow-hidden rounded-card bg-coal shadow-raised">
       {item.image ? (
-        <Link
-          href={item.href}
-          tabIndex={-1}
-          aria-hidden
-          className="absolute -top-14 left-1/2 w-52 -translate-x-1/2 sm:-top-16 sm:w-64"
-        >
-          <Img
-            image={item.image}
-            sizes="(min-width: 640px) 16rem, 13rem"
-            className="aspect-square w-full rounded-full object-cover shadow-[0_0_0_8px_var(--color-black),0_30px_60px_rgb(0_0_0/0.55)] transition-transform duration-(--duration-slow) hover:-rotate-6"
-          />
-        </Link>
-      ) : null}
-      <div className="grid gap-3">
-        <FlipDigits
-          value={String(number).padStart(2, '0')}
-          className="text-[1.9rem] [&_.flip-tile]:[background:linear-gradient(#161616_0_50%,#000_50%_100%)]"
+        <Img
+          image={item.image}
+          sizes="(min-width: 1024px) 24rem, (min-width: 640px) 46vw, 80vw"
+          className="absolute inset-0 -z-10 h-full w-full object-cover transition-transform duration-(--duration-slow) ease-out group-hover:scale-105"
         />
-        <h3 className="text-display-2">
-          <Link href={item.href} className="hover:underline">
+      ) : null}
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10 bg-[linear-gradient(to_top,var(--color-black)_10%,rgb(10_10_10/0.8)_42%,transparent_72%)]"
+      />
+      <FlipDigits
+        value={String(number).padStart(2, '0')}
+        className="absolute top-4 left-4 text-[1.6rem]"
+      />
+      <div className="grid gap-3 p-5">
+        <h3 className="text-[2rem] leading-[0.92] sm:text-[2.25rem]">
+          {/* Stretched: the whole card opens the dish; the order button sits above it. */}
+          <Link href={item.href} className="after:absolute after:inset-0">
             {item.name}
           </Link>
         </h3>
-        {item.description ? <p className="text-lg leading-snug">{item.description}</p> : null}
+        {item.description ? (
+          <p className="line-clamp-2 text-small text-white/80">{item.description}</p>
+        ) : null}
+        <OrderButton
+          links={item.orderLinks}
+          item={item}
+          placement="home-featured"
+          className="btn btn-red relative z-10 w-full"
+        />
       </div>
-      <OrderButton
-        links={item.orderLinks}
-        item={item}
-        placement="home-featured"
-        className="btn btn-ink w-full"
-      />
     </article>
   )
 }

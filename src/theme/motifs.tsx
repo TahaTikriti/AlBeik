@@ -1,5 +1,7 @@
 import Image from 'next/image'
 
+import { copy } from './copy'
+
 import stacked from './brand/albeik-logo-stacked-white.png'
 import mark from './brand/albeik-mark.png'
 import wordmark from './brand/albeik-wordmark.png'
@@ -110,6 +112,32 @@ export function HalalSticker({ className = '' }: SvgProps) {
       <span className="font-display text-[1.9em] leading-[0.8]">100%</span>
       <span className="font-display text-[1.25em] leading-[0.9] tracking-[0.06em]">HALAL</span>
     </span>
+  )
+}
+
+/**
+ * The "100% HALAL" post as a lockup: mustache, white 100%, outlined red
+ * HALAL, and the handwritten "Juicier. Meatier. Tastier." Size it with
+ * font-size on className.
+ */
+export function HalalLockup({ className = '' }: SvgProps) {
+  const { amount, word, script } = copy.home.halal
+  return (
+    <p className={`isolate grid justify-items-center text-center ${className}`}>
+      {/* A soft shadow pool keeps it readable over busy food. */}
+      <span
+        aria-hidden
+        className="absolute inset-x-[15%] -inset-y-[10%] -z-10 rounded-full bg-[radial-gradient(closest-side,rgb(0_0_0/0.5),transparent)]"
+      />
+      <Mustache className="mb-[0.35em] w-[3.4em] text-white drop-shadow-lg" />
+      <span className="font-display text-[2.6em] leading-[0.85] text-white [text-shadow:0_0.05em_0.2em_rgb(0_0_0/0.6)]">
+        {amount}
+      </span>
+      <span className="sticker-type font-display text-[4em] leading-[0.9] uppercase">{word}</span>
+      <span className="mt-[0.2em] -rotate-3 font-script text-[1.5em] leading-none text-white [text-shadow:0_0.05em_0.25em_rgb(0_0_0/0.7)]">
+        {script}
+      </span>
+    </p>
   )
 }
 
