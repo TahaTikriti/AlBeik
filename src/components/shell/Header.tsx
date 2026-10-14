@@ -17,7 +17,7 @@ export function Header({ site }: { site: SiteVM }) {
           aria-label={`${site.name}, home`}
           className="inline-flex min-h-tap shrink-0 items-center"
         >
-          <Logo name={site.name} image={site.logo} />
+          <Logo />
         </Link>
         <nav aria-label={copy.nav.label} className="ms-auto">
           <NavLinks />

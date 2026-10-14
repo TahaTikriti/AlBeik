@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 import type { SiteVM } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
-import { Mustache } from '@/theme/motifs'
+import { Mark, Wordmark } from '@/theme/motifs'
 
 import { ui } from '../ui/classes'
 
@@ -10,28 +10,31 @@ export function Footer({ site }: { site: SiteVM }) {
   const location = site.locations[0]
   return (
     <footer className="grain relative overflow-hidden border-t-4 border-red bg-black">
-      <div className={`${ui.container} grid gap-10 pt-16 pb-6`}>
-        <div className="grid gap-4 sm:grid-cols-3">
-          <div className="grid content-start gap-3">
-            <Mustache className="h-6 w-auto self-start text-red" />
-            <p className="max-w-[16rem] font-display text-2xl leading-none uppercase">
+      <div className={`${ui.container} grid gap-12 pt-14 pb-8 md:gap-16 md:pt-20`}>
+        <div className="grid gap-8 md:grid-cols-[1.5fr_1fr_1fr] md:gap-12">
+          <div className="flex items-end gap-5">
+            <Mark sizes="4.5rem" className="h-24 w-auto shrink-0 md:h-28" />
+            <p className="max-w-[15rem] font-display text-2xl leading-[0.95] uppercase">
               {copy.footer.tagline}
             </p>
           </div>
-          <nav aria-label="Footer" className="grid content-start gap-1">
-            {[
-              { href: '/menu', label: copy.nav.menu },
-              { href: '/about', label: copy.nav.about },
-              { href: '/location', label: copy.nav.location },
-            ].map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="label inline-flex min-h-tap items-center hover:text-red-text"
-              >
-                {link.label}
-              </Link>
-            ))}
+          <nav aria-label="Footer">
+            <ul className="flex flex-wrap gap-x-6 md:grid md:gap-x-0">
+              {[
+                { href: '/menu', label: copy.nav.menu },
+                { href: '/about', label: copy.nav.about },
+                { href: '/location', label: copy.nav.location },
+              ].map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="label inline-flex min-h-tap items-center hover:text-red-text"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </nav>
           <div className="grid content-start gap-2 text-small text-ink-muted">
             <p className="label text-white">{copy.footer.halal}</p>
@@ -49,13 +52,8 @@ export function Footer({ site }: { site: SiteVM }) {
             ))}
           </div>
         </div>
+        <Wordmark className="w-full text-red" />
       </div>
-      <p
-        aria-hidden
-        className="pointer-events-none -mb-[0.18em] text-center font-display text-[31vw] leading-[0.78] tracking-[-0.01em] text-red uppercase select-none md:text-[24vw]"
-      >
-        {site.name}
-      </p>
     </footer>
   )
 }

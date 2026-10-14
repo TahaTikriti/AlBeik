@@ -4,7 +4,7 @@ import { RichText } from '@/components/ui/RichText'
 import { ui } from '@/components/ui/classes'
 import type { AboutPageData } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
-import { Divider, Mustache, Smoke } from '@/theme/motifs'
+import { Divider, Mustache, Smoke, StackedLogo } from '@/theme/motifs'
 
 export function AboutView({ headline, body, images }: AboutPageData) {
   const [lead, ...more] = images
@@ -40,8 +40,10 @@ export function AboutView({ headline, body, images }: AboutPageData) {
         <div className={`${ui.container} py-section`}>
           <RichText
             data={body}
-            className="mx-auto grid max-w-[40rem] gap-6 text-xl leading-relaxed [&_h2]:pt-8 [&_h2]:text-display-2 [&_h2]:text-red [&_h3]:text-display-3 [&_ol]:list-decimal [&_ol]:ps-6 [&_p:first-child]:text-[1.45rem] [&_p:first-child]:leading-snug [&_p:first-child]:font-medium [&_p:first-child]:text-white [&_ul]:list-disc [&_ul]:ps-6"
+            className="mx-auto grid max-w-[40rem] gap-6 text-xl leading-relaxed [&_h2]:pt-8 [&_h2]:text-display-2 [&_h2]:text-red-text [&_h3]:text-display-3 [&_ol]:list-decimal [&_ol]:ps-6 [&_p:first-child]:text-[1.45rem] [&_p:first-child]:leading-snug [&_p:first-child]:font-medium [&_p:first-child]:text-white [&_ul]:list-disc [&_ul]:ps-6"
           />
+          {/* The logo signs off the story. */}
+          <StackedLogo alt="" className="reveal mx-auto mt-16 w-24 md:w-28" />
         </div>
       ) : null}
 
