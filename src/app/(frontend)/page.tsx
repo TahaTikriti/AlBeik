@@ -12,8 +12,8 @@ export async function generateMetadata(): Promise<Metadata> {
       ? `${site.name} · ${home.hero.headline.text}`
       : site.name,
     description: home.hero.subline,
+    // No page image: a shared home link shows the brand card, not a dish.
     path: '/',
-    image: home.hero.media?.kind === 'image' ? home.hero.media : null,
   })
 }
 
