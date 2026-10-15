@@ -9,7 +9,7 @@
   }
 
   body {
-    /* Decorative smoke and stickers bleed past edges; never let them scroll the page. */
+    /* Decorative smoke bleeds past edges; never let it scroll the page. */
     overflow-x: clip;
   }
 
@@ -26,7 +26,7 @@
   /* The "one word in red" from the Instagram posts. */
   em {
     font-style: normal;
-    color: var(--color-accent);
+    color: var(--color-emphasis);
   }
 
   ::selection {
@@ -85,6 +85,38 @@
     text-transform: uppercase;
   }
 
+  /* The ALBEIK wordmark from the logo, used as a mask so it takes the text color. */
+  .wordmark {
+    display: block;
+    aspect-ratio: 817 / 152;
+    background-color: currentColor;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+
+  /* The hero dish fades into whatever is behind it (smoke included), so there's no seam:
+     top and bottom on phones, left and bottom beside the copy. */
+  .fade-photo {
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 45%, #000 78%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, #000 45%, #000 78%, transparent);
+  }
+  @media (width >= 64rem) {
+    .fade-photo {
+      -webkit-mask-image:
+        linear-gradient(to right, transparent, #000 45%),
+        linear-gradient(to bottom, #000 72%, transparent);
+      mask-image:
+        linear-gradient(to right, transparent, #000 45%),
+        linear-gradient(to bottom, #000 72%, transparent);
+      -webkit-mask-composite: source-in;
+      mask-composite: intersect;
+    }
+  }
+
   .outline-text {
     color: transparent;
     -webkit-text-stroke: 2px var(--color-ink);
@@ -128,23 +160,6 @@
     background: rgb(0 0 0 / 0.55);
   }
 
-  .sticker {
-    display: grid;
-    place-items: center;
-    align-content: center;
-    width: 6.5em;
-    aspect-ratio: 1;
-    border-radius: 9999px;
-    background: var(--p-red);
-    color: var(--p-white);
-    text-align: center;
-    box-shadow:
-      inset 0 0 0 0.35em var(--p-red),
-      inset 0 0 0 0.45em rgb(255 255 255 / 0.85),
-      0 12px 30px rgb(0 0 0 / 0.5);
-    rotate: -12deg;
-  }
-
   /* Film grain over dark sections. */
   .grain {
     position: relative;
@@ -169,7 +184,7 @@
     background:
       radial-gradient(38% 28% at 28% 62%, rgb(255 255 255 / 0.11), transparent 70%),
       radial-gradient(30% 24% at 72% 38%, rgb(255 255 255 / 0.08), transparent 70%),
-      radial-gradient(34% 30% at 55% 85%, rgb(225 37 27 / 0.22), transparent 70%);
+      radial-gradient(34% 30% at 55% 85%, rgb(216 38 47 / 0.22), transparent 70%);
     filter: blur(28px);
     will-change: transform;
   }
@@ -212,6 +227,19 @@
   .sheet[open] {
     translate: 0 0;
   }
+  /* Follows the finger while it's dragged down (see OrderSheet). */
+  .sheet[data-dragging] {
+    transition: none;
+  }
+  .sheet li {
+    transition:
+      opacity var(--duration-base) var(--ease-out),
+      translate var(--duration-slow) var(--ease-out);
+  }
+  .sheet :focus-visible {
+    outline: 3px solid var(--p-red-text);
+    outline-offset: 3px;
+  }
   .sheet::backdrop {
     background-color: rgb(0 0 0 / 0);
     transition:
@@ -225,6 +253,10 @@
   @starting-style {
     .sheet[open] {
       translate: 0 100%;
+    }
+    .sheet[open] li {
+      opacity: 0;
+      translate: 0 1.25rem;
     }
     .sheet[open]::backdrop {
       background-color: rgb(0 0 0 / 0);
@@ -249,19 +281,23 @@
   .marquee-track {
     animation: marquee 32s linear infinite;
   }
-  .fez-bob {
-    animation: fez-bob 3.2s ease-in-out infinite;
+  .sheet li:nth-child(2) {
+    transition-delay: 70ms;
   }
-  .loader-fez {
-    animation: fez-bob 1.2s ease-in-out infinite;
+  .sheet li:nth-child(3) {
+    transition-delay: 140ms;
+  }
+  .fez-tip {
+    animation: fez-tip 900ms var(--ease-snap) 200ms both;
   }
 
-  @supports (animation-timeline: view()) {
-    .reveal {
-      animation: reveal linear both;
-      animation-timeline: view();
-      animation-range: entry 0% cover 28%;
-    }
+  /* The home page's one orchestrated moment: the dish settles in (scale only, so
+     it never delays the largest paint) and the handwritten line follows. */
+  .hero-settle {
+    animation: hero-settle 1.4s var(--ease-out) both;
+  }
+  .hero-follow {
+    animation: hero-follow 700ms var(--ease-out) 500ms both;
   }
 }
 
@@ -294,23 +330,27 @@
   }
 }
 
-@keyframes fez-bob {
-  0%,
-  100% {
-    translate: 0 0;
-  }
-  50% {
-    translate: 0 -8%;
+@keyframes fez-tip {
+  from {
+    translate: 0 -12%;
+    rotate: -18deg;
   }
 }
 
-@keyframes reveal {
+@keyframes hero-settle {
+  from {
+    scale: 1.06;
+  }
+}
+
+@keyframes hero-follow {
   from {
     opacity: 0;
-    transform: translateY(48px);
+    translate: 0 0.75rem;
   }
-  to {
-    opacity: 1;
-    transform: none;
-  }
+}
+
+/* An item page swaps the site-wide order bar for one that orders that dish. */
+body:has([data-order-bar='item']) [data-order-bar='site'] {
+  display: none;
 }

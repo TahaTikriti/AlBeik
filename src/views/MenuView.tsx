@@ -3,32 +3,22 @@ import { MenuSection } from '@/components/menu/MenuSection'
 import { ui } from '@/components/ui/classes'
 import type { MenuPageData } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
-import { Mustache, Smoke } from '@/theme/motifs'
 
 export function MenuView({ categories }: MenuPageData) {
   return (
     <>
-      <div className="grain relative overflow-hidden">
-        <Smoke className="opacity-80" />
-        <div className={`${ui.container} grid gap-4 pt-12 pb-10 md:pt-20`}>
-          <Mustache className="h-6 w-auto self-start text-red" />
-          <h1 className="text-mega">
-            The <em>menu</em>
-          </h1>
-          <p className="label text-ink-muted">{copy.menu.kicker}</p>
-        </div>
+      {/* Kept short: regulars come here to order, so the dishes start high on the page. */}
+      <div className="grain relative">
+        <h1 className={`${ui.container} text-display-1 pt-8 pb-6 md:pt-14 md:pb-8`}>
+          The <em>menu</em>
+        </h1>
       </div>
       {categories.length ? (
         <>
           <CategoryNav categories={categories.map(({ slug, name }) => ({ slug, name }))} />
-          <div className={`${ui.container} grid gap-24 py-section`}>
+          <div className={`${ui.container} grid gap-16 pt-8 pb-section md:gap-24 md:pt-12`}>
             {categories.map((category, i) => (
-              <MenuSection
-                key={category.id}
-                category={category}
-                number={i + 1}
-                preloadFirst={i === 0}
-              />
+              <MenuSection key={category.id} category={category} preloadFirst={i === 0} />
             ))}
           </div>
         </>

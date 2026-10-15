@@ -1,79 +1,90 @@
 import Image from 'next/image'
 
-import type { ImageVM } from '@/lib/data/types'
+import { copy } from './copy'
+
+import stacked from './brand/albeik-logo-stacked-white.png'
+import mark from './brand/albeik-mark.png'
+import wordmark from './brand/albeik-wordmark.png'
 
 /**
- * poc/street brand motifs, from AlBeik's Instagram rebrand: the white
- * mustache, the red fez (tarboush), flip-clock numerals, smoke and steam.
- * All inline SVG/CSS: no image requests.
+ * poc/street brand motifs: AlBeik's logo (reversed for the dark theme), the
+ * mustache traced from it, flip-clock numerals, smoke and steam.
+ *
+ * The logo files in ./brand are derived from the client's
+ * public/brand/albeik-logo-stacked.png: dark ink turned white, the fez kept
+ * red. Replace them with the client's own reversed/vector files when they
+ * arrive.
  */
 
 type SvgProps = { className?: string }
 
-/** The AlBeik mustache. Inherits the text color. */
+/** The mustache from the AlBeik logo. Inherits the text color. */
 export function Mustache({ className }: SvgProps) {
   return (
-    <svg viewBox="0 0 200 50" className={className} aria-hidden fill="currentColor">
-      <path d="M100 18C108 8 122 6 134 12C146 18 158 24 170 20C180 17 186 10 184 2C194 12 192 28 178 36C160 46 134 46 118 38C110 34 104 32 100 34C96 32 90 34 82 38C66 46 40 46 22 36C8 28 6 12 16 2C14 10 20 17 30 20C42 24 54 18 66 12C78 6 92 8 100 18Z" />
+    <svg viewBox="0 0 767 143" className={className} aria-hidden fill="currentColor">
+      <path d="M0.5 52.7L2.5 51L18.5 65.6L27.5 72.6L39.5 79.9L50.5 84.7L60.5 87.8L72.5 90L93.5 90L100.5 88.9L120.5 83.6L146.5 71.9L175.5 55.6L231.5 21L253.5 10L270.5 4L291.5 0L305.5 0L319.5 2L332.5 6L344.5 12L350.5 16L363.5 28.9L369.5 38.9L372.5 49.7L372.5 61.3L371.5 66.2L368.5 74.1L363.5 82.1L349.5 95L340.5 101L326.5 108L308.5 115L289.5 121L239.5 134L197.5 141L168.5 142.3L166.5 143L138.5 142L105.5 137L79.5 129L58.5 119L38.5 105L20.5 87L9.5 72.1L0.5 55.1ZM394.5 46.7L398.5 35.9L404.5 27L411.5 20L422.5 12L434.5 6L451.5 1L458.5 0L478.5 0L490.5 2L506.5 7L538.5 24L615.5 70.9L640.5 81.8L660.5 87L676.5 89L692.5 89L711.5 85.6L726.5 79.9L737.5 73.7L749.5 64.6L762.5 53L765.5 54.9L765.5 57.4L755.5 74.1L742.5 91L725.5 107L706.5 120L685.5 130L663.5 137L641.5 141L618.5 143L578.5 142L535.5 136L493.5 126L449.5 112L427.5 102L411.5 91L404.5 84L399.5 77L394.5 63.4Z" />
     </svg>
   )
 }
 
-/** The red fez (tarboush) with its black tassel. */
-export function Fez({ className }: SvgProps) {
+/** The logo's fez-and-face mark. Decorative: pair it with text or a label. */
+export function Mark({
+  className,
+  sizes,
+  eager = false,
+}: {
+  className?: string
+  /** How wide it renders, e.g. "2rem". */
+  sizes: string
+  eager?: boolean
+}) {
   return (
-    <svg viewBox="0 0 120 120" className={className} aria-hidden>
-      <path d="M22 104L34 34C34 27 86 27 86 34L98 104C98 115 22 115 22 104Z" fill="#e1251b" />
-      <path d="M70 29C80 30 86 32 86 34L98 104C98 110 89 113 76 114Z" fill="#a8130b" opacity=".7" />
-      <path
-        d="M40 40C41 64 38 86 33 100"
-        stroke="#fff"
-        strokeOpacity=".18"
-        strokeWidth="5"
-        fill="none"
-        strokeLinecap="round"
-      />
-      <path d="M23 98C40 106 80 106 97 98L98 104C98 115 22 115 22 104Z" fill="#000" opacity=".18" />
-      <ellipse cx="60" cy="33" rx="26" ry="6" fill="#c11a11" />
-      <path
-        d="M60 32C74 28 88 32 91 46"
-        stroke="#111"
-        strokeWidth="2.5"
-        fill="none"
-        strokeLinecap="round"
-      />
-      <circle cx="60" cy="32" r="3.5" fill="#111" />
-      <path
-        d="M90 45C94 45 96 49 96 53L99 80C96 84 89 84 86 80L88 53C88 49 87 46 90 45Z"
-        fill="#111"
-      />
-      <path d="M89 56L88 80M92.5 56L93 82M96 56L97.5 80" stroke="#3a3a3a" strokeWidth="1" />
-    </svg>
+    <Image
+      src={mark}
+      alt=""
+      sizes={sizes}
+      loading={eager ? 'eager' : undefined}
+      className={className}
+    />
   )
 }
 
-export function Logo({ name, image }: { name: string; image: ImageVM | null }) {
-  if (image) {
-    return (
-      <Image
-        src={image.url}
-        alt={name}
-        width={image.width}
-        height={image.height}
-        sizes="160px"
-        className="h-9 w-auto"
-        preload
-      />
-    )
-  }
+/** The ALBEIK wordmark. Takes the text color; size it by width or height. */
+export function Wordmark({ className = '' }: SvgProps) {
+  const url = `url(${wordmark.src})`
   return (
-    <span className="flex items-center gap-2">
-      <Mustache className="h-[0.9rem] w-auto text-white" />
-      <span className="font-display text-[1.65rem] leading-none tracking-[0.02em] uppercase">
-        {name}
-      </span>
+    <span
+      aria-hidden
+      className={`wordmark ${className}`}
+      style={{ maskImage: url, WebkitMaskImage: url }}
+    />
+  )
+}
+
+/**
+ * Header lockup: mark + wordmark, after the client's horizontal logo. The
+ * wordmark is set larger than in that file so it stays legible at header
+ * size. Always the theme's reversed logo: the client's dark-ink originals
+ * (including one uploaded to Site settings) would vanish on black.
+ */
+export function Logo() {
+  return (
+    <span className="flex items-center gap-2.5">
+      {/* The Beik nods when you point at him: the one bit of character in the chrome. */}
+      <Mark
+        sizes="1.75rem"
+        eager
+        className="h-11 w-auto origin-[50%_85%] transition-transform duration-(--duration-base) ease-snap group-hover:-rotate-8 group-focus-visible:-rotate-8"
+      />
+      {/* Below 360px (small phones) the mark alone keeps the nav from overflowing. */}
+      <Wordmark className="h-[1.05rem] w-[5.65rem] max-[359px]:hidden" />
     </span>
   )
+}
+
+/** The full stacked logo: mark, wordmark and "Lebanese Restaurant". Pass alt="" where it's decorative. */
+export function StackedLogo({ alt, className }: { alt: string; className?: string }) {
+  return <Image src={stacked} alt={alt} sizes="10rem" className={className} />
 }
 
 /** Hairline, mustache, hairline. */
@@ -100,13 +111,26 @@ export function FlipDigits({ value, className = '' }: { value: string; className
   )
 }
 
-/** Round "100% HALAL" sticker. */
-export function HalalSticker({ className = '' }: SvgProps) {
+/**
+ * The handwritten line from the posts ("Juicier. Meatier. Tastier.") under
+ * the mustache, set on the hero dish. Size it with font-size on className.
+ */
+export function HeroScript({ className = '' }: SvgProps) {
   return (
-    <span className={`sticker ${className}`} aria-hidden>
-      <span className="font-display text-[1.9em] leading-[0.8]">100%</span>
-      <span className="font-display text-[1.25em] leading-[0.9] tracking-[0.06em]">HALAL</span>
-    </span>
+    <p className={`isolate grid justify-items-center text-center ${className}`}>
+      {/* A soft shadow pool keeps it readable over busy food. */}
+      <span
+        aria-hidden
+        className="absolute inset-x-[12%] -inset-y-[35%] -z-10 rounded-full bg-[radial-gradient(closest-side,rgb(0_0_0/0.6),transparent)]"
+      />
+      {/* Inner wrapper animates, so it never fights the positioning on className. */}
+      <span className="hero-follow grid justify-items-center">
+        <Mustache className="mb-[0.3em] w-[4.5em] text-white drop-shadow-lg" />
+        <span className="-rotate-3 font-script text-[2.75em] leading-none text-white [text-shadow:0_0.04em_0.2em_rgb(0_0_0/0.7)]">
+          {copy.home.heroScript}
+        </span>
+      </span>
+    </p>
   )
 }
 
@@ -126,15 +150,12 @@ export function Steam({ className = '' }: SvgProps) {
   )
 }
 
-export function Loader() {
-  return <Fez className="loader-fez h-16 w-auto" />
-}
-
-export function NotFoundArt() {
+/** The fez moment: the logo's mark in a cloud of smoke, tipping its fez once on arrival. */
+export function FezMoment({ className = '' }: SvgProps) {
   return (
-    <div className="relative mx-auto w-48">
+    <div className={`relative ${className}`}>
       <Smoke className="opacity-80" />
-      <Fez className="fez-bob relative w-full -rotate-12" />
+      <Mark sizes="(min-width: 768px) 9rem, 7rem" className="fez-tip relative w-full -rotate-6" />
     </div>
   )
 }

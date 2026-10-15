@@ -4,7 +4,7 @@ import { Emphasis } from '@/components/ui/Emphasis'
 import { ui } from '@/components/ui/classes'
 import type { LocationPageData } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
-import { Fez, Smoke } from '@/theme/motifs'
+import { FezMoment, Smoke } from '@/theme/motifs'
 
 export function LocationView({ locations }: LocationPageData) {
   return (
@@ -15,7 +15,7 @@ export function LocationView({ locations }: LocationPageData) {
           <h1 className="text-mega">
             <Emphasis text={copy.location.heading} />
           </h1>
-          <Fez className="fez-bob w-24 shrink-0 -rotate-12 md:w-36" />
+          <FezMoment className="w-20 shrink-0 md:w-32" />
         </div>
 
         {locations.map((location) => {

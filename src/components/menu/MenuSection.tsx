@@ -1,33 +1,29 @@
 import type { CategoryVM } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
-import { FlipDigits } from '@/theme/motifs'
 
 import { MenuItemCard } from './MenuItemCard'
 
 export function MenuSection({
   category,
-  number,
   preloadFirst = false,
 }: {
   category: CategoryVM
-  number: number
   preloadFirst?: boolean
 }) {
   const headingId = `${category.slug}-heading`
   return (
     <section id={category.slug} data-anchor aria-labelledby={headingId} className="grid gap-8">
-      <header className="flex items-end gap-4 border-b-2 border-red pb-3">
-        <FlipDigits value={String(number).padStart(2, '0')} className="text-[2.6rem]" />
-        <h2 id={headingId} className="text-display-2">
+      {/* Wraps the count under a long name rather than pushing past the screen. */}
+      <header className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b-2 border-red pb-3">
+        <h2 id={headingId} className="min-w-0 text-display-2 wrap-break-word">
           {category.name}
         </h2>
-        <span className="label ms-auto pb-2 text-ink-muted">
-          {copy.menu.count(category.items.length)}
-        </span>
+        <span className="label text-ink-muted">{copy.menu.count(category.items.length)}</span>
       </header>
-      <ul className="grid gap-4 sm:mt-10 sm:grid-cols-2 sm:gap-x-5 sm:gap-y-20 lg:grid-cols-3">
+      {/* Equal rows: every card in the list is the same size. */}
+      <ul className="grid auto-rows-fr gap-3 sm:mt-12 sm:grid-cols-2 sm:gap-x-5 sm:gap-y-20 lg:grid-cols-3">
         {category.items.map((item, i) => (
-          <li key={item.id}>
+          <li key={item.id} className="min-w-0">
             <MenuItemCard item={item} placement="menu" preloadImage={preloadFirst && i === 0} />
           </li>
         ))}

@@ -7,6 +7,6 @@ export const theme = {
   og: {
     background: '#0a0a0a',
     foreground: '#ffffff',
-    accent: '#e1251b',
+    accent: '#d8262f',
   },
 } as const

@@ -15,14 +15,15 @@
   --p-ash: #aaa198;
   --p-cream: #f4ede3;
   --p-white: #ffffff;
-  --p-red: #e1251b;
-  --p-red-deep: #c11a11;
-  --p-ember: #ff5a36;
-  /* Brighter red for small text on black: 5.9:1 (brand red is 4.2:1, large text only). */
-  --p-red-text: #ff4a3d;
+  /* Both reds come from the logo's fez. */
+  --p-red: #d8262f; /* fez body: fields and buttons (white text on it: 6.7:1) */
+  --p-red-deep: #b51d26;
+  /* Fez top: red text on black (5:1, fine for small text). */
+  --p-red-text: #f4313f;
 
   --p-font-display-fallback: Impact, 'Arial Narrow Bold', 'Helvetica Neue Condensed', sans-serif;
   --p-font-body-fallback: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --p-font-script-fallback: 'Bradley Hand', 'Segoe Print', cursive;
 }
 
 /* ── 2. Semantic tokens (Tailwind theme) ──────────────────────────────── */
@@ -40,6 +41,8 @@
   --color-ink-inverse: var(--p-white);
   --color-accent: var(--p-red);
   --color-accent-ink: var(--p-white);
+  /* The "one word in red" in headlines. */
+  --color-emphasis: var(--p-red-text);
   --color-line: var(--p-char);
   --color-focus: var(--p-white);
   --color-scrim: rgb(0 0 0 / 0.72);
@@ -56,16 +59,19 @@
   /* Type families */
   --font-display: var(--p-font-display), var(--p-font-display-fallback);
   --font-body: var(--p-font-body), var(--p-font-body-fallback);
+  --font-script: var(--p-font-script), var(--p-font-script-fallback);
 
-  /* Type scale, phone first. Display is set in caps with tight leading. */
+  /* Type scale, phone first. Display is set in caps with tight leading.
+     Anton's capitals are 0.86em tall, so line-height minus 0.86 is the gap
+     between stacked lines: about 0.06-0.14em keeps them tight but clear. */
   --text-mega: clamp(5rem, 2.5rem + 13vw, 13rem);
-  --text-mega--line-height: 0.82;
+  --text-mega--line-height: 0.92;
   --text-display-1: clamp(3.4rem, 2.4rem + 5.5vw, 7.5rem);
-  --text-display-1--line-height: 0.86;
+  --text-display-1--line-height: 0.96;
   --text-display-2: clamp(2.4rem, 1.8rem + 3.2vw, 4.75rem);
-  --text-display-2--line-height: 0.9;
+  --text-display-2--line-height: 0.98;
   --text-display-3: clamp(1.5rem, 1.3rem + 1vw, 2.1rem);
-  --text-display-3--line-height: 0.95;
+  --text-display-3--line-height: 1;
   --text-body: 1.0625rem;
   --text-body--line-height: 1.55;
   --text-small: 0.9375rem;
@@ -96,7 +102,7 @@
   /* Elevation */
   --shadow-raised: 0 18px 40px -12px rgb(0 0 0 / 0.65);
   --shadow-sheet: 0 -24px 60px rgb(0 0 0 / 0.6);
-  --shadow-ember: 0 14px 40px -10px rgb(225 37 27 / 0.55);
+  --shadow-ember: 0 14px 40px -10px rgb(216 38 47 / 0.55);
 
   /* Space */
   --spacing-gutter: 1.25rem;
@@ -135,6 +141,7 @@
   --color-ink-muted: var(--p-white);
   --color-accent: var(--p-black);
   --color-accent-ink: var(--p-white);
+  --color-emphasis: var(--p-black);
   --color-line: rgb(0 0 0 / 0.22);
   --color-focus: var(--p-white);
 }
@@ -147,6 +154,7 @@
   --color-ink-muted: #5e554d;
   --color-accent: var(--p-red-deep);
   --color-accent-ink: var(--p-white);
+  --color-emphasis: var(--p-red-deep);
   --color-line: rgb(10 10 10 / 0.14);
   --color-focus: var(--p-black);
 }

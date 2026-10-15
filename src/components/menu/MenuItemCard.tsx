@@ -1,7 +1,7 @@
 import Link from 'next/link'
 
 import type { Placement } from '@/lib/analytics'
-import type { MenuItemVM } from '@/lib/data/types'
+import type { MenuItemVM, MenuTag } from '@/lib/data/types'
 import { formatPrice } from '@/lib/text'
 import { copy } from '@/theme/copy'
 
@@ -16,65 +16,75 @@ type Props = {
   preloadImage?: boolean
 }
 
-/** A menu row: round "plate" photo that hangs off the card, big condensed name, order button. */
+/** One tag rides on the photo as a sticker; the item page lists them all. */
+const BADGE_ORDER: MenuTag[] = ['signature', 'popular', 'new', 'spicy', 'vegetarian']
+
+/**
+ * A menu card: round "plate" photo in a red glow, big condensed name,
+ * order button. Name and description are clamped to two lines and the
+ * button row is pinned to the bottom, so every card in a list is the same
+ * size (the list sets equal rows). The whole card opens the dish; the
+ * order button sits above that link.
+ */
 export function MenuItemCard({
   item,
   placement,
   headingLevel: Heading = 'h3',
   preloadImage = false,
 }: Props) {
+  const badge = BADGE_ORDER.find((tag) => item.tags.includes(tag))
   return (
-    <article className="group relative grid h-full grid-cols-[6.5rem_1fr] gap-x-4 gap-y-3 rounded-card bg-coal p-4 ps-3 sm:grid-cols-1 sm:pt-0 sm:text-center">
-      <Link
-        href={item.href}
-        tabIndex={-1}
-        aria-hidden
-        className="relative -my-1 sm:mx-auto sm:-mt-14 sm:w-44"
-      >
+    <article className="group relative grid h-full grid-cols-[clamp(5.25rem,25vw,6.75rem)_1fr] items-center gap-x-3.5 rounded-card bg-coal p-3 pe-4 transition-[background-color,scale] duration-(--duration-fast) hover:bg-char active:scale-[0.985] sm:grid-cols-1 sm:grid-rows-[auto_1fr_auto] sm:items-stretch sm:gap-y-4 sm:px-5 sm:pt-0 sm:pb-5 sm:text-center">
+      <div className="relative sm:mx-auto sm:-mt-14 sm:w-44">
+        <span
+          aria-hidden
+          className="absolute -inset-3 rounded-full bg-[radial-gradient(closest-side,rgb(216_38_47/0.5),transparent)] opacity-60 blur-md transition-opacity duration-(--duration-slow) group-hover:opacity-100"
+        />
         {item.image ? (
           <Img
             image={item.image}
-            sizes="(min-width: 640px) 11rem, 6.5rem"
+            sizes="(min-width: 640px) 11rem, 25vw"
             preload={preloadImage}
-            className="plate w-full transition-transform duration-(--duration-slow) ease-out group-hover:scale-105 group-hover:-rotate-3"
+            className="plate relative w-full transition-transform duration-(--duration-slow) ease-out group-hover:scale-105 group-hover:-rotate-3"
           />
         ) : (
-          <span className="plate grid w-full place-items-center bg-char font-display text-4xl">
+          <span className="plate relative grid w-full place-items-center bg-char font-display text-4xl">
             {item.name.charAt(0)}
           </span>
         )}
-      </Link>
-      <div className="grid content-start gap-1.5">
-        {item.tags.length ? (
-          <ul className="flex flex-wrap gap-1.5 sm:justify-center">
-            {item.tags.map((tag) => (
-              <li key={tag} className="label text-[0.65rem] text-red-text">
-                ★ {copy.item.tags[tag]}
-              </li>
-            ))}
-          </ul>
-        ) : null}
-        <Heading className="text-[1.75rem] leading-[0.95]">
-          <Link href={item.href} className="inline-block py-1 hover:text-red">
-            {item.name}
-          </Link>
-        </Heading>
-        {item.description ? (
-          <p className="line-clamp-3 text-small text-ink-muted sm:line-clamp-2">
-            {item.description}
-          </p>
+        {badge ? (
+          <span className="label absolute -bottom-1.5 left-1/2 -translate-x-1/2 -rotate-6 rounded-full bg-white px-2 py-1 text-[0.6rem] whitespace-nowrap text-black shadow-raised">
+            ★ {copy.item.tags[badge]}
+          </span>
         ) : null}
       </div>
-      <div className="col-span-2 flex items-center justify-end gap-3 sm:col-span-1 sm:justify-center">
-        {item.price !== null ? (
-          <span className="me-auto font-display text-2xl sm:me-0">{formatPrice(item.price)}</span>
-        ) : null}
-        <OrderButton
-          links={item.orderLinks}
-          item={item}
-          placement={placement}
-          className="btn btn-red min-h-11 px-6 text-[1.15rem] shadow-none"
-        />
+      {/* Phones: text on top, button pinned below. From sm up the card's own rows take over. */}
+      <div className="grid h-full grid-rows-[1fr_auto] gap-3 py-1 sm:contents">
+        <div className="grid content-start gap-1 sm:pt-1">
+          {/* Never clamped: a menu must show the whole name. Scales down on narrow phones. */}
+          <Heading className="text-[clamp(1.3rem,0.55rem+3.8vw,1.6rem)] leading-none sm:text-[1.75rem]">
+            <Link
+              href={item.href}
+              className="after:absolute after:inset-0 after:rounded-card group-hover:text-red-text"
+            >
+              {item.name}
+            </Link>
+          </Heading>
+          {item.description ? (
+            <p className="line-clamp-2 text-small text-ink-muted">{item.description}</p>
+          ) : null}
+        </div>
+        <div className="flex items-center justify-end gap-3 sm:justify-center">
+          {item.price !== null ? (
+            <span className="me-auto font-display text-2xl sm:me-0">{formatPrice(item.price)}</span>
+          ) : null}
+          <OrderButton
+            links={item.orderLinks}
+            item={item}
+            placement={placement}
+            className="btn btn-red relative z-10 min-h-11 px-6 text-[1.15rem] shadow-none"
+          />
+        </div>
       </div>
     </article>
   )

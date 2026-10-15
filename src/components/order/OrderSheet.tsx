@@ -1,6 +1,6 @@
 'use client'
 
-import { useId, type Ref } from 'react'
+import { useId, useRef, type PointerEvent, type Ref } from 'react'
 
 import type { OrderLink } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
@@ -13,13 +13,39 @@ type Props = {
   onChoose: (link: OrderLink) => void
 }
 
+/** How far the sheet must be dragged down before letting go closes it. */
+const DISMISS_PX = 80
+
 /**
  * The "which app?" sheet: a native modal <dialog> that slides up from the
- * bottom. Focus is trapped, Esc and a tap on the backdrop close it. Links
- * open in the same tab so the platform's app can take over.
+ * bottom. Focus is trapped; Esc, a tap on the backdrop, or dragging the red
+ * band down closes it. Links open in the same tab so the platform's app can
+ * take over.
  */
 export function OrderSheet({ ref, links, item, onChoose }: Props) {
   const titleId = useId()
+  const drag = useRef<{ startY: number; dy: number } | null>(null)
+
+  const onDragStart = (event: PointerEvent<HTMLDivElement>) => {
+    drag.current = { startY: event.clientY, dy: 0 }
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+  const onDragMove = (event: PointerEvent<HTMLDivElement>) => {
+    const sheet = event.currentTarget.closest('dialog')
+    if (!drag.current || !sheet) return
+    drag.current.dy = Math.max(0, event.clientY - drag.current.startY)
+    sheet.dataset.dragging = ''
+    sheet.style.translate = `0 ${drag.current.dy}px`
+  }
+  const onDragEnd = (event: PointerEvent<HTMLDivElement>) => {
+    const sheet = event.currentTarget.closest('dialog')
+    const dy = drag.current?.dy ?? 0
+    drag.current = null
+    if (!sheet) return
+    delete sheet.dataset.dragging
+    sheet.style.translate = ''
+    if (dy > DISMISS_PX) sheet.close()
+  }
 
   return (
     <dialog
@@ -31,9 +57,18 @@ export function OrderSheet({ ref, links, item, onChoose }: Props) {
       }}
     >
       <div className="grain relative">
-        <div className="flex items-center justify-between bg-red px-gutter py-3">
+        <div
+          className="relative flex touch-none items-center justify-center bg-red px-gutter pt-5 pb-3 select-none md:pt-3"
+          onPointerDown={onDragStart}
+          onPointerMove={onDragMove}
+          onPointerUp={onDragEnd}
+          onPointerCancel={onDragEnd}
+        >
+          <span
+            aria-hidden
+            className="absolute top-2 left-1/2 h-1 w-10 -translate-x-1/2 rounded-full bg-white/60 md:hidden"
+          />
           <Mustache className="h-4 w-auto text-white" />
-          <span className="label text-white">100% halal</span>
         </div>
         <div className="grid gap-5 px-gutter pt-6 pb-[calc(1.5rem+var(--safe-bottom))]">
           <div className="grid gap-2">
