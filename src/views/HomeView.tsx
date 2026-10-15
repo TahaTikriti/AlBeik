@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { ViewTransition } from 'react'
 
 import { OrderButton } from '@/components/order/OrderButton'
 import { Countdown } from '@/components/ui/Countdown'
@@ -6,10 +7,11 @@ import { Emphasis } from '@/components/ui/Emphasis'
 import { Img } from '@/components/ui/Img'
 import { Marquee } from '@/components/ui/Marquee'
 import { Media } from '@/components/ui/Media'
+import { PunchLine } from '@/components/ui/PunchLine'
 import { ui } from '@/components/ui/classes'
 import type { HomePageData, MenuItemVM, RichLine, SiteVM } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
-import { Smoke, Steam } from '@/theme/motifs'
+import { Embers, Smoke } from '@/theme/motifs'
 
 type Props = HomePageData & { site: SiteVM }
 
@@ -64,7 +66,9 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
       ) : null}
 
       {/* HERO: the brand's reels on a page. Copy and the order button come first;
-          the dish rises out of the dark below (beside it from lg). */}
+          the dish rises out of the dark below (beside it from lg). The page's one
+          orchestrated moment: the words punch in, LEBANESE stamps down, the grill
+          throws embers. The order buttons never wait for it. */}
       <section className="grain relative overflow-hidden">
         <Smoke />
         <div
@@ -72,12 +76,12 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
         >
           <div className="grid gap-3">
             <p className="label text-red-text">{copy.home.heroKicker}</p>
-            <h1>
+            <h1 className="hero-shout">
               <span className="text-display-1 block">
-                <Emphasis line={shout} />
+                <PunchLine line={shout} />
               </span>
               {followUp ? (
-                <span className="mt-[0.35em] block font-display text-[clamp(1.6rem,1.2rem+2vw,2.6rem)] leading-none">
+                <span className="swipe-in mt-[0.35em] block font-display text-[clamp(1.6rem,1.2rem+2vw,2.6rem)] leading-none">
                   <Emphasis line={followUp} />
                 </span>
               ) : null}
@@ -111,7 +115,7 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
               preload
               className="fade-photo hero-settle aspect-square w-full object-cover sm:aspect-[16/10] lg:aspect-auto lg:h-full"
             />
-            <Steam />
+            <Embers />
           </figure>
         ) : null}
       </section>
@@ -126,7 +130,7 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
         >
           <h2
             id="featured-heading"
-            className="text-display-1 lg:self-end lg:text-[clamp(3.25rem,1rem+3.6vw,4.75rem)]"
+            className="kinetic text-display-1 lg:self-end lg:text-[clamp(3.25rem,1rem+3.6vw,4.75rem)]"
           >
             <Emphasis text={copy.home.featuredTitle} />
           </h2>
@@ -148,7 +152,7 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
 
       {/* PROMISE */}
       {promise ? (
-        <section data-theme="inverse" className="grain relative overflow-hidden">
+        <section data-theme="inverse" className="wipe-open grain relative overflow-clip">
           <div className={`${ui.container} grid gap-10 py-section md:grid-cols-2 md:items-center`}>
             <div className="grid gap-6">
               {promise.headline.text ? (
@@ -159,11 +163,11 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
               {promise.body ? <p className="max-w-[38ch] text-lg">{promise.body}</p> : null}
             </div>
             {promise.media ? (
-              <div className="relative">
+              <div className="relative overflow-clip rounded-card shadow-raised">
                 <Media
                   media={promise.media}
                   sizes="(min-width: 768px) 46vw, 100vw"
-                  className="aspect-[4/3] w-full rounded-card object-cover shadow-raised md:aspect-[4/5]"
+                  className="parallax aspect-[4/3] w-full object-cover md:aspect-[4/5]"
                 />
               </div>
             ) : null}
@@ -176,10 +180,10 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
         <section
           data-theme="light"
           aria-labelledby="testimonials-heading"
-          className="overflow-hidden"
+          className="overflow-clip"
         >
           <div className={`${ui.container} ${ui.section} grid gap-10`}>
-            <h2 id="testimonials-heading" className="text-display-1">
+            <h2 id="testimonials-heading" className="kinetic text-display-1">
               <Emphasis text={copy.home.testimonialsTitle} />
             </h2>
             <ul className="-mx-gutter flex snap-x snap-mandatory gap-4 overflow-x-auto px-gutter pb-4 [scrollbar-width:none] md:grid md:auto-rows-fr md:grid-cols-2 md:overflow-visible">
@@ -208,13 +212,13 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
       ) : null}
 
       {/* VISIT */}
-      <section aria-labelledby="visit-heading" className="grain relative overflow-hidden">
+      <section aria-labelledby="visit-heading" className="grain relative overflow-clip">
         <Smoke className="opacity-70" />
         <div
           className={`${ui.container} ${ui.section} grid gap-8 lg:grid-cols-[auto_1fr] lg:items-end lg:gap-12`}
         >
           <div className="grid gap-4">
-            <h2 id="visit-heading" className="text-mega lg:whitespace-nowrap">
+            <h2 id="visit-heading" className="kinetic text-mega lg:whitespace-nowrap">
               <Emphasis text={copy.home.visitTitle} />
             </h2>
             <p className="max-w-[30ch] text-lg text-ink-muted">{copy.home.visitBody}</p>
@@ -272,23 +276,27 @@ function SignatureCard({ item }: { item: MenuItemVM }) {
   return (
     <article className="group relative isolate grid aspect-[4/5] content-end overflow-hidden rounded-card bg-charcoal shadow-raised">
       {item.image ? (
-        <Img
-          image={item.image}
-          sizes="(min-width: 1024px) 24rem, (min-width: 640px) 46vw, 80vw"
-          className="absolute inset-0 -z-10 h-full w-full object-cover transition-transform duration-(--duration-slow) ease-out group-hover:scale-105"
-        />
+        <ViewTransition name={`dish-${item.slug}`} share="dish-photo" default="none">
+          <Img
+            image={item.image}
+            sizes="(min-width: 1024px) 24rem, (min-width: 640px) 46vw, 80vw"
+            className="absolute inset-0 -z-10 h-full w-full object-cover transition-transform duration-(--duration-slow) ease-out group-hover:scale-105"
+          />
+        </ViewTransition>
       ) : null}
       <div
         aria-hidden
         className="absolute inset-0 -z-10 bg-[linear-gradient(to_top,var(--color-black)_10%,rgb(0_0_0/0.8)_42%,transparent_72%)]"
       />
       <div className="grid gap-3 p-5">
-        <h3 className="text-[2rem] leading-none normal-case sm:text-[2.25rem]">
-          {/* Stretched: the whole card opens the dish; the order button sits above it. */}
-          <Link href={item.href} className="after:absolute after:inset-0">
-            {item.name}
-          </Link>
-        </h3>
+        <ViewTransition name={`dish-name-${item.slug}`} share="dish-name" default="none">
+          <h3 className="text-[2rem] leading-none normal-case sm:text-[2.25rem]">
+            {/* Stretched: the whole card opens the dish; the order button sits above it. */}
+            <Link href={item.href} className="after:absolute after:inset-0">
+              {item.name}
+            </Link>
+          </h3>
+        </ViewTransition>
         {item.description ? (
           <p className="line-clamp-2 text-small text-white/80">{item.description}</p>
         ) : null}

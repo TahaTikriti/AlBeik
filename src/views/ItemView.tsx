@@ -1,5 +1,7 @@
 import Link from 'next/link'
+import { ViewTransition } from 'react'
 
+import { ScrollTopOnArrival } from '@/components/menu/ScrollTopOnArrival'
 import { OrderButton } from '@/components/order/OrderButton'
 import { StickyOrderBar } from '@/components/shell/StickyOrderBar'
 import { Img } from '@/components/ui/Img'
@@ -16,6 +18,7 @@ import { Smoke, Steam } from '@/theme/motifs'
 export function ItemView({ item }: ItemPageData) {
   return (
     <>
+      <ScrollTopOnArrival />
       <article className="grain relative overflow-hidden">
         <Smoke />
         <div
@@ -31,18 +34,23 @@ export function ItemView({ item }: ItemPageData) {
             </Link>
           </p>
 
-          <h1 className="text-display-1 normal-case md:col-start-2 md:self-end md:text-[clamp(3rem,1.5rem+3.4vw,5.5rem)]">
-            {item.name}
-          </h1>
+          {/* The menu card's photo and name morph into these (see MenuItemCard). */}
+          <ViewTransition name={`dish-name-${item.slug}`} share="dish-name" default="none">
+            <h1 className="text-display-1 normal-case md:col-start-2 md:self-end md:text-[clamp(3rem,1.5rem+3.4vw,5.5rem)]">
+              {item.name}
+            </h1>
+          </ViewTransition>
 
           <div className="relative w-full md:col-start-1 md:row-span-2 md:row-start-2 md:self-center">
             {item.image ? (
-              <Img
-                image={item.image}
-                sizes="(min-width: 1216px) 36rem, (min-width: 768px) 46vw, 100vw"
-                preload
-                className="aspect-square w-full rounded-card object-cover shadow-raised"
-              />
+              <ViewTransition name={`dish-${item.slug}`} share="dish-photo" default="none">
+                <Img
+                  image={item.image}
+                  sizes="(min-width: 1216px) 36rem, (min-width: 768px) 46vw, 100vw"
+                  preload
+                  className="aspect-square w-full rounded-card object-cover shadow-raised"
+                />
+              </ViewTransition>
             ) : null}
             <Steam />
           </div>

@@ -8,6 +8,7 @@ import { toOrderAction } from '@/lib/order'
 import { copy } from '@/theme/copy'
 
 import { ui } from '../ui/classes'
+import { emberBurst } from './emberBurst'
 import { OrderSheet } from './OrderSheet'
 
 type Props = {
@@ -47,7 +48,10 @@ export function OrderButton({
         href={link.href}
         className={className}
         aria-label={item ? copy.order.ctaForOn(item.name, link.label) : undefined}
-        onClick={() => onChoose(link)}
+        onClick={(event) => {
+          emberBurst(event.currentTarget, event.clientX, event.clientY)
+          onChoose(link)
+        }}
       >
         {copy.order.on(link.label)}
       </a>
@@ -61,8 +65,10 @@ export function OrderButton({
         className={className}
         aria-haspopup="dialog"
         aria-label={item ? copy.order.ctaFor(item.name) : undefined}
-        onClick={() => {
+        onClick={(event) => {
           dialog.current?.showModal()
+          // After showModal, so the sparks land above the sheet's backdrop.
+          emberBurst(event.currentTarget, event.clientX, event.clientY)
           track('order_sheet_open', { item: itemKey, placement })
         }}
       >

@@ -21,12 +21,12 @@ export function AboutView({ headline, body, images }: AboutPageData) {
       </header>
 
       {lead ? (
-        <figure className="relative">
+        <figure className="relative overflow-clip">
           <Img
             image={lead}
             sizes="100vw"
             preload
-            className="aspect-[3/2] max-h-[70vh] w-full object-cover md:aspect-[21/9]"
+            className="parallax aspect-[3/2] max-h-[70vh] w-full object-cover md:aspect-[21/9]"
           />
           <div
             className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"
