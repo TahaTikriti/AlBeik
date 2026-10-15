@@ -89,7 +89,7 @@ Clicks are tracked as Umami custom events (`order_sheet_open`, `order_click` wit
 - Address, phone, opening hours, Google Maps link
 - The logo as vector (SVG) files, including a white/reversed version; social links, testimonial sources
 - Dietary tags (spicy, vegetarian), to be confirmed before tagging
-- True cut-out photos, if any exist (the current ones have backgrounds)
+- Real photography to replace the illustrative menu images when it exists (see [docs/menu-images.md](docs/menu-images.md)), and a lighter hero photo
 
 ## Deploying
 
