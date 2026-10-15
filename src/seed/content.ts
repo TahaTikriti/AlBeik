@@ -8,7 +8,7 @@ import type { MenuTag } from '@/lib/data/types'
 
 const S3 = 'https://s3.eu-central-1.amazonaws.com/storage.albeik.us'
 
-/** Files live in public/seed (committed copies of the live site's images), served at /seed/<file>. */
+/** Original editorial photos in public/seed, served at /seed/<file>. */
 export const images = {
   hero: {
     file: 'banner.webp',
@@ -55,10 +55,10 @@ export type SeedItem = {
   tags?: MenuTag[]
 }
 
-/** Item photos are square; `size` is their width and height in pixels. */
-const photo = (file: string, path: string, size: number) => ({
+/** Client-selected AI menu recreations. See docs/menu-images.md for provenance. */
+const photo = (file: string, size: number) => ({
   file,
-  source: `${S3}/${path}`,
+  source: `/seed/${file}`,
   width: size,
   height: size,
 })
@@ -76,7 +76,7 @@ export const menuItems: SeedItem[] = [
     category: 'Specials',
     // fixed: "smashed smashed patty"
     description: 'Our signature smashed patty topped with cheese, caramelized onion and coleslaw',
-    image: photo('albeik-smashed-burger.jpg', '89/Screenshot_20250906_141626_Photoroom.jpg', 540),
+    image: photo('albeik-smashed-burger-brand.webp', 1254),
     tags: ['signature'],
   },
   {
@@ -84,7 +84,7 @@ export const menuItems: SeedItem[] = [
     category: 'Specials',
     description:
       'Our signature sandwich made of grilled seasoned chicken, melted cheese, grilled green pepper and onions, and a drizzle of our Avocado sauce',
-    image: photo('albeik-chicken-sandwich.jpg', '93/Screenshot_20250906_141655_Photoroom.jpg', 505),
+    image: photo('albeik-chicken-sandwich-brand.webp', 1254),
     tags: ['signature'],
   },
 
@@ -94,32 +94,32 @@ export const menuItems: SeedItem[] = [
     category: 'Appetizers',
     description:
       'Lebanese sujuk spread on pita bread and toasted, topped with pickles, Mayo, corn, lettuce and tomatoes',
-    image: photo('arayes-sujuk.jpg', '91/Screenshot_20250906_141427_Photoroom.jpg', 685),
+    image: photo('arayes-sujuk-brand.webp', 1254),
   },
   {
     name: 'Arayes Kafta',
     category: 'Appetizers',
     description: 'Juicy Beef Kafta spread in pita bread and grilled',
-    image: photo('arayes-kafta.jpg', '90/Screenshot_20250906_141347_Photoroom.jpg', 1080),
+    image: photo('arayes-kafta-brand.webp', 1254),
   },
   {
     name: 'Hummus',
     category: 'Appetizers',
     description: 'Freshly made hummus served with Pita Bread',
-    image: photo('hummus.jpg', '84/Screenshot_20250906_141713_Photoroom.jpg', 569),
+    image: photo('hummus-brand.webp', 1254),
   },
   {
     name: 'Hummus with Beef Shawarma', // was "Hummus with Beef shawarma"
     category: 'Appetizers',
     description: 'Hummus, topped with our signature beef shawarma. Served with Lebanese Pita bread',
-    image: photo('hummus-with-beef-shawarma.png', '87/6M2A9570-%282%29.png', 921),
+    image: photo('hummus-with-beef-shawarma-brand.webp', 1254),
   },
   {
     name: 'Hummus with Chicken Shawarma', // was "Hummus with chicken shawarma"
     category: 'Appetizers',
     description:
       'Hummus topped with our signature chicken shawarma. Served with Lebanese Pita bread.',
-    image: photo('hummus-with-chicken-shawarma.png', '88/6M2A9570-%283%29.png', 921),
+    image: photo('hummus-with-chicken-shawarma-brand.webp', 1254),
   },
   {
     name: 'Baba Ghannouj',
@@ -127,7 +127,7 @@ export const menuItems: SeedItem[] = [
     // fixed: stray ")" after "bread"
     description:
       'Smoky dip made from roasted eggplant, tahini, garlic and lemon juice. Served with Lebanese Pita bread',
-    image: photo('baba-ghannouj.jpg', '86/Screenshot_20250906_141706_Photoroom.jpg', 554),
+    image: photo('baba-ghannouj-brand.webp', 1254),
   },
 
   // ── Sandwiches
@@ -135,82 +135,69 @@ export const menuItems: SeedItem[] = [
     name: 'Beef Shawarma Sandwich',
     category: 'Sandwiches',
     description: 'Our signature beef shawarma sandwich with biwaz salad, pickles and tahini sauce',
-    image: photo('beef-shawarma-sandwich.jpg', '102/Screenshot_20250906_141508_Photoroom.jpg', 504),
+    image: photo('beef-shawarma-sandwich-brand.webp', 1254),
   },
   {
     name: 'Francisco Sandwich', // was "Francisco sandwich"
     category: 'Sandwiches',
     description: 'Grilled chicken over melted cheese with aioli sauce, pickles, lettuce and corn.',
-    image: photo('francisco-sandwich.jpg', '101/Screenshot_20250906_141633_Photoroom.jpg', 509),
+    image: photo('francisco-sandwich-brand.webp', 1254),
   },
   {
     name: 'Kafta Sandwich',
     category: 'Sandwiches',
     description:
       'Beef Kafta skewer wrapped in Lebanese Pita bread over hummus, biwaz, pickles, tomatoes and tahini sauce',
-    image: photo('kafta-sandwich.jpg', '94/Screenshot_20250906_141508_Photoroom.jpg', 554),
+    image: photo('kafta-sandwich-brand.webp', 1254),
   },
   {
     name: 'Falafel Sandwich',
     category: 'Sandwiches',
     description:
       'Crispy Falafel balls served in soft Lebanese Pita Bread with Tahini sauce and Vegetables (Tomatoes, Parsley, Turnip pickles)',
-    // Only a 300px thumbnail exists on the live site.
-    image: photo('falafel-sandwich.webp', '63/conversions/falafel-thumb.webp', 300),
+    image: photo('falafel-sandwich-brand.webp', 1254),
   },
   {
     name: 'Chicken Shawarma Sandwich', // was "Chicken shawarma Sandwich"
     category: 'Sandwiches',
     description:
       'Slices of Chicken shawarma with Garlic sauce and pickles wrapped in Lebanese Pita bread.',
-    image: photo(
-      'chicken-shawarma-sandwich.jpg',
-      '75/Screenshot_20250906_143342_Photoroom.jpg',
-      490,
-    ),
+    image: photo('chicken-shawarma-sandwich-brand.webp', 1254),
   },
   {
     name: 'Kabab Orfali Sandwich',
     category: 'Sandwiches',
     description:
       'Charbroiled special beef Kabab blend, tomatoes, over hummus and Biwaz Salad. Wrapped in Lebanese Pita Bread and drizzled with Tahini sauce',
-    image: photo('kabab-orfali-sandwich.jpg', '95/Screenshot_20250906_141508_Photoroom.jpg', 534),
+    image: photo('kabab-orfali-sandwich-brand.webp', 1254),
   },
   {
     name: 'Kabab Sandwich',
     category: 'Sandwiches',
     description:
       'Charbroiled beef Kabab, over hummus, tahini, pickles, tomatoes and Biwaz Salad. Wrapped in Lebanese Pita bread.',
-    image: photo('kabab-sandwich.jpg', '77/Screenshot_20250906_141508_Photoroom.jpg', 522),
+    image: photo('kabab-sandwich-brand.webp', 1254),
   },
   {
     name: 'Charbroiled Rib-eye Sandwich', // fixed: "Ribe-eye"
     category: 'Sandwiches',
     description:
       'Charbroiled rib-eye beef chunks with hummus and Biwaz salad (Parsley, Onion and Sumac) wrapped in Lebanese Pita Bread',
-    image: photo(
-      'charbroiled-rib-eye-sandwich.jpg',
-      '78/Screenshot_20250906_141523_Photoroom.jpg',
-      493,
-    ),
+    image: photo('charbroiled-rib-eye-sandwich-brand.webp', 1254),
   },
   {
     name: 'Chicken Tawouk Sandwich',
     category: 'Sandwiches',
     description:
       'Charbroiled chicken breast pieces seasoned with our special spices, over garlic sauce, pickles and wrapped in Lebanese Pita bread.',
-    image: photo('chicken-tawouk-sandwich.jpg', '81/Screenshot_20250906_141533_Photoroom.jpg', 557),
+    image: photo('chicken-tawouk-sandwich-brand.webp', 1254),
   },
   {
     name: 'Charbroiled Chicken Sandwich', // was "Charbroiled Chicken sandwich"
     category: 'Sandwiches',
     description:
       'Charbroiled chicken with Garlic sauce, spicy garlic sauce and pickles wrapped in Lebanese Pita bread.',
-    image: photo(
-      'charbroiled-chicken-sandwich.jpg',
-      '82/Screenshot_20250906_141516_Photoroom.jpg',
-      559,
-    ),
+    image: photo('charbroiled-chicken-sandwich-brand.webp', 1254),
   },
 ]
 
