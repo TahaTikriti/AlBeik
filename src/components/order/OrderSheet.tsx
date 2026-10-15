@@ -116,7 +116,10 @@ export function OrderSheet({ ref, links, item, onChoose }: Props) {
             ))}
           </ul>
           <form method="dialog">
-            <button type="submit" className="btn btn-ghost w-full text-white">
+            <button
+              type="submit"
+              className="btn btn-ghost w-full text-white hover:text-black focus-visible:text-black"
+            >
               {copy.order.close}
             </button>
           </form>

@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-import { Emphasis } from '@/components/ui/Emphasis'
+import { PunchLine } from '@/components/ui/PunchLine'
 import { ui } from '@/components/ui/classes'
 import type { LocationPageData } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
@@ -13,7 +13,7 @@ export function LocationView({ locations }: LocationPageData) {
       <div className={`${ui.container} grid gap-14 pt-12 pb-section md:pt-20`}>
         <div className="flex items-end justify-between gap-4">
           <h1 className="text-mega">
-            <Emphasis text={copy.location.heading} />
+            <PunchLine text={copy.location.heading} />
           </h1>
           <FezMoment className="w-20 shrink-0 md:w-32" />
         </div>

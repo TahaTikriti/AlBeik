@@ -14,7 +14,7 @@ export function MenuSection({
   return (
     <section id={category.slug} data-anchor aria-labelledby={headingId} className="grid gap-8">
       {/* Wraps the count under a long name rather than pushing past the screen. */}
-      <header className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b-2 border-red pb-3">
+      <header className="draw-rule flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b-2 border-red pb-3">
         <h2 id={headingId} className="min-w-0 text-display-2 wrap-break-word">
           {category.name}
         </h2>

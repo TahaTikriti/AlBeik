@@ -5,6 +5,7 @@ import { copy } from '@/theme/copy'
 
 import { Footer } from './Footer'
 import { Header } from './Header'
+import { Spotlight } from './Spotlight'
 import { StickyOrderBar, StickyOrderBarSpacer } from './StickyOrderBar'
 
 export function SiteShell({ site, children }: { site: SiteVM; children: ReactNode }) {
@@ -19,6 +20,7 @@ export function SiteShell({ site, children }: { site: SiteVM; children: ReactNod
         {children}
       </main>
       <Footer site={site} />
+      <Spotlight />
       {canOrder ? (
         <>
           <StickyOrderBarSpacer />

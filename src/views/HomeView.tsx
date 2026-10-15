@@ -274,7 +274,10 @@ function PromiseHeadline({ line }: { line: RichLine }) {
 /** A reel card: the dish full-bleed, fading to black under its name and order button. */
 function SignatureCard({ item }: { item: MenuItemVM }) {
   return (
-    <article className="group relative isolate grid aspect-[4/5] content-end overflow-hidden rounded-card bg-charcoal shadow-raised">
+    <article
+      data-spotlight
+      className="group relative isolate grid aspect-[4/5] content-end overflow-hidden rounded-card bg-charcoal shadow-raised"
+    >
       {item.image ? (
         <ViewTransition name={`dish-${item.slug}`} share="dish-photo" default="none">
           <Img

@@ -14,6 +14,8 @@ export function Header({ site }: { site: SiteVM }) {
     <header
       data-theme="light"
       className="sticky top-0 z-(--z-header) h-header border-b border-line"
+      // Holds still above the page during page changes (brand.css).
+      style={{ viewTransitionName: 'site-header' }}
     >
       <div className={`${ui.container} flex h-full items-center gap-3`}>
         <Link
@@ -35,6 +37,8 @@ export function Header({ site }: { site: SiteVM }) {
           />
         </div>
       </div>
+      {/* A fuse burning along the header's edge as the page scrolls (brand.css). */}
+      <span className="fuse" aria-hidden />
     </header>
   )
 }
