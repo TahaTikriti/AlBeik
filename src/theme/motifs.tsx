@@ -1,19 +1,19 @@
 import Image from 'next/image'
 
-import { copy } from './copy'
-
-import stacked from './brand/albeik-logo-stacked-white.png'
-import mark from './brand/albeik-mark.png'
+import horizontal from './brand/albeik-logo-horizontal-original.png'
+import mark from './brand/albeik-mark-original.png'
 import wordmark from './brand/albeik-wordmark.png'
 
 /**
- * poc/street brand motifs: AlBeik's logo (reversed for the dark theme), the
- * mustache traced from it, flip-clock numerals, smoke and steam.
+ * poc/street brand motifs: AlBeik's logo, the mustache traced from it,
+ * flip-clock numerals, smoke and steam.
  *
- * The logo files in ./brand are derived from the client's
- * public/brand/albeik-logo-stacked.png: dark ink turned white, the fez kept
- * red. Replace them with the client's own reversed/vector files when they
- * arrive.
+ * The logo is always the client's original (red fez, charcoal ink) on white,
+ * as in docs/brand/brand-guidelines.png: never reversed. The files in ./brand
+ * are cut, uncoloured, from public/brand/albeik-logo-stacked.png; the
+ * horizontal one is rebuilt from those pieces to the proportions of
+ * public/brand/albeik-logo-horizontal.jpg. Swap in vector files when the
+ * client sends them.
  */
 
 type SvgProps = { className?: string }
@@ -27,7 +27,7 @@ export function Mustache({ className }: SvgProps) {
   )
 }
 
-/** The logo's fez-and-face mark. Decorative: pair it with text or a label. */
+/** The logo's fez-and-face mark, original colours: on white only. Decorative: pair it with text or a label. */
 export function Mark({
   className,
   sizes,
@@ -49,7 +49,7 @@ export function Mark({
   )
 }
 
-/** The ALBEIK wordmark. Takes the text color; size it by width or height. */
+/** The ALBEIK wordmark. Takes the text color (charcoal next to the logo); size it by width or height. */
 export function Wordmark({ className = '' }: SvgProps) {
   const url = `url(${wordmark.src})`
   return (
@@ -63,9 +63,8 @@ export function Wordmark({ className = '' }: SvgProps) {
 
 /**
  * Header lockup: mark + wordmark, after the client's horizontal logo. The
- * wordmark is set larger than in that file so it stays legible at header
- * size. Always the theme's reversed logo: the client's dark-ink originals
- * (including one uploaded to Site settings) would vanish on black.
+ * wordmark is set larger than in that file (and "Lebanese Restaurant"
+ * dropped) so it stays legible at header size. Sits on the white header.
  */
 export function Logo() {
   return (
@@ -82,9 +81,17 @@ export function Logo() {
   )
 }
 
-/** The full stacked logo: mark, wordmark and "Lebanese Restaurant". Pass alt="" where it's decorative. */
-export function StackedLogo({ alt, className }: { alt: string; className?: string }) {
-  return <Image src={stacked} alt={alt} sizes="10rem" className={className} />
+/**
+ * The full horizontal logo (mark, wordmark, "Lebanese Restaurant") on its
+ * white panel, like the logo panel in the brand guidelines, with the card
+ * radius. Size it by width.
+ */
+export function LogoPanel({ className = '', sizes }: { className?: string; sizes: string }) {
+  return (
+    <div data-theme="light" className={`rounded-card p-[7%] ${className}`}>
+      <Image src={horizontal} alt="AlBeik Lebanese Restaurant" sizes={sizes} className="w-full" />
+    </div>
+  )
 }
 
 /** Hairline, mustache, hairline. */
@@ -111,29 +118,6 @@ export function FlipDigits({ value, className = '' }: { value: string; className
   )
 }
 
-/**
- * The handwritten line from the posts ("Juicier. Meatier. Tastier.") under
- * the mustache, set on the hero dish. Size it with font-size on className.
- */
-export function HeroScript({ className = '' }: SvgProps) {
-  return (
-    <p className={`isolate grid justify-items-center text-center ${className}`}>
-      {/* A soft shadow pool keeps it readable over busy food. */}
-      <span
-        aria-hidden
-        className="absolute inset-x-[12%] -inset-y-[35%] -z-10 rounded-full bg-[radial-gradient(closest-side,rgb(0_0_0/0.6),transparent)]"
-      />
-      {/* Inner wrapper animates, so it never fights the positioning on className. */}
-      <span className="hero-follow grid justify-items-center">
-        <Mustache className="mb-[0.3em] w-[4.5em] text-white drop-shadow-lg" />
-        <span className="-rotate-3 font-script text-[2.75em] leading-none text-white [text-shadow:0_0.04em_0.2em_rgb(0_0_0/0.7)]">
-          {copy.home.heroScript}
-        </span>
-      </span>
-    </p>
-  )
-}
-
 /** Slow drifting smoke behind a section. */
 export function Smoke({ className = '' }: SvgProps) {
   return <span className={`smoke ${className}`} aria-hidden />
@@ -150,12 +134,14 @@ export function Steam({ className = '' }: SvgProps) {
   )
 }
 
-/** The fez moment: the logo's mark in a cloud of smoke, tipping its fez once on arrival. */
+/** The fez moment: the logo's mark on its white panel in a cloud of smoke, tipping its fez once on arrival. */
 export function FezMoment({ className = '' }: SvgProps) {
   return (
     <div className={`relative ${className}`}>
       <Smoke className="opacity-80" />
-      <Mark sizes="(min-width: 768px) 9rem, 7rem" className="fez-tip relative w-full -rotate-6" />
+      <div data-theme="light" className="relative rounded-card px-[18%] py-[14%] shadow-raised">
+        <Mark sizes="(min-width: 768px) 6rem, 5rem" className="fez-tip w-full -rotate-6" />
+      </div>
     </div>
   )
 }

@@ -8,9 +8,13 @@ import { OrderButton } from '../order/OrderButton'
 import { ui } from '../ui/classes'
 import { NavLinks } from './NavLinks'
 
+/** White, so the original logo sits on white as in the brand guidelines. */
 export function Header({ site }: { site: SiteVM }) {
   return (
-    <header className="sticky top-0 z-(--z-header) h-header border-b border-line bg-black/90 backdrop-blur-md">
+    <header
+      data-theme="light"
+      className="sticky top-0 z-(--z-header) h-header border-b border-line"
+    >
       <div className={`${ui.container} flex h-full items-center gap-3`}>
         <Link
           href="/"
@@ -27,7 +31,7 @@ export function Header({ site }: { site: SiteVM }) {
             links={site.storeOrderLinks}
             placement="sticky"
             label={copy.order.stickyLabel}
-            className="btn btn-red min-h-11 text-[1.1rem]"
+            className="btn btn-red min-h-11 text-[1.1rem] shadow-none"
           />
         </div>
       </div>

@@ -1,29 +1,27 @@
 /*
- * DESIGN TOKENS: poc/street. AlBeik's Instagram rebrand: deep black,
- * chili red, white, heavy condensed caps, smoke.
+ * DESIGN TOKENS: poc/street, held to docs/brand/brand-guidelines.jpg.
+ * Exactly the guidelines' five colours (two reds, charcoal, black, white);
+ * softer tones are white or charcoal at reduced opacity, never a new hue.
+ * Two typefaces: a condensed bold display and a clean sans for text.
  *
  * Layers: primitives (--p-*) → semantic tokens (Tailwind theme) → theme
- * scopes ([data-theme="inverse"] = red field, [data-theme="light"] = cream).
+ * scopes ([data-theme="inverse"] = red field, [data-theme="light"] = white,
+ * where the original logo sits).
  */
 
 /* ── 1. Primitives ─────────────────────────────────────────────────────── */
 :root {
-  --p-black: #0a0a0a;
-  --p-coal: #161413;
-  --p-char: #221f1d;
-  --p-smoke: #3a3532;
-  --p-ash: #aaa198;
-  --p-cream: #f4ede3;
+  --p-black: #000000;
   --p-white: #ffffff;
-  /* Both reds come from the logo's fez. */
-  --p-red: #d8262f; /* fez body: fields and buttons (white text on it: 6.7:1) */
-  --p-red-deep: #b51d26;
-  /* Fez top: red text on black (5:1, fine for small text). */
+  /* The logo's ink. Raised surfaces and hairlines on black. */
+  --p-charcoal: #231f20;
+  /* "Primary red", the fez body: fields and buttons (white text on it: 4.9:1). */
+  --p-red: #d8262f;
+  /* "Logo highlight", the fez top: red text on black (5.5:1) and hover. */
   --p-red-text: #f4313f;
 
   --p-font-display-fallback: Impact, 'Arial Narrow Bold', 'Helvetica Neue Condensed', sans-serif;
   --p-font-body-fallback: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --p-font-script-fallback: 'Bradley Hand', 'Segoe Print', cursive;
 }
 
 /* ── 2. Semantic tokens (Tailwind theme) ──────────────────────────────── */
@@ -34,32 +32,27 @@
 
   /* Color roles */
   --color-surface: var(--p-black);
-  --color-surface-raised: var(--p-coal);
+  --color-surface-raised: var(--p-charcoal);
   --color-surface-inverse: var(--p-red);
   --color-ink: var(--p-white);
-  --color-ink-muted: var(--p-ash);
+  --color-ink-muted: rgb(255 255 255 / 0.7);
   --color-ink-inverse: var(--p-white);
   --color-accent: var(--p-red);
   --color-accent-ink: var(--p-white);
   /* The "one word in red" in headlines. */
   --color-emphasis: var(--p-red-text);
-  --color-line: var(--p-char);
+  --color-line: var(--p-charcoal);
   --color-focus: var(--p-white);
   --color-scrim: rgb(0 0 0 / 0.72);
   --color-red: var(--p-red);
-  --color-red-deep: var(--p-red-deep);
   --color-red-text: var(--p-red-text);
   --color-black: var(--p-black);
   --color-white: var(--p-white);
-  --color-cream: var(--p-cream);
-  --color-coal: var(--p-coal);
-  --color-char: var(--p-char);
-  --color-ash: var(--p-ash);
+  --color-charcoal: var(--p-charcoal);
 
   /* Type families */
   --font-display: var(--p-font-display), var(--p-font-display-fallback);
   --font-body: var(--p-font-body), var(--p-font-body-fallback);
-  --font-script: var(--p-font-script), var(--p-font-script-fallback);
 
   /* Type scale, phone first. Display is set in caps with tight leading.
      Anton's capitals are 0.86em tall, so line-height minus 0.86 is the gap
@@ -76,10 +69,9 @@
   --text-body--line-height: 1.55;
   --text-small: 0.9375rem;
   --text-small--line-height: 1.45;
-  --text-label: 0.8125rem;
+  --text-label: 0.875rem;
   --text-label--line-height: 1.1;
-  --text-label--letter-spacing: 0.12em;
-  --text-label--font-weight: 700;
+  --text-label--letter-spacing: 0.08em;
   /* Plain steps for one-off sizes */
   --text-base: 1rem;
   --text-base--line-height: 1.5;
@@ -95,9 +87,11 @@
   --text-7xl--line-height: 1;
 
   /* Shape */
-  --radius-control: 0.75rem;
-  --radius-card: 1.5rem;
-  --radius-sheet: 1.75rem;
+  /* Kept tight: the guidelines board is square-edged. One radius per role,
+     and the white logo panels share the card radius. */
+  --radius-control: 0.5rem;
+  --radius-card: 1rem;
+  --radius-sheet: 1.25rem;
 
   /* Elevation */
   --shadow-raised: 0 18px 40px -12px rgb(0 0 0 / 0.65);
@@ -136,7 +130,7 @@
 /* Chili red field. Text stays white; accents turn black. */
 [data-theme='inverse'] {
   --color-surface: var(--p-red);
-  --color-surface-raised: var(--p-red-deep);
+  --color-surface-raised: var(--p-charcoal);
   --color-ink: var(--p-white);
   --color-ink-muted: var(--p-white);
   --color-accent: var(--p-black);
@@ -146,17 +140,19 @@
   --color-focus: var(--p-white);
 }
 
-/* Cream paper, for a break from the dark. */
+/* White, as in the brand guidelines: the header, a break from the dark, and
+   the only surface the original logo (red fez, charcoal ink) sits on.
+   Red text is the fez body (4.9:1 on white). */
 [data-theme='light'] {
-  --color-surface: var(--p-cream);
+  --color-surface: var(--p-white);
   --color-surface-raised: var(--p-white);
-  --color-ink: var(--p-black);
-  --color-ink-muted: #5e554d;
-  --color-accent: var(--p-red-deep);
+  --color-ink: var(--p-charcoal);
+  --color-ink-muted: rgb(35 31 32 / 0.72);
+  --color-accent: var(--p-red);
   --color-accent-ink: var(--p-white);
-  --color-emphasis: var(--p-red-deep);
-  --color-line: rgb(10 10 10 / 0.14);
-  --color-focus: var(--p-black);
+  --color-emphasis: var(--p-red);
+  --color-line: rgb(35 31 32 / 0.12);
+  --color-focus: var(--p-charcoal);
 }
 
 @media (prefers-reduced-motion: reduce) {

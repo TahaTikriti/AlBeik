@@ -51,7 +51,7 @@ export function OrderSheet({ ref, links, item, onChoose }: Props) {
     <dialog
       ref={ref}
       aria-labelledby={titleId}
-      className="sheet fixed inset-x-0 top-auto bottom-0 m-0 w-full max-w-none overflow-hidden rounded-t-sheet bg-coal p-0 text-white shadow-sheet md:inset-x-auto md:right-6 md:bottom-6 md:left-auto md:w-[26rem] md:rounded-sheet"
+      className="sheet fixed inset-x-0 top-auto bottom-0 m-0 w-full max-w-none overflow-hidden rounded-t-sheet bg-charcoal p-0 text-white shadow-sheet md:inset-x-auto md:right-6 md:bottom-6 md:left-auto md:w-[26rem] md:rounded-sheet"
       onClick={(event) => {
         if (event.target === event.currentTarget) event.currentTarget.close()
       }}
@@ -100,7 +100,7 @@ export function OrderSheet({ ref, links, item, onChoose }: Props) {
                       {link.label}
                     </span>
                     {item && link.level === 'store' ? (
-                      <span className="text-[0.8rem] text-[#5e554d]">
+                      <span className="text-[0.8rem] text-charcoal/70">
                         {copy.order.storeLevelNote}
                       </span>
                     ) : null}

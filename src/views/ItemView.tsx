@@ -31,21 +31,17 @@ export function ItemView({ item }: ItemPageData) {
             </Link>
           </p>
 
-          <h1 className="text-display-1 md:col-start-2 md:self-end md:text-[clamp(3rem,1.5rem+3.4vw,5.5rem)]">
+          <h1 className="text-display-1 normal-case md:col-start-2 md:self-end md:text-[clamp(3rem,1.5rem+3.4vw,5.5rem)]">
             {item.name}
           </h1>
 
-          <div className="relative mx-auto w-full max-w-[18rem] md:col-start-1 md:row-span-2 md:row-start-2 md:max-w-[26rem] md:self-center">
-            <div
-              className="absolute inset-[8%] rounded-full bg-red opacity-40 blur-3xl"
-              aria-hidden
-            />
+          <div className="relative w-full md:col-start-1 md:row-span-2 md:row-start-2 md:self-center">
             {item.image ? (
               <Img
                 image={item.image}
-                sizes="(min-width: 768px) 26rem, 18rem"
+                sizes="(min-width: 1216px) 36rem, (min-width: 768px) 46vw, 100vw"
                 preload
-                className="plate relative w-full"
+                className="aspect-square w-full rounded-card object-cover shadow-raised"
               />
             ) : null}
             <Steam />

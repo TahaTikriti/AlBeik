@@ -10,12 +10,14 @@ const S3 = 'https://s3.eu-central-1.amazonaws.com/storage.albeik.us'
 
 /** Original editorial photos in public/seed, served at /seed/<file>. */
 export const images = {
+  // Web copy of docs/brand/photos/tawook.png (the client's brand photo set),
+  // cut to a centred square: the hero never shows more than that.
   hero: {
-    file: 'banner.webp',
-    width: 1500,
-    height: 1000,
-    alt: 'Mixed grill board with kafta, chicken tawouk and beef skewers, fries, grilled vegetables, onion salad and a side salad',
-    source: `${S3}/69/conversions/albeik-banner-large.webp`,
+    file: 'hero-tawook.webp',
+    width: 1122,
+    height: 1122,
+    alt: 'Chicken tawouk skewers charring over glowing charcoal, smoke rising',
+    source: 'docs/brand/photos/tawook.png',
   },
   dining: {
     file: 'hero-landscape.webp',
@@ -24,12 +26,13 @@ export const images = {
     alt: 'The AlBeik dining room, with wooden booths, the order counter and menu screens',
     source: `${S3}/70/conversions/albeik-landscape2-large.webp`,
   },
+  // Web copy of docs/brand/photos/platter-2.png.
   spread: {
-    file: 'table.webp',
-    width: 4000,
-    height: 5000,
-    alt: 'Overhead spread of AlBeik dishes: hummus, baba ghannouj, a kafta and chicken plate, wraps, a burger, wings and fries',
-    source: `${S3}/49/conversions/albeik-table-large.webp`,
+    file: 'platter-spread.webp',
+    width: 1536,
+    height: 1024,
+    alt: 'Overhead spread: chicken tawouk skewers with fries and grilled tomatoes, fattoush, hummus, garlic sauce, pickles and pita',
+    source: 'docs/brand/photos/platter-2.png',
   },
 } as const
 

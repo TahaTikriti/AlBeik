@@ -20,11 +20,11 @@ type Props = {
 const BADGE_ORDER: MenuTag[] = ['signature', 'popular', 'new', 'spicy', 'vegetarian']
 
 /**
- * A menu card: round "plate" photo in a red glow, big condensed name,
- * order button. Name and description are clamped to two lines and the
- * button row is pinned to the bottom, so every card in a list is the same
- * size (the list sets equal rows). The whole card opens the dish; the
- * order button sits above that link.
+ * A menu card: the dish photo (a thumbnail on phones, full-bleed on top from
+ * sm up), the name in title case as in the brand guidelines, order button.
+ * The description is clamped to two lines and the button row is pinned to
+ * the bottom, so every card in a list is the same size (the list sets equal
+ * rows). The whole card opens the dish; the order button sits above that link.
  */
 export function MenuItemCard({
   item,
@@ -34,35 +34,31 @@ export function MenuItemCard({
 }: Props) {
   const badge = BADGE_ORDER.find((tag) => item.tags.includes(tag))
   return (
-    <article className="group relative grid h-full grid-cols-[clamp(5.25rem,25vw,6.75rem)_1fr] items-center gap-x-3.5 rounded-card bg-coal p-3 pe-4 transition-[background-color,scale] duration-(--duration-fast) hover:bg-char active:scale-[0.985] sm:grid-cols-1 sm:grid-rows-[auto_1fr_auto] sm:items-stretch sm:gap-y-4 sm:px-5 sm:pt-0 sm:pb-5 sm:text-center">
-      <div className="relative sm:mx-auto sm:-mt-14 sm:w-44">
-        <span
-          aria-hidden
-          className="absolute -inset-3 rounded-full bg-[radial-gradient(closest-side,rgb(216_38_47/0.5),transparent)] opacity-60 blur-md transition-opacity duration-(--duration-slow) group-hover:opacity-100"
-        />
+    <article className="group relative grid h-full grid-cols-[clamp(5.25rem,25vw,6.75rem)_1fr] items-center gap-x-3.5 overflow-hidden rounded-card bg-charcoal p-3 pe-4 transition-[scale] duration-(--duration-fast) active:scale-[0.985] sm:grid-cols-1 sm:grid-rows-[auto_1fr_auto] sm:items-stretch sm:gap-y-4 sm:p-0 sm:pb-5">
+      <div className="relative overflow-hidden rounded-control sm:rounded-none">
         {item.image ? (
           <Img
             image={item.image}
-            sizes="(min-width: 640px) 11rem, 25vw"
+            sizes="(min-width: 1024px) 24rem, (min-width: 640px) 46vw, 25vw"
             preload={preloadImage}
-            className="plate relative w-full transition-transform duration-(--duration-slow) ease-out group-hover:scale-105 group-hover:-rotate-3"
+            className="aspect-square w-full object-cover transition-transform duration-(--duration-slow) ease-out group-hover:scale-105 sm:aspect-[4/3]"
           />
         ) : (
-          <span className="plate relative grid w-full place-items-center bg-char font-display text-4xl">
+          <span className="grid aspect-square w-full place-items-center bg-black font-display text-4xl sm:aspect-[4/3]">
             {item.name.charAt(0)}
           </span>
         )}
         {badge ? (
-          <span className="label absolute -bottom-1.5 left-1/2 -translate-x-1/2 -rotate-6 rounded-full bg-white px-2 py-1 text-[0.6rem] whitespace-nowrap text-black shadow-raised">
+          <span className="label absolute bottom-1.5 left-1/2 -translate-x-1/2 rounded-full bg-white px-2 py-1 text-[0.6rem] whitespace-nowrap text-black shadow-raised sm:top-3 sm:bottom-auto sm:left-3 sm:translate-x-0">
             ★ {copy.item.tags[badge]}
           </span>
         ) : null}
       </div>
       {/* Phones: text on top, button pinned below. From sm up the card's own rows take over. */}
       <div className="grid h-full grid-rows-[1fr_auto] gap-3 py-1 sm:contents">
-        <div className="grid content-start gap-1 sm:pt-1">
+        <div className="grid content-start gap-1.5 sm:px-5">
           {/* Never clamped: a menu must show the whole name. Scales down on narrow phones. */}
-          <Heading className="text-[clamp(1.3rem,0.55rem+3.8vw,1.6rem)] leading-none sm:text-[1.75rem]">
+          <Heading className="text-[clamp(1.35rem,0.6rem+3.8vw,1.65rem)] leading-[1.05] normal-case sm:text-[1.85rem]">
             <Link
               href={item.href}
               className="after:absolute after:inset-0 after:rounded-card group-hover:text-red-text"
@@ -74,9 +70,9 @@ export function MenuItemCard({
             <p className="line-clamp-2 text-small text-ink-muted">{item.description}</p>
           ) : null}
         </div>
-        <div className="flex items-center justify-end gap-3 sm:justify-center">
+        <div className="flex items-center justify-end gap-3 sm:justify-start sm:px-5">
           {item.price !== null ? (
-            <span className="me-auto font-display text-2xl sm:me-0">{formatPrice(item.price)}</span>
+            <span className="me-auto font-display text-2xl">{formatPrice(item.price)}</span>
           ) : null}
           <OrderButton
             links={item.orderLinks}

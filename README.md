@@ -4,11 +4,11 @@ Next.js 16 + Payload CMS 3 in one app. The public site is static (rebuilt when c
 
 ## This branch: `poc/street`
 
-Design direction 1 (the one chosen), taken straight from AlBeik's Instagram rebrand: deep black, the logo's fez red and white, AlBeik's real logo reversed for the dark background, huge condensed caps (Anton) with one word in red, the logo's mustache as the recurring mark, the logo's fez-and-face mark on the 404 and Visit pages, slow smoke and steam, and a dark order sheet that slides up. Like the brand's Instagram reels, food is lit and everything else is dark: the hero dish rises out of the dark under the handwritten "Juicier. Meatier. Tastier." (Caveat Brush, the one accent font), signature dishes are same-size reel cards, and an item page shows the dish's name over the lit dish, like the dish posts. Menu cards are all the same size and the menu stays quiet, because regulars come to order. Split-flap numerals are kept for promo countdowns. Copy is in the brand's voice ("Spice bomb is waiting").
+Design direction 1 (the one chosen), taken from AlBeik's Instagram rebrand and held to the client's brand guidelines (`docs/brand/brand-guidelines.jpg`): exactly the guidelines' five colours (primary red #D8262F, logo highlight #F4313F, charcoal #231F20, black, white), two typefaces (Anton for condensed bold display and labels, Inter for text), AlBeik's real logo in its original colours on white (a white header, as in the guidelines), huge condensed caps with one word in red, dish names in title case, the logo's mustache as the recurring mark, the logo's fez-and-face mark on a white tile on the 404 and Visit pages, slow smoke and steam, and a dark order sheet that slides up. Corners are kept tight (one radius per role; logo panels share the card radius). Like the brand's Instagram reels, food is lit and everything else is dark: the hero pairs "The recipe is Lebanese." with charcoal-grilled tawouk, as on the guidelines board, signature dishes are same-size reel cards, and an item page shows the dish's name over the lit dish, like the dish posts. Menu cards are all the same size and the menu stays quiet, because regulars come to order. Split-flap numerals are kept for promo countdowns. Copy is in the brand's voice ("Spice bomb is waiting").
 
 What changed versus `main` is presentation only: `src/theme` (tokens, fonts, motifs, copy, `brand.css`), `src/components`, `src/views` and one import in `src/styles/globals.css`. Data and logic are identical.
 
-**Logo.** The client's files are in `public/brand/`. They're dark ink on white or transparent, so the theme uses white-reversed pieces derived from the stacked PNG, kept in `src/theme/brand/` (mark, wordmark, full stacked logo) plus the favicons. Swap them for the client's own vector or reversed files when those arrive.
+**Logo.** The client's files are in `public/brand/`; the brand guidelines and original photos are in `docs/brand/`. `docs/` is never served by the site (only `public/` is); remove `docs/brand/brand-guidelines.jpg` when it's no longer needed. The manager wants the original logo (red fez, charcoal ink) on white, never reversed, so it lives on white surfaces only: the header (`data-theme="light"`), a white logo panel in the footer, and white tiles for the fez mark. The pieces in `src/theme/brand/` (mark, horizontal lockup, wordmark mask) are cut uncoloured from the stacked PNG, plus the favicons. Swap them for the client's vector files when those arrive.
 
 Lighthouse mobile (production build, demo data): performance home 90–91, menu 92, item 96–97; accessibility, best practices and SEO 100. The home page's ceiling is the hero photo: a properly sized, compressed professional shot would buy the most.
 
@@ -87,9 +87,9 @@ Clicks are tracked as Umami custom events (`order_sheet_open`, `order_click` wit
 - Prices, and whether to show them (Site settings → Show prices)
 - Item-level DoorDash / Uber Eats links, if they're willing to collect them (optional)
 - Address, phone, opening hours, Google Maps link
-- The logo as vector (SVG) files, including a white/reversed version; social links, testimonial sources
+- The logo as vector (SVG) files; social links, testimonial sources
 - Dietary tags (spicy, vegetarian), to be confirmed before tagging
-- Real photography to replace the illustrative menu images when it exists (see [docs/menu-images.md](docs/menu-images.md)), and a lighter hero photo
+- Real photography to replace the illustrative menu images when it exists (see [docs/menu-images.md](docs/menu-images.md))
 
 ## Deploying
 

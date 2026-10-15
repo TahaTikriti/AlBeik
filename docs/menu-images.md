@@ -4,7 +4,7 @@ The 18 menu photos were replaced with client-selected AI-generated recreations o
 
 Each image is a 1254 × 1254 WebP, exported at quality 88 from the generated PNG master. The `-brand.webp` filenames avoid reusing previously cached image URLs. All menu cards, featured specials and dish pages use the shared mapping in `src/seed/content.ts`. Original assets remain available for rollback.
 
-The logo and original hero, spread and real dining-room photos are unchanged.
+The real dining-room photo is unchanged. The home hero and the promise-section spread now come from the client's brand photos in `docs/brand/photos/` (2026-10-15).
 
 ## CMS behavior
 

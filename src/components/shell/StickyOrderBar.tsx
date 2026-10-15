@@ -17,14 +17,14 @@ export function StickyOrderBar({ links, item = null }: Props) {
       data-order-bar={item ? 'item' : 'site'}
       className="fixed inset-x-0 bottom-0 z-(--z-sticky) px-3 pb-[calc(0.6rem+var(--safe-bottom))] md:hidden"
     >
-      <div className="flex items-center gap-3 rounded-[1.25rem] border border-white/10 bg-black/85 p-2 ps-4 shadow-raised backdrop-blur-md">
+      <div className="flex items-center gap-3 rounded-card border border-white/10 bg-black/85 p-2 ps-4 shadow-raised backdrop-blur-md">
         <Mustache className="h-3 w-auto shrink-0 text-red" />
         {item ? (
           <span className="grid min-w-0 flex-1">
             <span className="label text-[0.62rem] tracking-[0.1em] text-ink-muted">
               {copy.order.stickyKicker}
             </span>
-            <span className="truncate font-display text-lg leading-tight uppercase">
+            <span className="truncate font-display text-lg leading-tight">
               {item.name}
             </span>
           </span>

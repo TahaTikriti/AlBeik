@@ -9,7 +9,7 @@ import { Media } from '@/components/ui/Media'
 import { ui } from '@/components/ui/classes'
 import type { HomePageData, MenuItemVM, RichLine, SiteVM } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
-import { HeroScript, Smoke, Steam } from '@/theme/motifs'
+import { Smoke, Steam } from '@/theme/motifs'
 
 type Props = HomePageData & { site: SiteVM }
 
@@ -77,7 +77,7 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
                 <Emphasis line={shout} />
               </span>
               {followUp ? (
-                <span className="mt-[0.35em] block font-display text-[clamp(1.6rem,1.2rem+2vw,2.6rem)] leading-none text-ink-muted">
+                <span className="mt-[0.35em] block font-display text-[clamp(1.6rem,1.2rem+2vw,2.6rem)] leading-none">
                   <Emphasis line={followUp} />
                 </span>
               ) : null}
@@ -112,7 +112,6 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
               className="fade-photo hero-settle aspect-square w-full object-cover sm:aspect-[16/10] lg:aspect-auto lg:h-full"
             />
             <Steam />
-            <HeroScript className="absolute inset-x-0 top-[38%] text-[0.8rem] sm:text-[0.95rem] lg:top-1/2 lg:left-[20%] lg:-translate-y-1/2 lg:text-base" />
           </figure>
         ) : null}
       </section>
@@ -164,7 +163,7 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
                 <Media
                   media={promise.media}
                   sizes="(min-width: 768px) 46vw, 100vw"
-                  className="aspect-[4/5] w-full rotate-[-2deg] rounded-card object-cover shadow-raised"
+                  className="aspect-[4/3] w-full rounded-card object-cover shadow-raised md:aspect-[4/5]"
                 />
               </div>
             ) : null}
@@ -198,7 +197,7 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
                     </blockquote>
                     <figcaption className="flex flex-wrap items-baseline gap-x-3">
                       <span className="font-display text-xl uppercase">{t.name}</span>
-                      {t.source ? <span className="label text-ash">{t.source}</span> : null}
+                      {t.source ? <span className="label text-white/70">{t.source}</span> : null}
                     </figcaption>
                   </figure>
                 </li>
@@ -248,7 +247,7 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
   )
 }
 
-/** "100% *Halal*, Fresh & Delicious" → giant outlined "100%", the rest stacked below. */
+/** "100% *Halal*, Fresh & Delicious" → a giant white "100%", the rest stacked below. */
 function PromiseHeadline({ line }: { line: RichLine }) {
   const [first, ...rest] = line.text.split(' ')
   if (!first || !/\d/.test(first)) return <Emphasis line={line} />
@@ -260,9 +259,7 @@ function PromiseHeadline({ line }: { line: RichLine }) {
   }
   return (
     <>
-      <span className="outline-text block [-webkit-text-stroke-color:var(--color-white)]">
-        {first}
-      </span>
+      <span className="block text-white">{first}</span>
       <span className="block text-[0.62em] leading-[0.98] [&_em]:text-white">
         <Emphasis line={restLine} />
       </span>
@@ -273,7 +270,7 @@ function PromiseHeadline({ line }: { line: RichLine }) {
 /** A reel card: the dish full-bleed, fading to black under its name and order button. */
 function SignatureCard({ item }: { item: MenuItemVM }) {
   return (
-    <article className="group relative isolate grid aspect-[4/5] content-end overflow-hidden rounded-card bg-coal shadow-raised">
+    <article className="group relative isolate grid aspect-[4/5] content-end overflow-hidden rounded-card bg-charcoal shadow-raised">
       {item.image ? (
         <Img
           image={item.image}
@@ -283,10 +280,10 @@ function SignatureCard({ item }: { item: MenuItemVM }) {
       ) : null}
       <div
         aria-hidden
-        className="absolute inset-0 -z-10 bg-[linear-gradient(to_top,var(--color-black)_10%,rgb(10_10_10/0.8)_42%,transparent_72%)]"
+        className="absolute inset-0 -z-10 bg-[linear-gradient(to_top,var(--color-black)_10%,rgb(0_0_0/0.8)_42%,transparent_72%)]"
       />
       <div className="grid gap-3 p-5">
-        <h3 className="text-[2rem] leading-none sm:text-[2.25rem]">
+        <h3 className="text-[2rem] leading-none normal-case sm:text-[2.25rem]">
           {/* Stretched: the whole card opens the dish; the order button sits above it. */}
           <Link href={item.href} className="after:absolute after:inset-0">
             {item.name}

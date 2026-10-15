@@ -47,7 +47,6 @@ export const copy = {
   },
   home: {
     heroKicker: 'Lebanese street food in Kansas City',
-    heroScript: 'Juicier. Meatier. Tastier.',
     featuredTitle: 'The *signatures*',
     seeMenu: 'See the menu',
     fullMenu: 'The whole menu',
@@ -82,7 +81,8 @@ export const copy = {
     left: (n: number, unit: 'day' | 'hour') => `${unit}${n === 1 ? '' : 's'} to go`,
   },
   footer: {
-    tagline: 'The recipe is Lebanese. The attitude is ours.',
+    // As in the brand guidelines, LEBANESE in red.
+    tagline: 'The recipe is *Lebanese*. The extra attitude is ours.',
     follow: 'Follow us',
   },
 } as const

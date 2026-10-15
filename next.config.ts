@@ -7,6 +7,9 @@ const dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const nextConfig: NextConfig = {
   images: {
+    // AVIF first (about a fifth smaller than WebP): the hero photo is the home
+    // page's largest paint.
+    formats: ['image/avif', 'image/webp'],
     // Payload serves uploads from the same app and may append a cache-busting
     // query string; a pattern without `search` allows any query.
     // /seed/** holds the demo photos used when no database is configured.

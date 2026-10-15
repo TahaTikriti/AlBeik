@@ -57,7 +57,7 @@ export function CategoryNav({ categories }: { categories: CategoryRef[] }) {
               href={`#${category.slug}`}
               data-slug={category.slug}
               aria-current={active === category.slug ? 'true' : undefined}
-              className="inline-flex min-h-11 items-center gap-2 rounded-full border-2 border-char px-4 font-display text-[1.15rem] tracking-[0.04em] uppercase transition-[background-color,border-color,scale] duration-(--duration-base) ease-snap hover:border-white aria-[current=true]:scale-105 aria-[current=true]:border-red aria-[current=true]:bg-red"
+              className="inline-flex min-h-11 items-center gap-2 rounded-full border-2 border-charcoal px-4 font-display text-[1.15rem] tracking-[0.04em] uppercase transition-[background-color,border-color,scale] duration-(--duration-base) ease-snap hover:border-white aria-[current=true]:scale-105 aria-[current=true]:border-red aria-[current=true]:bg-red"
             >
               {category.name}
             </a>
