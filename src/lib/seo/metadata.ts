@@ -18,6 +18,8 @@ type PageMeta = {
  */
 export function pageMetadata(site: SiteVM, page: PageMeta): Metadata {
   const description = page.description ?? site.seo.description ?? undefined
+  // Pages without their own photo (and the home page) share the brand card,
+  // public/og.png: the logo and slogan (source: docs/brand/share-card.html).
   const share = page.image ?? site.seo.ogImage
   const title = page.absoluteTitle ?? page.title
 
@@ -35,7 +37,12 @@ export function pageMetadata(site: SiteVM, page: PageMeta): Metadata {
       images: [
         share
           ? { url: share.url, width: share.width, height: share.height, alt: share.alt }
-          : { url: '/og', width: 1200, height: 630, alt: site.name },
+          : {
+              url: '/og.png',
+              width: 1200,
+              height: 630,
+              alt: `${site.name} Lebanese Restaurant: the recipe is Lebanese, the extra attitude is ours`,
+            },
       ],
     },
     twitter: { card: 'summary_large_image' },
