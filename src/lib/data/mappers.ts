@@ -188,6 +188,8 @@ export function toHomePage(
       headline: toRichLine(home.hero?.headline),
       subline: orNull(home.hero?.subline),
       media: toMedia(home.hero?.media),
+      // TODO(cms): a Homepage field for the hero loop; demo content sets it today.
+      loop: null,
     },
     promise:
       promise && (orNull(promise.headline) || orNull(promise.body) || toMedia(promise.media))

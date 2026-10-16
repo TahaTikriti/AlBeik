@@ -120,7 +120,13 @@ export type PromoVM = {
 }
 
 export type HomePageData = {
-  hero: { headline: RichLine; subline: string | null; media: MediaVM | null }
+  hero: {
+    headline: RichLine
+    subline: string | null
+    media: MediaVM | null
+    /** Optional silent video loop played over the hero photo (the poster). */
+    loop: VideoVM | null
+  }
   promise: { headline: RichLine; body: string | null; media: MediaVM | null } | null
   featured: MenuItemVM[]
   promo: PromoVM | null

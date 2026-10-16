@@ -97,6 +97,14 @@ export function demoHome(): HomePageData {
       headline: toRichLine(hero.headline),
       subline: hero.subline,
       media: image(images.hero, images.hero.alt),
+      loop: content.heroLoop
+        ? {
+            kind: 'video',
+            url: `/seed/${content.heroLoop.file}`,
+            alt: images.hero.alt,
+            mimeType: content.heroLoop.mimeType,
+          }
+        : null,
     },
     promise: {
       headline: toRichLine(promise.headline),

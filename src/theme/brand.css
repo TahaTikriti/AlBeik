@@ -205,9 +205,9 @@
     z-index: -1;
     pointer-events: none;
     background:
-      radial-gradient(38% 28% at 28% 62%, rgb(255 255 255 / 0.11), transparent 70%),
-      radial-gradient(30% 24% at 72% 38%, rgb(255 255 255 / 0.08), transparent 70%),
-      radial-gradient(34% 30% at 55% 85%, rgb(216 38 47 / 0.22), transparent 70%);
+      radial-gradient(38% 28% at 28% 62%, rgb(255 255 255 / 0.08), transparent 70%),
+      radial-gradient(30% 24% at 72% 38%, rgb(255 255 255 / 0.06), transparent 70%),
+      radial-gradient(34% 30% at 55% 85%, rgb(216 38 47 / 0.16), transparent 70%);
     filter: blur(28px);
     will-change: transform;
   }
@@ -274,8 +274,8 @@
     border-radius: 50%;
     background: radial-gradient(circle, #fffbea 0 30%, #ffc160 55%, #ff7a2f 80%);
     box-shadow:
-      0 0 calc(var(--s) * 1.5) calc(var(--s) * 0.3) rgb(255 122 47 / 0.9),
-      0 0 calc(var(--s) * 4) rgb(244 49 63 / 0.6);
+      0 0 calc(var(--s) * 1.5) calc(var(--s) * 0.2) rgb(255 122 47 / 0.7),
+      0 0 calc(var(--s) * 3) rgb(244 49 63 / 0.4);
     opacity: 0;
   }
 
@@ -429,16 +429,13 @@
       hero-settle 1.4s var(--ease-out) both,
       hero-drift 16s ease-in-out 1.4s infinite alternate;
   }
-  /* The words punch up in turn, LEBANESE stamps down, the line shakes on impact,
-     and the follow-up line swipes in. About a second, once. */
+  /* The words punch up in turn, the red word settles in a beat later, and the
+     follow-up line swipes in. About a second, once. */
   .punch > span {
     animation: punch-up 620ms var(--ease-out) calc(var(--i) * 90ms) both;
   }
   .stamp {
-    animation: stamp 560ms var(--ease-snap) calc(var(--i) * 90ms + 120ms) both;
-  }
-  .hero-shout {
-    animation: shake 280ms linear 690ms both;
+    animation: stamp 520ms var(--ease-out) calc(var(--i) * 90ms + 100ms) both;
   }
   .swipe-in {
     animation: swipe-in 700ms var(--ease-out) 820ms both;
@@ -507,39 +504,9 @@
 }
 
 @keyframes stamp {
-  0% {
+  from {
     opacity: 0;
-    scale: 2.4;
-    rotate: -8deg;
-    filter: blur(6px);
-  }
-  55% {
-    opacity: 1;
-    filter: blur(0);
-    text-shadow: 0 0 0.35em rgb(244 49 63 / 0.9);
-  }
-  100% {
-    scale: 1;
-    rotate: 0deg;
-  }
-}
-
-@keyframes shake {
-  0%,
-  100% {
-    translate: 0 0;
-  }
-  20% {
-    translate: -4px 3px;
-  }
-  40% {
-    translate: 4px -2px;
-  }
-  60% {
-    translate: -2px 2px;
-  }
-  80% {
-    translate: 1px -1px;
+    scale: 1.12;
   }
 }
 
@@ -560,13 +527,13 @@
     scale: 1;
   }
   12% {
-    opacity: 1;
+    opacity: 0.8;
   }
   40% {
     translate: calc(var(--drift) * 0.5) calc(var(--rise) * -0.4cqh);
   }
   70% {
-    opacity: 0.85;
+    opacity: 0.55;
     translate: calc(var(--drift) * -0.2) calc(var(--rise) * -0.7cqh);
   }
   100% {
@@ -578,10 +545,10 @@
 
 @keyframes coal-glow {
   from {
-    opacity: 0.45;
+    opacity: 0.3;
   }
   to {
-    opacity: 0.95;
+    opacity: 0.6;
   }
 }
 
@@ -672,7 +639,7 @@
 
 @keyframes marquee-tilt {
   from {
-    rotate: -3.5deg;
+    rotate: var(--tilt, -3.5deg);
   }
 }
 

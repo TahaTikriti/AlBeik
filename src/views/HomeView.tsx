@@ -4,6 +4,7 @@ import { ViewTransition } from 'react'
 import { OrderButton } from '@/components/order/OrderButton'
 import { Countdown } from '@/components/ui/Countdown'
 import { Emphasis } from '@/components/ui/Emphasis'
+import { HeroLoop } from '@/components/ui/HeroLoop'
 import { Img } from '@/components/ui/Img'
 import { Marquee } from '@/components/ui/Marquee'
 import { Media } from '@/components/ui/Media'
@@ -67,8 +68,8 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
 
       {/* HERO: the brand's reels on a page. Copy and the order button come first;
           the dish rises out of the dark below (beside it from lg). The page's one
-          orchestrated moment: the words punch in, LEBANESE stamps down, the grill
-          throws embers. The order buttons never wait for it. */}
+          orchestrated moment: the words punch in, LEBANESE settles in after them,
+          the grill throws embers. The order buttons never wait for it. */}
       <section className="grain relative overflow-hidden">
         <Smoke />
         <div
@@ -76,7 +77,7 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
         >
           <div className="grid gap-3">
             <p className="label text-red-text">{copy.home.heroKicker}</p>
-            <h1 className="hero-shout">
+            <h1>
               <span className="text-display-1 block">
                 <PunchLine line={shout} />
               </span>
@@ -115,7 +116,16 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
               preload
               className="fade-photo hero-settle aspect-square w-full object-cover sm:aspect-[16/10] lg:aspect-auto lg:h-full"
             />
-            <Embers />
+            {/* A real loop (when there is one) brings its own fire; the embers
+                stand in for it over the still photo. */}
+            {hero.loop ? (
+              <HeroLoop
+                video={hero.loop}
+                className="fade-photo absolute inset-0 h-full w-full object-cover"
+              />
+            ) : (
+              <Embers />
+            )}
           </figure>
         ) : null}
       </section>
@@ -210,6 +220,9 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
           </div>
         </section>
       ) : null}
+
+      {/* The strip comes round again, the other way, between the white and the dark. */}
+      <Marquee items={copy.marqueeLate} reverse />
 
       {/* VISIT */}
       <section aria-labelledby="visit-heading" className="grain relative overflow-clip">

@@ -148,11 +148,11 @@ function hash(seed: number) {
   return ((t ^ (t >>> 14)) >>> 0) / 4294967296
 }
 
-const EMBERS = Array.from({ length: 28 }, (_, i) => {
+const EMBERS = Array.from({ length: 16 }, (_, i) => {
   const r = (n: number) => hash(i * 16 + n)
   return {
     x: `${(4 + r(1) * 92).toFixed(1)}%`,
-    size: `${(3 + r(2) * 5).toFixed(1)}px`,
+    size: `${(2.5 + r(2) * 3).toFixed(1)}px`,
     rise: Math.round(55 + r(3) * 45),
     drift: `${Math.round((r(4) - 0.5) * 90)}px`,
     duration: `${(3.2 + r(5) * 3.6).toFixed(2)}s`,

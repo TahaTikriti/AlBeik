@@ -8,7 +8,14 @@ import { useEffect, useRef, type ReactNode } from 'react'
  * cruising speed. Drives the CSS animation's playback rate (brand.css
  * .marquee-track); nothing happens with reduced motion.
  */
-export function MarqueeTrack({ children }: { children: ReactNode }) {
+export function MarqueeTrack({
+  children,
+  reverse = false,
+}: {
+  children: ReactNode
+  /** Runs the other way (and still flips while you scroll up). */
+  reverse?: boolean
+}) {
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -16,9 +23,19 @@ export function MarqueeTrack({ children }: { children: ReactNode }) {
     if (!track || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     let lastY = window.scrollY
     let lastT = performance.now()
+    const base = reverse ? -1 : 1
     let boost = 0
-    let direction = 1
+    let direction = base
     let frame = 0
+    const first = track.getAnimations()[0]
+    if (first) {
+      // Played backwards, an animation stops dead at time zero. Start the
+      // clock a thousand loops in, same phase, so reversing never gets there.
+      const loop = Number(first.effect?.getComputedTiming().duration) || 1
+      first.currentTime = loop * 1000 + (Number(first.currentTime) % loop)
+      // A reversed track runs backwards from the start, before any scroll.
+      first.playbackRate = base
+    }
 
     const tick = () => {
       boost *= 0.93
@@ -37,7 +54,7 @@ export function MarqueeTrack({ children }: { children: ReactNode }) {
       const speed = Math.abs(dy) / Math.max(now - lastT, 1)
       lastY = window.scrollY
       lastT = now
-      if (dy !== 0) direction = dy > 0 ? 1 : -1
+      if (dy !== 0) direction = (dy > 0 ? 1 : -1) * base
       boost = Math.min(boost + speed * 1.6, 9)
       if (!frame) frame = requestAnimationFrame(tick)
     }
@@ -47,7 +64,7 @@ export function MarqueeTrack({ children }: { children: ReactNode }) {
       window.removeEventListener('scroll', onScroll)
       cancelAnimationFrame(frame)
     }
-  }, [])
+  }, [reverse])
 
   return (
     <div ref={ref} className="marquee-track">

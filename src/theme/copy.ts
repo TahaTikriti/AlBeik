@@ -15,6 +15,8 @@ export const copy = {
   },
   // Facts, not filler: the charcoal grill and family recipes are from press coverage.
   marquee: ['Charcoal-grilled', 'Family recipes', 'Beirut street food', 'Kansas City'],
+  // The second strip, lower on the home page: lines from the Instagram posts.
+  marqueeLate: ['Juicier', 'Meatier', 'Tastier', 'Spice bomb is waiting'],
   order: {
     cta: 'Order',
     ctaFor: (item: string) => `Order ${item}`,

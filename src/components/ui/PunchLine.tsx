@@ -3,8 +3,8 @@ import type { CSSProperties } from 'react'
 import { emphasisSegments, type EmphasisProps } from './Emphasis'
 
 /**
- * The hero headline, one word at a time: plain words punch up out of a mask
- * in turn, then the red word lands like a stamp (see .punch / .stamp in
+ * A display headline, one word at a time: plain words punch up out of a mask
+ * in turn, then the red word settles in a beat later (see .punch / .stamp in
  * brand.css). Reads as normal text to assistive tech; static with reduced
  * motion.
  */

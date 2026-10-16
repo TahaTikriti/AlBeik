@@ -36,6 +36,13 @@ export const images = {
   },
 } as const
 
+/**
+ * Optional silent video loop over the hero photo (the photo stays as its
+ * poster). Put an MP4 (H.264, ~6-10 s, under ~3 MB) in public/seed and name
+ * it here; null shows the photo alone.
+ */
+export const heroLoop: { file: string; mimeType: string } | null = null
+
 export type SeedCategory = { name: string; sortOrder: number }
 
 export const categories: SeedCategory[] = [
@@ -271,7 +278,8 @@ export const siteSettings = {
 /** AlBeik's store pages, from the client (2026-10-14). Item-level links can be added per dish in the CMS. */
 export const storeLinks = {
   doordashStoreUrl: 'https://www.doordash.com/store/albeik-kansas-city-32933201/54031354/',
-  uberEatsStoreUrl: 'https://www.ubereats.com/store/al-beik-state-line-rd/lkFhH1rNVt-gZXLRIOxHzA?diningMode=DELIVERY',
+  uberEatsStoreUrl:
+    'https://www.ubereats.com/store/al-beik-state-line-rd/lkFhH1rNVt-gZXLRIOxHzA?diningMode=DELIVERY',
 }
 
 /** Printed after seeding; also listed in the README. */
