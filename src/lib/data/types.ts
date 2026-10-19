@@ -39,6 +39,8 @@ export type VideoVM = {
   url: string
   alt: string
   mimeType: string
+  /** Still shown before (and instead of) playback: ideally the first frame. */
+  poster: string | null
 }
 
 export type MediaVM = ImageVM | VideoVM
@@ -89,6 +91,8 @@ export type LocationVM = {
   /** `tel:` link, or null. */
   phoneHref: string | null
   mapUrl: string | null
+  /** Google Maps "Embed a map" URL for an iframe; null shows no map. */
+  mapEmbedUrl: string | null
   /** Display lines, e.g. { days: 'Mon–Thu', time: '11:00 AM – 10:00 PM' }. */
   hours: HoursLine[]
   /** The same hours as data (24-hour times), for JSON-LD or an "open now" badge. */
@@ -120,7 +124,13 @@ export type PromoVM = {
 }
 
 export type HomePageData = {
-  hero: { headline: RichLine; subline: string | null; media: MediaVM | null }
+  hero: {
+    headline: RichLine
+    subline: string | null
+    media: MediaVM | null
+    /** Optional silent video loop played over the hero photo (the poster). */
+    loop: VideoVM | null
+  }
   promise: { headline: RichLine; body: string | null; media: MediaVM | null } | null
   featured: MenuItemVM[]
   promo: PromoVM | null

@@ -1,5 +1,6 @@
 import { CategoryNav } from '@/components/menu/CategoryNav'
 import { MenuSection } from '@/components/menu/MenuSection'
+import { PunchLine } from '@/components/ui/PunchLine'
 import { ui } from '@/components/ui/classes'
 import type { MenuPageData } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
@@ -10,7 +11,7 @@ export function MenuView({ categories }: MenuPageData) {
       {/* Kept short: regulars come here to order, so the dishes start high on the page. */}
       <div className="grain relative">
         <h1 className={`${ui.container} text-display-1 pt-8 pb-6 md:pt-14 md:pb-8`}>
-          The <em>menu</em>
+          <PunchLine text="The *menu*" />
         </h1>
       </div>
       {categories.length ? (

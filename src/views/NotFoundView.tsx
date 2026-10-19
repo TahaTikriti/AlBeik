@@ -1,5 +1,6 @@
 import Link from 'next/link'
 
+import { PunchLine } from '@/components/ui/PunchLine'
 import { ui } from '@/components/ui/classes'
 import { copy } from '@/theme/copy'
 import { FezMoment } from '@/theme/motifs'
@@ -12,7 +13,9 @@ export function NotFoundView() {
           404
         </p>
         <FezMoment className="w-28 md:w-36" />
-        <h1 className="text-display-1">{copy.notFound.title}</h1>
+        <h1 className="text-display-1">
+          <PunchLine text={copy.notFound.title} />
+        </h1>
         <p className="max-w-[28ch] text-xl text-ink-muted">{copy.notFound.body}</p>
         <Link href="/menu" className="btn btn-red min-h-14 px-8">
           {copy.notFound.cta}

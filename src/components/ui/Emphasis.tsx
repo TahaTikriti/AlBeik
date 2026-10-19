@@ -3,18 +3,17 @@ import { Fragment } from 'react'
 import type { RichLine } from '@/lib/data/types'
 import { parseEmphasis } from '@/lib/text'
 
-type Props = { line: RichLine; text?: never } | { text: string; line?: never }
+export type EmphasisProps = { line: RichLine; text?: never } | { text: string; line?: never }
 
 /** Punctuation that sits right after a highlighted word ("*Lebanese*."). */
 const TRAILING_PUNCTUATION = /^[.,!?:;]+/
 
 /**
- * Display text where *asterisk* words become <em> (the red word from the
- * Instagram posts). Takes a CMS line or a UI copy string. Punctuation right
- * after a highlighted word takes its color, so a lone white period doesn't
- * trail a red word.
+ * The line's segments with punctuation right after a highlighted word moved
+ * into it ("*Lebanese*." → "Lebanese." in red), so a lone white period
+ * doesn't trail a red word.
  */
-export function Emphasis(props: Props) {
+export function emphasisSegments(props: EmphasisProps): RichLine['segments'] {
   const segments = (props.line ? props.line.segments : parseEmphasis(props.text)).map((s) => ({
     ...s,
   }))
@@ -26,10 +25,18 @@ export function Emphasis(props: Props) {
       cur.text = cur.text.slice(punctuation.length)
     }
   }
+  return segments.filter((s) => s.text)
+}
+
+/**
+ * Display text where *asterisk* words become <em> (the red word from the
+ * Instagram posts). Takes a CMS line or a UI copy string.
+ */
+export function Emphasis(props: EmphasisProps) {
   return (
     <>
-      {segments.map((segment, i) =>
-        !segment.text ? null : segment.emphasis ? (
+      {emphasisSegments(props).map((segment, i) =>
+        segment.emphasis ? (
           <em key={i}>{segment.text}</em>
         ) : (
           <Fragment key={i}>{segment.text}</Fragment>

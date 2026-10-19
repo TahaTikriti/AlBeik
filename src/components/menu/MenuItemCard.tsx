@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { ViewTransition } from 'react'
 
 import type { Placement } from '@/lib/analytics'
 import type { MenuItemVM, MenuTag } from '@/lib/data/types'
@@ -34,38 +35,46 @@ export function MenuItemCard({
 }: Props) {
   const badge = BADGE_ORDER.find((tag) => item.tags.includes(tag))
   return (
-    <article className="group relative grid h-full grid-cols-[clamp(5.25rem,25vw,6.75rem)_1fr] items-center gap-x-3.5 overflow-hidden rounded-card bg-charcoal p-3 pe-4 transition-[scale] duration-(--duration-fast) active:scale-[0.985] sm:grid-cols-1 sm:grid-rows-[auto_1fr_auto] sm:items-stretch sm:gap-y-4 sm:p-0 sm:pb-5">
-      <div className="relative overflow-hidden rounded-control sm:rounded-none">
-        {item.image ? (
-          <Img
-            image={item.image}
-            sizes="(min-width: 1024px) 24rem, (min-width: 640px) 46vw, 25vw"
-            preload={preloadImage}
-            className="aspect-square w-full object-cover transition-transform duration-(--duration-slow) ease-out group-hover:scale-105 sm:aspect-[4/3]"
-          />
-        ) : (
-          <span className="grid aspect-square w-full place-items-center bg-black font-display text-4xl sm:aspect-[4/3]">
-            {item.name.charAt(0)}
-          </span>
-        )}
-        {badge ? (
-          <span className="label absolute bottom-1.5 left-1/2 -translate-x-1/2 rounded-full bg-white px-2 py-1 text-[0.6rem] whitespace-nowrap text-black shadow-raised sm:top-3 sm:bottom-auto sm:left-3 sm:translate-x-0">
-            ★ {copy.item.tags[badge]}
-          </span>
-        ) : null}
-      </div>
+    <article
+      data-spotlight
+      className="group relative isolate grid h-full grid-cols-[clamp(5.25rem,25vw,6.75rem)_1fr] items-center gap-x-3.5 overflow-clip rounded-card bg-charcoal p-3 pe-4 transition-[scale] duration-(--duration-fast) active:scale-[0.985] sm:grid-cols-1 sm:grid-rows-[auto_1fr_auto] sm:items-stretch sm:gap-y-4 sm:p-0 sm:pb-5"
+    >
+      {/* Photo and name morph into the dish page (see ItemView). */}
+      <ViewTransition name={`dish-${item.slug}`} share="dish-photo" default="none">
+        <div className="relative overflow-clip rounded-control sm:rounded-none">
+          {item.image ? (
+            <Img
+              image={item.image}
+              sizes="(min-width: 1024px) 24rem, (min-width: 640px) 46vw, 25vw"
+              preload={preloadImage}
+              className="settle aspect-square w-full object-cover transition-transform duration-(--duration-slow) ease-out group-hover:scale-105 sm:aspect-[4/3]"
+            />
+          ) : (
+            <span className="grid aspect-square w-full place-items-center bg-black font-display text-4xl sm:aspect-[4/3]">
+              {item.name.charAt(0)}
+            </span>
+          )}
+          {badge ? (
+            <span className="label absolute bottom-1.5 left-1/2 -translate-x-1/2 rounded-full bg-white px-2 py-1 text-[0.6rem] whitespace-nowrap text-black shadow-raised sm:top-3 sm:bottom-auto sm:left-3 sm:translate-x-0">
+              ★ {copy.item.tags[badge]}
+            </span>
+          ) : null}
+        </div>
+      </ViewTransition>
       {/* Phones: text on top, button pinned below. From sm up the card's own rows take over. */}
       <div className="grid h-full grid-rows-[1fr_auto] gap-3 py-1 sm:contents">
         <div className="grid content-start gap-1.5 sm:px-5">
           {/* Never clamped: a menu must show the whole name. Scales down on narrow phones. */}
-          <Heading className="text-[clamp(1.35rem,0.6rem+3.8vw,1.65rem)] leading-[1.05] normal-case sm:text-[1.85rem]">
-            <Link
-              href={item.href}
-              className="after:absolute after:inset-0 after:rounded-card group-hover:text-red-text"
-            >
-              {item.name}
-            </Link>
-          </Heading>
+          <ViewTransition name={`dish-name-${item.slug}`} share="dish-name" default="none">
+            <Heading className="text-[clamp(1.35rem,0.6rem+3.8vw,1.65rem)] leading-[1.05] normal-case sm:text-[1.85rem]">
+              <Link
+                href={item.href}
+                className="after:absolute after:inset-0 after:rounded-card group-hover:text-red-text"
+              >
+                {item.name}
+              </Link>
+            </Heading>
+          </ViewTransition>
           {item.description ? (
             <p className="line-clamp-2 text-small text-ink-muted">{item.description}</p>
           ) : null}

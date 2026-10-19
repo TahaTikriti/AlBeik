@@ -1,7 +1,22 @@
+import type { CSSProperties } from 'react'
+
 import { Mustache } from '@/theme/motifs'
 
-/** A red strip of slogans that scrolls sideways (static with reduced motion). */
-export function Marquee({ items }: { items: readonly string[] }) {
+import { MarqueeTrack } from './MarqueeTrack'
+
+/**
+ * A red strip of slogans that scrolls sideways, pushed along by the page's
+ * scroll and tilted until it scrolls into place (static with reduced motion).
+ * `reverse` runs it the other way with the opposite tilt, for a second strip
+ * further down the page.
+ */
+export function Marquee({
+  items,
+  reverse = false,
+}: {
+  items: readonly string[]
+  reverse?: boolean
+}) {
   const run = (hidden: boolean) => (
     <span className="flex items-center" aria-hidden={hidden || undefined}>
       {items.map((item) => (
@@ -15,10 +30,18 @@ export function Marquee({ items }: { items: readonly string[] }) {
     </span>
   )
   return (
-    <div className="marquee border-y-2 border-black bg-red py-2 text-white">
-      <div className="marquee-track">
-        {run(false)}
-        {run(true)}
+    // Clips sideways only: the tilted strip is wider than the page, and any
+    // overflow would make phones zoom out. Its ends may still overhang above
+    // and below.
+    <div className="relative z-1 overflow-x-clip">
+      <div
+        className="marquee marquee-tilt border-y-2 border-black bg-red py-2 text-white"
+        style={reverse ? ({ '--tilt': '3deg' } as CSSProperties) : undefined}
+      >
+        <MarqueeTrack reverse={reverse}>
+          {run(false)}
+          {run(true)}
+        </MarqueeTrack>
       </div>
     </div>
   )

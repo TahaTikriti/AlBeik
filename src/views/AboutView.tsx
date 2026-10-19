@@ -1,5 +1,5 @@
-import { Emphasis } from '@/components/ui/Emphasis'
 import { Img } from '@/components/ui/Img'
+import { PunchLine } from '@/components/ui/PunchLine'
 import { RichText } from '@/components/ui/RichText'
 import { ui } from '@/components/ui/classes'
 import type { AboutPageData } from '@/lib/data/types'
@@ -15,18 +15,18 @@ export function AboutView({ headline, body, images }: AboutPageData) {
         <div className={`${ui.container} grid gap-5 pt-12 pb-14 md:pt-20`}>
           <p className="label text-red-text">{copy.about.title}</p>
           <h1 className="text-display-1 max-w-[14ch]">
-            {headline.text ? <Emphasis line={headline} /> : copy.about.title}
+            {headline.text ? <PunchLine line={headline} /> : copy.about.title}
           </h1>
         </div>
       </header>
 
       {lead ? (
-        <figure className="relative">
+        <figure className="relative overflow-clip">
           <Img
             image={lead}
             sizes="100vw"
             preload
-            className="aspect-[3/2] max-h-[70vh] w-full object-cover md:aspect-[21/9]"
+            className="parallax aspect-[3/2] max-h-[70vh] w-full object-cover md:aspect-[21/9]"
           />
           <div
             className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"

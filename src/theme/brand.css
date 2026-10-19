@@ -3,6 +3,13 @@
  * motion. Everything animated respects prefers-reduced-motion.
  */
 
+/* Animatable length for the scroll fuse (see .fuse). */
+@property --fuse {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 0%;
+}
+
 @layer base {
   html {
     color-scheme: dark;
@@ -56,23 +63,53 @@
   .btn:active {
     transform: scale(0.96);
   }
+  /* Red buttons: a band of heat sweeps across on hover or keyboard focus. */
   .btn-red {
-    background: var(--p-red);
+    background-color: var(--p-red);
+    background-image: linear-gradient(
+      110deg,
+      transparent 38%,
+      rgb(255 255 255 / 0.3) 50%,
+      transparent 62%
+    );
+    background-size: 260% 100%;
+    background-position: 130% 0;
+    background-repeat: no-repeat;
     color: var(--p-white);
     box-shadow: var(--shadow-ember);
+    transition:
+      transform var(--duration-fast) var(--ease-out),
+      background-color var(--duration-fast),
+      background-position 0ms;
   }
-  .btn-red:hover {
-    background: var(--p-red-text);
+  .btn-red:hover,
+  .btn-red:focus-visible {
+    background-color: var(--p-red-text);
+    background-position: -30% 0;
+    transition:
+      transform var(--duration-fast) var(--ease-out),
+      background-color var(--duration-fast),
+      background-position 750ms var(--ease-out);
   }
   .btn-ink {
     background: var(--color-accent);
     color: var(--color-accent-ink);
   }
+  /* Outlined buttons fill with white from the bottom. */
   .btn-ghost {
     box-shadow: inset 0 0 0 2px currentColor;
+    background-image: linear-gradient(var(--p-white), var(--p-white));
+    background-size: 100% 0%;
+    background-position: 50% 100%;
+    background-repeat: no-repeat;
+    transition:
+      transform var(--duration-fast) var(--ease-out),
+      background-size var(--duration-base) var(--ease-out),
+      color var(--duration-fast);
   }
-  .btn-ghost:hover {
-    background: var(--p-white);
+  .btn-ghost:hover,
+  .btn-ghost:focus-visible {
+    background-size: 100% 100%;
     color: var(--p-black);
   }
 
@@ -168,9 +205,9 @@
     z-index: -1;
     pointer-events: none;
     background:
-      radial-gradient(38% 28% at 28% 62%, rgb(255 255 255 / 0.11), transparent 70%),
-      radial-gradient(30% 24% at 72% 38%, rgb(255 255 255 / 0.08), transparent 70%),
-      radial-gradient(34% 30% at 55% 85%, rgb(216 38 47 / 0.22), transparent 70%);
+      radial-gradient(38% 28% at 28% 62%, rgb(255 255 255 / 0.08), transparent 70%),
+      radial-gradient(30% 24% at 72% 38%, rgb(255 255 255 / 0.06), transparent 70%),
+      radial-gradient(34% 30% at 55% 85%, rgb(216 38 47 / 0.16), transparent 70%);
     filter: blur(28px);
     will-change: transform;
   }
@@ -191,6 +228,124 @@
     background: radial-gradient(closest-side, rgb(255 255 255 / 0.35), transparent);
     filter: blur(10px);
     opacity: 0;
+  }
+
+  /* Hero headline words (see PunchLine): each word sits in a mask it rises out of. */
+  .punch {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: top;
+    padding-block: 0.08em;
+    margin-block: -0.08em;
+  }
+  .punch > span,
+  .stamp {
+    display: inline-block;
+  }
+
+  /* Embers off the grill, over the hero dish. Sized in container units so they
+     rise the same share of the photo at any size. */
+  .embers {
+    position: absolute;
+    inset: 0;
+    container-type: size;
+    pointer-events: none;
+  }
+  .embers::before {
+    content: '';
+    position: absolute;
+    inset: auto 0 0;
+    height: 45%;
+    background: radial-gradient(
+      60% 70% at 50% 100%,
+      rgb(255 120 40 / 0.35),
+      rgb(216 38 47 / 0.15) 45%,
+      transparent 75%
+    );
+    mix-blend-mode: screen;
+    opacity: 0.7;
+  }
+  .embers > span {
+    position: absolute;
+    bottom: 4%;
+    left: var(--x);
+    width: var(--s);
+    height: var(--s);
+    border-radius: 50%;
+    background: radial-gradient(circle, #fffbea 0 30%, #ffc160 55%, #ff7a2f 80%);
+    box-shadow:
+      0 0 calc(var(--s) * 1.5) calc(var(--s) * 0.2) rgb(255 122 47 / 0.7),
+      0 0 calc(var(--s) * 3) rgb(244 49 63 / 0.4);
+    opacity: 0;
+  }
+
+  /* Scroll progress: a fuse along the bottom of the header, spark at the tip. */
+  .fuse {
+    position: absolute;
+    inset-inline: 0;
+    bottom: -2px;
+    height: 3px;
+    pointer-events: none;
+    /* At 100% the spark would poke past the page edge and widen the page
+       (phones zoom out); clip sideways, let it glow above and below. */
+    overflow-x: clip;
+  }
+  .fuse::before {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+    width: var(--fuse);
+    background: linear-gradient(90deg, var(--p-red), var(--p-red-text));
+  }
+  .fuse::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: var(--fuse);
+    width: 9px;
+    height: 9px;
+    margin: -4.5px 0 0 -4.5px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fffbea 0 25%, #ffc160 50%, rgb(244 49 63 / 0) 75%);
+    box-shadow: 0 0 10px 3px rgb(255 122 47 / 0.75);
+  }
+
+  /* Dish cards: a warm glow follows the pointer (Spotlight), behind the text. */
+  [data-spotlight]::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(
+      280px circle at var(--mx, 50%) var(--my, 50%),
+      rgb(244 49 63 / 0.24),
+      transparent 65%
+    );
+    box-shadow: inset 0 0 0 1px rgb(244 49 63 / 0.3);
+    opacity: 0;
+    transition: opacity var(--duration-base);
+  }
+  @media (hover: hover) {
+    [data-spotlight]:hover::before {
+      opacity: 1;
+    }
+  }
+
+  /* The footer map, tinted to the brand's warm charcoal so it sits in the
+     black footer. One fixed look; invert + hue-rotate keeps the pin red-ish
+     and the labels readable. */
+  .map-dark {
+    filter: invert(0.9) hue-rotate(180deg) sepia(0.2) saturate(0.8) brightness(0.92) contrast(0.95);
+  }
+
+  /* The menu's category pill (CategoryNav) glides, with a little overshoot. */
+  .chip-pill {
+    transition:
+      translate var(--duration-slow) var(--ease-snap),
+      width var(--duration-slow) var(--ease-out);
   }
 
   .marquee {
@@ -277,10 +432,29 @@
     animation: fez-tip 900ms var(--ease-snap) 200ms both;
   }
 
-  /* The home page's one orchestrated moment: the dish settles in (scale only, so
-     it never delays the largest paint). */
+  /* The home page's one orchestrated moment. The dish settles in (scale only, so
+     it never delays the largest paint), then keeps pushing in slowly. */
   .hero-settle {
-    animation: hero-settle 1.4s var(--ease-out) both;
+    animation:
+      hero-settle 1.4s var(--ease-out) both,
+      hero-drift 16s ease-in-out 1.4s infinite alternate;
+  }
+  /* The words punch up in turn, the red word settles in a beat later, and the
+     follow-up line swipes in. About a second, once. */
+  .punch > span {
+    animation: punch-up 620ms var(--ease-out) calc(var(--i) * 90ms) both;
+  }
+  .stamp {
+    animation: stamp 520ms var(--ease-out) calc(var(--i) * 90ms + 100ms) both;
+  }
+  .swipe-in {
+    animation: swipe-in 700ms var(--ease-out) 820ms both;
+  }
+  .embers > span {
+    animation: ember-rise var(--d) linear var(--delay) infinite;
+  }
+  .embers::before {
+    animation: coal-glow 2.6s ease-in-out infinite alternate;
   }
 }
 
@@ -323,6 +497,290 @@
 @keyframes hero-settle {
   from {
     scale: 1.06;
+  }
+}
+
+@keyframes hero-drift {
+  to {
+    scale: 1.07;
+    translate: -1.5% -1%;
+  }
+}
+
+@keyframes punch-up {
+  from {
+    translate: 0 110%;
+  }
+}
+
+@keyframes stamp {
+  from {
+    opacity: 0;
+    scale: 1.12;
+  }
+}
+
+@keyframes swipe-in {
+  from {
+    clip-path: inset(-0.2em 100% -0.2em 0);
+    translate: -0.5em 0;
+  }
+  to {
+    clip-path: inset(-0.2em -0.2em -0.2em 0);
+  }
+}
+
+@keyframes ember-rise {
+  0% {
+    opacity: 0;
+    translate: 0 0;
+    scale: 1;
+  }
+  12% {
+    opacity: 0.8;
+  }
+  40% {
+    translate: calc(var(--drift) * 0.5) calc(var(--rise) * -0.4cqh);
+  }
+  70% {
+    opacity: 0.55;
+    translate: calc(var(--drift) * -0.2) calc(var(--rise) * -0.7cqh);
+  }
+  100% {
+    opacity: 0;
+    translate: var(--drift) calc(var(--rise) * -1cqh);
+    scale: 0.5;
+  }
+}
+
+@keyframes coal-glow {
+  from {
+    opacity: 0.3;
+  }
+  to {
+    opacity: 0.6;
+  }
+}
+
+/* ── Scroll-linked motion: tied to the thumb, not a timer ───────────────
+   Big section titles slide in from both sides (the red word from the right),
+   the red field opens out to full bleed, photos drift slower than the page.
+   Browsers without scroll timelines (and reduced motion) get the still page.
+   Ancestors must clip with overflow: clip, not hidden: hidden makes them the
+   scroll container the timeline follows, and it never moves. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .kinetic {
+      animation: kinetic-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 45%;
+    }
+    .kinetic em {
+      display: inline-block;
+      animation: kinetic-em linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 45%;
+    }
+    .wipe-open {
+      animation: wipe-open linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 70%;
+    }
+    .parallax {
+      scale: 1.16;
+      animation: parallax linear both;
+      animation-timeline: view();
+    }
+    .fuse {
+      animation: fuse linear both;
+      animation-timeline: scroll(root);
+    }
+    /* Menu photos settle into their cards as they arrive. transform, not
+       scale, so it stacks with the hover zoom. */
+    .settle {
+      animation: settle linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 40%;
+    }
+    /* A category's red rule draws itself across as the section arrives. */
+    .draw-rule {
+      position: relative;
+      border-bottom-color: transparent;
+      view-timeline: --rule;
+    }
+    .draw-rule::after {
+      content: '';
+      position: absolute;
+      inset-inline: 0;
+      bottom: -2px;
+      height: 2px;
+      background: var(--p-red);
+      transform-origin: left;
+      animation: draw-rule linear both;
+      animation-timeline: --rule;
+      animation-range: entry 30% cover 40%;
+    }
+    /* Wider than the page so the tilted ends never show a gap (Marquee clips
+       the overflow sideways). */
+    .marquee-tilt {
+      width: 112%;
+      margin-inline: -6%;
+      animation: marquee-tilt linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 55%;
+    }
+    .fuse::after {
+      animation: spark-flicker 180ms steps(2) infinite;
+    }
+  }
+}
+
+@keyframes settle {
+  from {
+    transform: scale(1.18);
+  }
+}
+
+@keyframes draw-rule {
+  from {
+    scale: 0 1;
+  }
+}
+
+@keyframes marquee-tilt {
+  from {
+    rotate: var(--tilt, -3.5deg);
+  }
+}
+
+@keyframes fuse {
+  from {
+    --fuse: 0%;
+    opacity: 0;
+  }
+  2% {
+    opacity: 1;
+  }
+  to {
+    --fuse: 100%;
+    opacity: 1;
+  }
+}
+
+@keyframes spark-flicker {
+  50% {
+    scale: 1.35;
+    opacity: 0.8;
+  }
+}
+
+@keyframes kinetic-in {
+  from {
+    translate: -18vw 0;
+  }
+}
+
+@keyframes kinetic-em {
+  from {
+    translate: 40vw 0;
+  }
+}
+
+@keyframes wipe-open {
+  from {
+    clip-path: inset(8% 6% 8% 6% round var(--radius-card));
+  }
+  to {
+    clip-path: inset(0 round 0);
+  }
+}
+
+@keyframes parallax {
+  from {
+    translate: 0 -7%;
+  }
+  to {
+    translate: 0 7%;
+  }
+}
+
+/* ── Menu to dish: the card's photo and name morph into the dish page ────
+   (React <ViewTransition> pairs, see MenuItemCard / ItemView). Photos crop
+   rather than stretch between a 4:3 card and a square page photo. */
+::view-transition-group(.dish-photo),
+::view-transition-group(.dish-name) {
+  animation-duration: 480ms;
+  animation-timing-function: var(--ease-out);
+}
+::view-transition-image-pair(.dish-photo) {
+  overflow: clip;
+  border-radius: var(--radius-card);
+  animation: via-blur 480ms var(--ease-out);
+}
+::view-transition-old(.dish-photo),
+::view-transition-new(.dish-photo) {
+  height: 100%;
+  object-fit: cover;
+}
+/* ── Page changes: the old page lifts away, the new one rises in (see
+   app/(frontend)/template.tsx); the nav underline slides to its new link. */
+::view-transition-old(.page-out) {
+  animation: page-out 200ms ease-in both;
+}
+::view-transition-new(.page-in) {
+  animation: page-in 460ms var(--ease-out) 90ms both;
+}
+::view-transition-group(nav-underline) {
+  z-index: 101;
+  animation-duration: 460ms;
+  animation-timing-function: var(--ease-snap);
+}
+/* The header and order bar are anchored: drawn above the moving page,
+   swapped in place without a crossfade. */
+::view-transition-group(site-header),
+::view-transition-group(order-bar) {
+  z-index: 100;
+}
+::view-transition-group(site-header) {
+  animation: none;
+}
+::view-transition-old(site-header) {
+  display: none;
+}
+::view-transition-new(site-header) {
+  animation: none;
+}
+@keyframes page-out {
+  to {
+    opacity: 0;
+    translate: 0 -10px;
+  }
+}
+@keyframes page-in {
+  from {
+    opacity: 0;
+    translate: 0 22px;
+  }
+}
+
+/* The name grows into the title instead of crossfading two different line
+   breaks over each other. */
+::view-transition-old(.dish-name) {
+  display: none;
+}
+::view-transition-new(.dish-name) {
+  animation: none;
+}
+@keyframes via-blur {
+  35% {
+    filter: blur(3px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }
 

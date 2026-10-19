@@ -1,15 +1,19 @@
 import Link from 'next/link'
+import { ViewTransition } from 'react'
+import { preload } from 'react-dom'
 
 import { OrderButton } from '@/components/order/OrderButton'
 import { Countdown } from '@/components/ui/Countdown'
 import { Emphasis } from '@/components/ui/Emphasis'
+import { HeroLoop } from '@/components/ui/HeroLoop'
 import { Img } from '@/components/ui/Img'
 import { Marquee } from '@/components/ui/Marquee'
 import { Media } from '@/components/ui/Media'
+import { PunchLine } from '@/components/ui/PunchLine'
 import { ui } from '@/components/ui/classes'
 import type { HomePageData, MenuItemVM, RichLine, SiteVM } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
-import { Smoke, Steam } from '@/theme/motifs'
+import { Embers, Smoke } from '@/theme/motifs'
 
 type Props = HomePageData & { site: SiteVM }
 
@@ -41,6 +45,8 @@ function splitFirstSentence(line: RichLine): [RichLine, RichLine | null] {
 
 export function HomeView({ hero, promise, featured, promo, testimonials, site }: Props) {
   const [shout, followUp] = splitFirstSentence(hero.headline)
+  // The loop's poster is the hero's largest paint: fetch it first.
+  if (hero.loop?.poster) preload(hero.loop.poster, { as: 'image', fetchPriority: 'high' })
   const location = site.locations[0]
 
   return (
@@ -64,7 +70,9 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
       ) : null}
 
       {/* HERO: the brand's reels on a page. Copy and the order button come first;
-          the dish rises out of the dark below (beside it from lg). */}
+          the dish rises out of the dark below (beside it from lg). The page's one
+          orchestrated moment: the words punch in, LEBANESE settles in after them,
+          the grill throws embers. The order buttons never wait for it. */}
       <section className="grain relative overflow-hidden">
         <Smoke />
         <div
@@ -74,10 +82,10 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
             <p className="label text-red-text">{copy.home.heroKicker}</p>
             <h1>
               <span className="text-display-1 block">
-                <Emphasis line={shout} />
+                <PunchLine line={shout} />
               </span>
               {followUp ? (
-                <span className="mt-[0.35em] block font-display text-[clamp(1.6rem,1.2rem+2vw,2.6rem)] leading-none">
+                <span className="swipe-in mt-[0.35em] block font-display text-[clamp(1.6rem,1.2rem+2vw,2.6rem)] leading-none">
                   <Emphasis line={followUp} />
                 </span>
               ) : null}
@@ -103,7 +111,16 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
           </div>
         </div>
 
-        {hero.media ? (
+        {/* With a loop, the video stands alone (its poster is its first frame);
+            otherwise the photo, with embers standing in for the fire. */}
+        {hero.loop ? (
+          <figure className="relative -mt-6 lg:absolute lg:inset-y-0 lg:right-0 lg:mt-0 lg:w-[54%]">
+            <HeroLoop
+              video={hero.loop}
+              className="fade-photo aspect-square w-full object-cover sm:aspect-[16/10] lg:aspect-auto lg:h-full"
+            />
+          </figure>
+        ) : hero.media ? (
           <figure className="relative -mt-6 lg:absolute lg:inset-y-0 lg:right-0 lg:mt-0 lg:w-[54%]">
             <Media
               media={hero.media}
@@ -111,7 +128,7 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
               preload
               className="fade-photo hero-settle aspect-square w-full object-cover sm:aspect-[16/10] lg:aspect-auto lg:h-full"
             />
-            <Steam />
+            <Embers />
           </figure>
         ) : null}
       </section>
@@ -126,7 +143,7 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
         >
           <h2
             id="featured-heading"
-            className="text-display-1 lg:self-end lg:text-[clamp(3.25rem,1rem+3.6vw,4.75rem)]"
+            className="kinetic text-display-1 lg:self-end lg:text-[clamp(3.25rem,1rem+3.6vw,4.75rem)]"
           >
             <Emphasis text={copy.home.featuredTitle} />
           </h2>
@@ -148,7 +165,7 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
 
       {/* PROMISE */}
       {promise ? (
-        <section data-theme="inverse" className="grain relative overflow-hidden">
+        <section data-theme="inverse" className="wipe-open grain relative overflow-clip">
           <div className={`${ui.container} grid gap-10 py-section md:grid-cols-2 md:items-center`}>
             <div className="grid gap-6">
               {promise.headline.text ? (
@@ -159,11 +176,11 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
               {promise.body ? <p className="max-w-[38ch] text-lg">{promise.body}</p> : null}
             </div>
             {promise.media ? (
-              <div className="relative">
+              <div className="relative overflow-clip rounded-card shadow-raised">
                 <Media
                   media={promise.media}
                   sizes="(min-width: 768px) 46vw, 100vw"
-                  className="aspect-[4/3] w-full rounded-card object-cover shadow-raised md:aspect-[4/5]"
+                  className="parallax aspect-[4/3] w-full object-cover md:aspect-[4/5]"
                 />
               </div>
             ) : null}
@@ -176,10 +193,10 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
         <section
           data-theme="light"
           aria-labelledby="testimonials-heading"
-          className="overflow-hidden"
+          className="overflow-clip"
         >
           <div className={`${ui.container} ${ui.section} grid gap-10`}>
-            <h2 id="testimonials-heading" className="text-display-1">
+            <h2 id="testimonials-heading" className="kinetic text-display-1">
               <Emphasis text={copy.home.testimonialsTitle} />
             </h2>
             <ul className="-mx-gutter flex snap-x snap-mandatory gap-4 overflow-x-auto px-gutter pb-4 [scrollbar-width:none] md:grid md:auto-rows-fr md:grid-cols-2 md:overflow-visible">
@@ -207,23 +224,29 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
         </section>
       ) : null}
 
+      {/* The strip comes round again, the other way, between the white and the dark. */}
+      <Marquee items={copy.marqueeLate} reverse />
+
       {/* VISIT */}
-      <section aria-labelledby="visit-heading" className="grain relative overflow-hidden">
+      <section aria-labelledby="visit-heading" className="grain relative overflow-clip">
         <Smoke className="opacity-70" />
         <div
           className={`${ui.container} ${ui.section} grid gap-8 lg:grid-cols-[auto_1fr] lg:items-end lg:gap-12`}
         >
           <div className="grid gap-4">
-            <h2 id="visit-heading" className="text-mega lg:whitespace-nowrap">
+            <h2 id="visit-heading" className="kinetic text-mega lg:whitespace-nowrap">
               <Emphasis text={copy.home.visitTitle} />
             </h2>
             <p className="max-w-[30ch] text-lg text-ink-muted">{copy.home.visitBody}</p>
           </div>
           <div className="grid gap-4 lg:justify-items-end lg:text-right">
             {location ? (
-              <address className="grid font-display text-display-2 not-italic uppercase">
+              // Sized for a full street address: each line stays on one line.
+              <address className="grid font-display text-[clamp(1.6rem,1.1rem+1.6vw,2.6rem)] leading-[1.02] not-italic uppercase">
                 {location.addressLines.map((line) => (
-                  <span key={line}>{line}</span>
+                  <span key={line} className="whitespace-nowrap">
+                    {line}
+                  </span>
                 ))}
               </address>
             ) : null}
@@ -237,9 +260,16 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
                 ))}
               </dl>
             ) : null}
-            <Link href="/location" className="btn btn-ghost">
-              {copy.location.directions}
-            </Link>
+            {/* Straight to Google Maps when the listing is known. */}
+            {location?.mapUrl ? (
+              <a href={location.mapUrl} target="_blank" rel="noopener" className="btn btn-ghost">
+                {copy.location.directions}
+              </a>
+            ) : (
+              <Link href="/location" className="btn btn-ghost">
+                {copy.location.directions}
+              </Link>
+            )}
           </div>
         </div>
       </section>
@@ -270,25 +300,32 @@ function PromiseHeadline({ line }: { line: RichLine }) {
 /** A reel card: the dish full-bleed, fading to black under its name and order button. */
 function SignatureCard({ item }: { item: MenuItemVM }) {
   return (
-    <article className="group relative isolate grid aspect-[4/5] content-end overflow-hidden rounded-card bg-charcoal shadow-raised">
+    <article
+      data-spotlight
+      className="group relative isolate grid aspect-[4/5] content-end overflow-hidden rounded-card bg-charcoal shadow-raised"
+    >
       {item.image ? (
-        <Img
-          image={item.image}
-          sizes="(min-width: 1024px) 24rem, (min-width: 640px) 46vw, 80vw"
-          className="absolute inset-0 -z-10 h-full w-full object-cover transition-transform duration-(--duration-slow) ease-out group-hover:scale-105"
-        />
+        <ViewTransition name={`dish-${item.slug}`} share="dish-photo" default="none">
+          <Img
+            image={item.image}
+            sizes="(min-width: 1024px) 24rem, (min-width: 640px) 46vw, 80vw"
+            className="absolute inset-0 -z-10 h-full w-full object-cover transition-transform duration-(--duration-slow) ease-out group-hover:scale-105"
+          />
+        </ViewTransition>
       ) : null}
       <div
         aria-hidden
         className="absolute inset-0 -z-10 bg-[linear-gradient(to_top,var(--color-black)_10%,rgb(0_0_0/0.8)_42%,transparent_72%)]"
       />
       <div className="grid gap-3 p-5">
-        <h3 className="text-[2rem] leading-none normal-case sm:text-[2.25rem]">
-          {/* Stretched: the whole card opens the dish; the order button sits above it. */}
-          <Link href={item.href} className="after:absolute after:inset-0">
-            {item.name}
-          </Link>
-        </h3>
+        <ViewTransition name={`dish-name-${item.slug}`} share="dish-name" default="none">
+          <h3 className="text-[2rem] leading-none normal-case sm:text-[2.25rem]">
+            {/* Stretched: the whole card opens the dish; the order button sits above it. */}
+            <Link href={item.href} className="after:absolute after:inset-0">
+              {item.name}
+            </Link>
+          </h3>
+        </ViewTransition>
         {item.description ? (
           <p className="line-clamp-2 text-small text-white/80">{item.description}</p>
         ) : null}

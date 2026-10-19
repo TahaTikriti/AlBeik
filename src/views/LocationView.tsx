@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-import { Emphasis } from '@/components/ui/Emphasis'
+import { PunchLine } from '@/components/ui/PunchLine'
 import { ui } from '@/components/ui/classes'
 import type { LocationPageData } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
@@ -13,7 +13,7 @@ export function LocationView({ locations }: LocationPageData) {
       <div className={`${ui.container} grid gap-14 pt-12 pb-section md:pt-20`}>
         <div className="flex items-end justify-between gap-4">
           <h1 className="text-mega">
-            <Emphasis text={copy.location.heading} />
+            <PunchLine text={copy.location.heading} />
           </h1>
           <FezMoment className="w-20 shrink-0 md:w-32" />
         </div>
@@ -61,9 +61,11 @@ export function LocationView({ locations }: LocationPageData) {
                   </dl>
                 ) : null}
                 {location.hoursNote ? <p className="text-ink-muted">{location.hoursNote}</p> : null}
-                {hasDetails ? null : (
+                {location.hours.length || location.hoursNote ? null : (
                   <div className="grid gap-5 rounded-card bg-surface-raised p-6">
-                    <p className="text-xl leading-snug">{copy.location.detailsSoon}</p>
+                    <p className="text-xl leading-snug">
+                      {hasDetails ? copy.location.hoursSoon : copy.location.detailsSoon}
+                    </p>
                     <Link href="/menu" className="btn btn-red justify-self-start">
                       {copy.home.seeMenu}
                     </Link>

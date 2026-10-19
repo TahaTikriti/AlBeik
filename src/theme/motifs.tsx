@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import type { CSSProperties } from 'react'
 
 import horizontal from './brand/albeik-logo-horizontal-original.png'
 import mark from './brand/albeik-mark-original.png'
@@ -130,6 +131,53 @@ export function Steam({ className = '' }: SvgProps) {
       <span />
       <span />
       <span />
+    </span>
+  )
+}
+
+/**
+ * Embers drifting up off the grill, for the hero dish. Fixed values (no
+ * randomness) so the server and browser agree; negative delays mean the fire
+ * is already going on first paint.
+ */
+/** mulberry32: a well-spread, repeatable 0-1 value per seed. */
+function hash(seed: number) {
+  let t = (seed + 0x6d2b79f5) | 0
+  t = Math.imul(t ^ (t >>> 15), t | 1)
+  t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+}
+
+const EMBERS = Array.from({ length: 16 }, (_, i) => {
+  const r = (n: number) => hash(i * 16 + n)
+  return {
+    x: `${(4 + r(1) * 92).toFixed(1)}%`,
+    size: `${(2.5 + r(2) * 3).toFixed(1)}px`,
+    rise: Math.round(55 + r(3) * 45),
+    drift: `${Math.round((r(4) - 0.5) * 90)}px`,
+    duration: `${(3.2 + r(5) * 3.6).toFixed(2)}s`,
+    delay: `${(-r(6) * 6).toFixed(2)}s`,
+  }
+})
+
+export function Embers({ className = '' }: SvgProps) {
+  return (
+    <span className={`embers ${className}`} aria-hidden>
+      {EMBERS.map((e, i) => (
+        <span
+          key={i}
+          style={
+            {
+              '--x': e.x,
+              '--s': e.size,
+              '--rise': e.rise,
+              '--drift': e.drift,
+              '--d': e.duration,
+              '--delay': e.delay,
+            } as CSSProperties
+          }
+        />
+      ))}
     </span>
   )
 }

@@ -15,6 +15,8 @@ export const copy = {
   },
   // Facts, not filler: the charcoal grill and family recipes are from press coverage.
   marquee: ['Charcoal-grilled', 'Family recipes', 'Beirut street food', 'Kansas City'],
+  // The second strip, lower on the home page: lines from the Instagram posts.
+  marqueeLate: ['Juicier', 'Meatier', 'Tastier', 'Spice bomb is waiting'],
   order: {
     cta: 'Order',
     ctaFor: (item: string) => `Order ${item}`,
@@ -63,6 +65,7 @@ export const copy = {
     directions: 'Get directions',
     call: (phone: string) => `Call ${phone}`,
     detailsSoon: 'Address and hours are on their way. Hungry now? Order online.',
+    hoursSoon: 'Opening hours are on their way. Hungry now? Order online.',
   },
   about: {
     title: 'Our story',
@@ -83,6 +86,8 @@ export const copy = {
   footer: {
     // As in the brand guidelines, LEBANESE in red.
     tagline: 'The recipe is *Lebanese*. The extra attitude is ours.',
+    mapLabel: 'Find us',
+    mapTitle: 'Map: AlBeik on State Line Rd, Kansas City',
     follow: 'Follow us',
   },
 } as const

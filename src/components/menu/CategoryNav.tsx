@@ -1,18 +1,34 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 import type { CategoryRef } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
 
 /**
  * Category chips that stick under the header. Plain anchor links (work
- * without JS); JS highlights the chip for the section in view and keeps it
- * centred in the bar.
+ * without JS); JS highlights the chip for the section in view, keeps it
+ * centred in the bar, and glides one red pill behind the chips to it.
  */
 export function CategoryNav({ categories }: { categories: CategoryRef[] }) {
   const [active, setActive] = useState(categories[0]?.slug)
   const listRef = useRef<HTMLUListElement>(null)
+  const [pill, setPill] = useState<{ x: number; width: number } | null>(null)
+
+  // Measure the active chip for the pill; again when chips resize (web fonts).
+  useLayoutEffect(() => {
+    const list = listRef.current
+    if (!list) return
+    const measure = () => {
+      // The chip's list item: positioned, so its offsetLeft is within the list.
+      const chip = list.querySelector<HTMLElement>(`[data-slug="${active}"]`)?.parentElement
+      if (chip) setPill({ x: chip.offsetLeft, width: chip.offsetWidth })
+    }
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(list)
+    return () => observer.disconnect()
+  }, [active])
 
   useEffect(() => {
     const visible = new Map<string, boolean>()
@@ -49,15 +65,22 @@ export function CategoryNav({ categories }: { categories: CategoryRef[] }) {
     >
       <ul
         ref={listRef}
-        className="mx-auto flex h-chipbar max-w-content snap-x items-center gap-2 overflow-x-auto px-gutter [scrollbar-width:none]"
+        className="relative mx-auto flex h-chipbar max-w-content snap-x items-center gap-2 overflow-x-auto px-gutter [scrollbar-width:none]"
       >
+        {pill ? (
+          <li
+            aria-hidden
+            className="chip-pill pointer-events-none absolute top-1/2 left-0 h-11 rounded-full bg-red"
+            style={{ translate: `${pill.x}px -50%`, width: pill.width }}
+          />
+        ) : null}
         {categories.map((category) => (
-          <li key={category.slug} className="shrink-0 snap-center">
+          <li key={category.slug} className="relative shrink-0 snap-center">
             <a
               href={`#${category.slug}`}
               data-slug={category.slug}
               aria-current={active === category.slug ? 'true' : undefined}
-              className="inline-flex min-h-11 items-center gap-2 rounded-full border-2 border-charcoal px-4 font-display text-[1.15rem] tracking-[0.04em] uppercase transition-[background-color,border-color,scale] duration-(--duration-base) ease-snap hover:border-white aria-[current=true]:scale-105 aria-[current=true]:border-red aria-[current=true]:bg-red"
+              className="inline-flex min-h-11 items-center gap-2 rounded-full border-2 border-charcoal px-4 font-display text-[1.15rem] tracking-[0.04em] uppercase transition-[border-color] duration-(--duration-base) hover:border-white aria-[current=true]:border-transparent"
             >
               {category.name}
             </a>
