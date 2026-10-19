@@ -12,7 +12,9 @@ Design direction 1 (the one chosen), taken from AlBeik's Instagram rebrand and h
 
 What changed versus `main` is presentation only: `src/theme` (tokens, fonts, motifs, copy, `brand.css`), `src/components`, `src/views` and one import in `src/styles/globals.css`. Data and logic are identical.
 
-**Logo.** The client's files are in `public/brand/`; the brand guidelines and original photos are in `docs/brand/`. **Share image.** Links to the site show `public/og.png` (logo and slogan on black; source `docs/brand/share-card.html`, which says how to re-render it); dish pages show their dish. `docs/` is never served by the site (only `public/` is); remove `docs/brand/brand-guidelines.jpg` when it's no longer needed. The manager wants the original logo (red fez, charcoal ink) on white, never reversed, so it lives on white surfaces only: the header (`data-theme="light"`), a white logo panel in the footer, and white tiles for the fez mark. The pieces in `src/theme/brand/` (mark, horizontal lockup, wordmark mask) are cut uncoloured from the stacked PNG, plus the favicons. Swap them for the client's vector files when those arrive.
+**Logo.** The client's files are in `public/brand/`; the brand guidelines and original photos are in `docs/brand/`. **Map.** The footer shows AlBeik's Google Maps listing (Google's "Embed a map" iframe, lazy-loaded, tinted dark until you point at or use it) with the address and a Get directions button; the address and link come from the client's Google Maps listing.
+
+**Share image.** Links to the site show `public/og.png` (logo and slogan on black; source `docs/brand/share-card.html`, which says how to re-render it); dish pages show their dish. `docs/` is never served by the site (only `public/` is); remove `docs/brand/brand-guidelines.jpg` when it's no longer needed. The manager wants the original logo (red fez, charcoal ink) on white, never reversed, so it lives on white surfaces only: the header (`data-theme="light"`), a white logo panel in the footer, and white tiles for the fez mark. The pieces in `src/theme/brand/` (mark, horizontal lockup, wordmark mask) are cut uncoloured from the stacked PNG, plus the favicons. Swap them for the client's vector files when those arrive.
 
 Lighthouse mobile (production build, demo data): performance home 90–91, menu 92, item 96–97; accessibility, best practices and SEO 100. The home page's ceiling is the hero photo: a properly sized, compressed professional shot would buy the most.
 
@@ -90,7 +92,7 @@ Clicks are tracked as Umami custom events (`order_sheet_open`, `order_click` wit
 - Full menu: Platters, Sides, Drinks and Desserts are empty (empty categories are hidden)
 - Prices, and whether to show them (Site settings → Show prices)
 - Item-level DoorDash / Uber Eats links, if they're willing to collect them (optional)
-- Address, phone, opening hours, Google Maps link
+- Phone and opening hours (the address and Google Maps listing are in; demo content in `src/seed/content.ts`)
 - The logo as vector (SVG) files; social links, testimonial sources
 - Dietary tags (spicy, vegetarian), to be confirmed before tagging
 - Real photography to replace the illustrative menu images when it exists (see [docs/menu-images.md](docs/menu-images.md))

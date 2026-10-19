@@ -238,9 +238,12 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
           </div>
           <div className="grid gap-4 lg:justify-items-end lg:text-right">
             {location ? (
-              <address className="grid font-display text-display-2 not-italic uppercase">
+              // Sized for a full street address: each line stays on one line.
+              <address className="grid font-display text-[clamp(1.6rem,1.1rem+1.6vw,2.6rem)] leading-[1.02] not-italic uppercase">
                 {location.addressLines.map((line) => (
-                  <span key={line}>{line}</span>
+                  <span key={line} className="whitespace-nowrap">
+                    {line}
+                  </span>
                 ))}
               </address>
             ) : null}
@@ -254,9 +257,16 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
                 ))}
               </dl>
             ) : null}
-            <Link href="/location" className="btn btn-ghost">
-              {copy.location.directions}
-            </Link>
+            {/* Straight to Google Maps when the listing is known. */}
+            {location?.mapUrl ? (
+              <a href={location.mapUrl} target="_blank" rel="noopener" className="btn btn-ghost">
+                {copy.location.directions}
+              </a>
+            ) : (
+              <Link href="/location" className="btn btn-ghost">
+                {copy.location.directions}
+              </Link>
+            )}
           </div>
         </div>
       </section>

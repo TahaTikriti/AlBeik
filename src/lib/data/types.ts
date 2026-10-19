@@ -89,6 +89,8 @@ export type LocationVM = {
   /** `tel:` link, or null. */
   phoneHref: string | null
   mapUrl: string | null
+  /** Google Maps "Embed a map" URL for an iframe; null shows no map. */
+  mapEmbedUrl: string | null
   /** Display lines, e.g. { days: 'Mon–Thu', time: '11:00 AM – 10:00 PM' }. */
   hours: HoursLine[]
   /** The same hours as data (24-hour times), for JSON-LD or an "open now" badge. */

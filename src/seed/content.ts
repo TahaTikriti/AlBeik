@@ -277,8 +277,19 @@ export const siteSettings = {
   siteName: 'AlBeik',
   // The live site's meta description.
   defaultDescription: 'A taste of home, miles away from Beirut',
-  // Only the city is known (brief: "Kansas City (State Line shops)").
-  location: { name: 'Kansas City', city: 'Kansas City' },
+  // From AlBeik's Google Maps listing, shared by the client (2026-10-19).
+  // Phone and opening hours are still unknown.
+  location: {
+    name: 'Kansas City',
+    streetAddress: '13135 State Line Rd',
+    city: 'Kansas City',
+    region: 'MO',
+    postalCode: '64145',
+    mapUrl: 'https://maps.app.goo.gl/znsqSSoN9GUnPYi2A',
+    // Google Maps "Embed a map" for the listing (place ID 0x87c0c3f45ad27473:0x6183bb57e0283719).
+    mapEmbedUrl:
+      'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2500!2d-94.6061227!3d38.8899988!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x87c0c3f45ad27473%3A0x6183bb57e0283719!2sAL%20BEIK!5e0!3m2!1sen!2sus!4v1760000000000!5m2!1sen!2sus',
+  },
 }
 
 /** AlBeik's store pages, from the client (2026-10-14). Item-level links can be added per dish in the CMS. */
@@ -293,7 +304,7 @@ export const TODO = [
   'Full menu (Platters, Sides, Drinks, Desserts are empty): scrape /our-menu or get it from the client',
   'Prices (and decide whether to show them: Site settings → Show prices)',
   'Item-level DoorDash / Uber Eats links, if the client wants to collect them (optional)',
-  'Address, phone, opening hours and Google Maps link (Site settings → Locations)',
+  'Phone and opening hours (Site settings → Locations)',
   'Logo files and social links (Site settings)',
   'Testimonial sources (Google, Yelp…)',
   'Dietary tags (spicy, vegetarian) once the client confirms them',

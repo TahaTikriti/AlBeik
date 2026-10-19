@@ -108,7 +108,8 @@ export function toTestimonial(doc: Testimonial): TestimonialVM {
 
 type LocationRow = NonNullable<SiteSetting['locations']>[number]
 
-export function toLocation(row: LocationRow): LocationVM {
+// TODO(cms): a field for the map embed; the demo content sets it today.
+export function toLocation(row: LocationRow & { mapEmbedUrl?: string | null }): LocationVM {
   const streetAddress = orNull(row.streetAddress)
   const city = orNull(row.city)
   const region = orNull(row.region)
@@ -127,6 +128,7 @@ export function toLocation(row: LocationRow): LocationVM {
     phone,
     phoneHref: phone ? toTelHref(phone) : null,
     mapUrl: orNull(row.mapUrl),
+    mapEmbedUrl: orNull(row.mapEmbedUrl),
     hours: formatHours(row.hours),
     openingHours: completeHours(row.hours),
     hoursNote: orNull(row.hoursNote),

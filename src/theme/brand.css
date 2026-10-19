@@ -286,6 +286,9 @@
     bottom: -2px;
     height: 3px;
     pointer-events: none;
+    /* At 100% the spark would poke past the page edge and widen the page
+       (phones zoom out); clip sideways, let it glow above and below. */
+    overflow-x: clip;
   }
   .fuse::before {
     content: '';
@@ -329,6 +332,18 @@
     [data-spotlight]:hover::before {
       opacity: 1;
     }
+  }
+
+  /* The footer map, tinted dark to sit in the black footer; it shows its true
+     colours while you point at it or use it. invert + hue-rotate keeps the
+     red pin red. */
+  .map-dark {
+    filter: invert(0.92) hue-rotate(180deg) saturate(0.75) contrast(0.92);
+    transition: filter var(--duration-slow) var(--ease-out);
+  }
+  .map-card:hover .map-dark,
+  .map-card:focus-within .map-dark {
+    filter: none;
   }
 
   /* The menu's category pill (CategoryNav) glides, with a little overshoot. */

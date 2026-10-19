@@ -61,9 +61,11 @@ export function LocationView({ locations }: LocationPageData) {
                   </dl>
                 ) : null}
                 {location.hoursNote ? <p className="text-ink-muted">{location.hoursNote}</p> : null}
-                {hasDetails ? null : (
+                {location.hours.length || location.hoursNote ? null : (
                   <div className="grid gap-5 rounded-card bg-surface-raised p-6">
-                    <p className="text-xl leading-snug">{copy.location.detailsSoon}</p>
+                    <p className="text-xl leading-snug">
+                      {hasDetails ? copy.location.hoursSoon : copy.location.detailsSoon}
+                    </p>
                     <Link href="/menu" className="btn btn-red justify-self-start">
                       {copy.home.seeMenu}
                     </Link>

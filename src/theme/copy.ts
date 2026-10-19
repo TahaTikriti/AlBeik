@@ -65,6 +65,7 @@ export const copy = {
     directions: 'Get directions',
     call: (phone: string) => `Call ${phone}`,
     detailsSoon: 'Address and hours are on their way. Hungry now? Order online.',
+    hoursSoon: 'Opening hours are on their way. Hungry now? Order online.',
   },
   about: {
     title: 'Our story',
@@ -85,6 +86,8 @@ export const copy = {
   footer: {
     // As in the brand guidelines, LEBANESE in red.
     tagline: 'The recipe is *Lebanese*. The extra attitude is ours.',
+    mapLabel: 'Find us',
+    mapTitle: 'Map: AlBeik on State Line Rd, Kansas City',
     follow: 'Follow us',
   },
 } as const
