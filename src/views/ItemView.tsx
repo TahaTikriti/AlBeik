@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { ViewTransition } from 'react'
 
+import { DISH_PAGE_IMAGE_SIZES } from '@/components/menu/dishImage'
 import { ScrollTopOnArrival } from '@/components/menu/ScrollTopOnArrival'
 import { OrderButton } from '@/components/order/OrderButton'
 import { StickyOrderBar } from '@/components/shell/StickyOrderBar'
@@ -46,7 +47,7 @@ export function ItemView({ item }: ItemPageData) {
               <ViewTransition name={`dish-${item.slug}`} share="dish-photo" default="none">
                 <Img
                   image={item.image}
-                  sizes="(min-width: 1216px) 36rem, (min-width: 768px) 46vw, 100vw"
+                  sizes={DISH_PAGE_IMAGE_SIZES}
                   preload
                   className="aspect-square w-full rounded-card object-cover shadow-raised"
                 />

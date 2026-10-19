@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { ViewTransition } from 'react'
 import { preload } from 'react-dom'
 
+import { dishPreloadAttrs } from '@/components/menu/dishImage'
 import { OrderButton } from '@/components/order/OrderButton'
 import { Countdown } from '@/components/ui/Countdown'
 import { Emphasis } from '@/components/ui/Emphasis'
@@ -299,6 +300,7 @@ function PromiseHeadline({ line }: { line: RichLine }) {
 function SignatureCard({ item }: { item: MenuItemVM }) {
   return (
     <article
+      {...dishPreloadAttrs(item.image)}
       data-spotlight
       className="group relative isolate grid aspect-[4/5] content-end overflow-hidden rounded-card bg-charcoal shadow-raised"
     >

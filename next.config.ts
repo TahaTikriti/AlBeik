@@ -10,6 +10,11 @@ const nextConfig: NextConfig = {
     // AVIF first (about a fifth smaller than WebP): the hero photo is the home
     // page's largest paint.
     formats: ['image/avif', 'image/webp'],
+    // Keep optimized photos for a week (default 4 h), in the browser and at the
+    // edge, so reopening a dish never waits on the network. Local images are
+    // read from disk, so the /seed Cache-Control below doesn't carry over.
+    // No purge exists: replace a photo under a new file name.
+    minimumCacheTTL: 604800,
     // Payload serves uploads from the same app and may append a cache-busting
     // query string; a pattern without `search` allows any query.
     // /seed/** holds the demo photos used when no database is configured.
@@ -38,8 +43,20 @@ export default {
   // the first navigation, costing ~600 ms on mobile. Keep it on the admin only.
   async headers() {
     const rules = (await payloadHeaders?.()) ?? []
-    return rules.map((rule) =>
-      rule.source === '/:path*' ? { ...rule, source: '/admin/:path*' } : rule,
-    )
+    return [
+      ...rules.map((rule) =>
+        rule.source === '/:path*' ? { ...rule, source: '/admin/:path*' } : rule,
+      ),
+      // Demo photos and the hero video: public/ files default to max-age=0, so
+      // phones re-checked every photo on every view (and /_next/image inherits
+      // the larger of this and minimumCacheTTL). A week fresh, a month served
+      // stale while it refreshes. Replacing a file? Give it a new name.
+      {
+        source: '/seed/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=2592000' },
+        ],
+      },
+    ]
   },
 } satisfies NextConfig

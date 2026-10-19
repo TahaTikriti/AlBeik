@@ -8,6 +8,7 @@ import { copy } from '@/theme/copy'
 
 import { OrderButton } from '../order/OrderButton'
 import { Img } from '../ui/Img'
+import { dishPreloadAttrs } from './dishImage'
 
 type Props = {
   item: MenuItemVM
@@ -36,6 +37,7 @@ export function MenuItemCard({
   const badge = BADGE_ORDER.find((tag) => item.tags.includes(tag))
   return (
     <article
+      {...dishPreloadAttrs(item.image)}
       data-spotlight
       className="group relative isolate grid h-full grid-cols-[clamp(5.25rem,25vw,6.75rem)_1fr] items-center gap-x-3.5 overflow-clip rounded-card bg-charcoal p-3 pe-4 transition-[scale] duration-(--duration-fast) active:scale-[0.985] sm:grid-cols-1 sm:grid-rows-[auto_1fr_auto] sm:items-stretch sm:gap-y-4 sm:p-0 sm:pb-5"
     >

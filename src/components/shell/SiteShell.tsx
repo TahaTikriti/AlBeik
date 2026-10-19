@@ -4,6 +4,7 @@ import type { SiteVM } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
 
 import { Footer } from './Footer'
+import { DishPreload } from './DishPreload'
 import { Header } from './Header'
 import { Spotlight } from './Spotlight'
 import { StickyOrderBar, StickyOrderBarSpacer } from './StickyOrderBar'
@@ -25,6 +26,7 @@ export function SiteShell({ site, children }: { site: SiteVM; children: ReactNod
       </main>
       <Footer site={site} />
       <Spotlight />
+      <DishPreload />
       {canOrder ? (
         <>
           <StickyOrderBarSpacer />
