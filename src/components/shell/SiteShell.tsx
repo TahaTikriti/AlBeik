@@ -16,7 +16,11 @@ export function SiteShell({ site, children }: { site: SiteVM; children: ReactNod
         {copy.skipToContent}
       </a>
       <Header site={site} />
-      <main id="main" tabIndex={-1} className="outline-none">
+      {/* overflow-x: clip keeps anything mid-animation (a title sliding in from
+          the side) from widening the page: on phones that makes the whole page
+          pan sideways and pushes the fixed order bar off-screen. clip, not
+          hidden: no scroll container, so sticky chips and scroll timelines work. */}
+      <main id="main" tabIndex={-1} className="overflow-x-clip outline-none">
         {children}
       </main>
       <Footer site={site} />

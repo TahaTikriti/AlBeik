@@ -69,14 +69,15 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
         </aside>
       ) : null}
 
-      {/* HERO: the brand's reels on a page. Copy and the order button come first;
-          the dish rises out of the dark below (beside it from lg). The page's one
+      {/* HERO: the brand's reels on a page. On phones and tablets the dish fills
+          the whole first screen behind the copy (dimmed under the words, full
+          strength below); from lg it sits beside the copy. The page's one
           orchestrated moment: the words punch in, LEBANESE settles in after them,
           the grill throws embers. The order buttons never wait for it. */}
-      <section className="grain relative overflow-hidden">
+      <section className="grain relative overflow-hidden max-lg:min-h-[calc(100svh-var(--spacing-header))]">
         <Smoke />
         <div
-          className={`${ui.container} relative z-10 grid gap-6 pt-9 lg:min-h-[min(44rem,calc(100dvh-var(--spacing-header)))] lg:grid-cols-[minmax(0,52%)_1fr] lg:content-center lg:py-20 lg:*:col-start-1`}
+          className={`${ui.container} relative z-10 grid gap-6 pt-9 pb-10 lg:min-h-[min(44rem,calc(100dvh-var(--spacing-header)))] lg:grid-cols-[minmax(0,52%)_1fr] lg:content-center lg:py-20 lg:*:col-start-1`}
         >
           <div className="grid gap-3">
             <p className="label text-red-text">{copy.home.heroKicker}</p>
@@ -104,7 +105,7 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
             />
             <Link
               href="/menu"
-              className="btn btn-ghost min-h-14 px-3 text-[1.3rem] sm:px-7 sm:text-[1.5rem]"
+              className="btn btn-ghost min-h-14 px-3 text-[1.3rem] max-lg:bg-black/45 max-lg:backdrop-blur-sm sm:px-7 sm:text-[1.5rem]"
             >
               {copy.home.seeMenu}
             </Link>
@@ -114,19 +115,16 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
         {/* With a loop, the video stands alone (its poster is its first frame);
             otherwise the photo, with embers standing in for the fire. */}
         {hero.loop ? (
-          <figure className="relative -mt-6 lg:absolute lg:inset-y-0 lg:right-0 lg:mt-0 lg:w-[54%]">
-            <HeroLoop
-              video={hero.loop}
-              className="fade-photo aspect-square w-full object-cover sm:aspect-[16/10] lg:aspect-auto lg:h-full"
-            />
+          <figure className="absolute inset-0 lg:left-auto lg:w-[54%]">
+            <HeroLoop video={hero.loop} className="fade-photo h-full w-full object-cover" />
           </figure>
         ) : hero.media ? (
-          <figure className="relative -mt-6 lg:absolute lg:inset-y-0 lg:right-0 lg:mt-0 lg:w-[54%]">
+          <figure className="absolute inset-0 lg:left-auto lg:w-[54%]">
             <Media
               media={hero.media}
               sizes="(min-width: 1024px) 54vw, 100vw"
               preload
-              className="fade-photo hero-settle aspect-square w-full object-cover sm:aspect-[16/10] lg:aspect-auto lg:h-full"
+              className="fade-photo hero-settle h-full w-full object-cover"
             />
             <Embers />
           </figure>

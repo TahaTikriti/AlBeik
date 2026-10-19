@@ -137,11 +137,26 @@
     mask-repeat: no-repeat;
   }
 
-  /* The hero dish fades into whatever is behind it (smoke included), so there's no seam:
-     top and bottom on phones, left and bottom beside the copy. */
+  /* The hero dish fades into whatever is behind it (smoke included), so there's no seam.
+     Phones and tablets: full screen behind the copy, dimmed under the words and
+     full strength lower down. Beside the copy (lg): faded on the left and bottom. */
   .fade-photo {
-    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 45%, #000 78%, transparent);
-    mask-image: linear-gradient(to bottom, transparent, #000 45%, #000 78%, transparent);
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      rgb(0 0 0 / 0.32),
+      rgb(0 0 0 / 0.42) 40%,
+      #000 66%,
+      #000 88%,
+      transparent
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      rgb(0 0 0 / 0.32),
+      rgb(0 0 0 / 0.42) 40%,
+      #000 66%,
+      #000 88%,
+      transparent
+    );
   }
   @media (width >= 64rem) {
     .fade-photo {
