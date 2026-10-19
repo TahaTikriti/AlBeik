@@ -41,7 +41,13 @@ export const images = {
  * poster). Put an MP4 (H.264, ~6-10 s, under ~3 MB) in public/seed and name
  * it here; null shows the photo alone.
  */
-export const heroLoop: { file: string; mimeType: string } | null = null
+// Pexels video 14554564 (free licence, commercial use, no credit needed):
+// chicken tawouk over coals, cropped to the food (the hand turning skewers is
+// cut out) and crossfaded end-to-start so it loops seamlessly; 10.5 s, 720x944.
+export const heroLoop: { file: string; mimeType: string } | null = {
+  file: 'hero-loop.mp4',
+  mimeType: 'video/mp4',
+}
 
 export type SeedCategory = { name: string; sortOrder: number }
 
