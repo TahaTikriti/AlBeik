@@ -1,18 +1,18 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 
 import type { VideoVM } from '@/lib/data/types'
 
 /**
- * A silent loop over the hero photo, which stays underneath as its poster.
- * The video is only requested after the page has loaded (the photo stays the
- * largest paint), fades in once it is actually playing, pauses off-screen,
- * and never starts for reduced motion or data saving.
+ * The hero's silent loop, on its own: the video shows its poster (the
+ * loop's first frame) until it plays, so playback starts without a seam and
+ * nothing else ever shows behind it. The video itself is only requested
+ * after the page has loaded, pauses off-screen, and never starts for reduced
+ * motion or data saving (the poster stays).
  */
 export function HeroLoop({ video, className = '' }: { video: VideoVM; className?: string }) {
   const ref = useRef<HTMLVideoElement>(null)
-  const [playing, setPlaying] = useState(false)
 
   useEffect(() => {
     const el = ref.current
@@ -48,13 +48,13 @@ export function HeroLoop({ video, className = '' }: { video: VideoVM; className?
   return (
     <video
       ref={ref}
+      poster={video.poster ?? undefined}
       muted
       loop
       playsInline
       preload="none"
-      aria-hidden
-      onPlaying={() => setPlaying(true)}
-      className={`transition-opacity duration-(--duration-slow) ${playing ? 'opacity-100' : 'opacity-0'} ${className}`}
+      aria-label={video.alt}
+      className={className}
     />
   )
 }

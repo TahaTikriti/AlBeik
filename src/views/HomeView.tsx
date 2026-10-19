@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { ViewTransition } from 'react'
+import { preload } from 'react-dom'
 
 import { OrderButton } from '@/components/order/OrderButton'
 import { Countdown } from '@/components/ui/Countdown'
@@ -44,6 +45,8 @@ function splitFirstSentence(line: RichLine): [RichLine, RichLine | null] {
 
 export function HomeView({ hero, promise, featured, promo, testimonials, site }: Props) {
   const [shout, followUp] = splitFirstSentence(hero.headline)
+  // The loop's poster is the hero's largest paint: fetch it first.
+  if (hero.loop?.poster) preload(hero.loop.poster, { as: 'image', fetchPriority: 'high' })
   const location = site.locations[0]
 
   return (
@@ -108,7 +111,16 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
           </div>
         </div>
 
-        {hero.media ? (
+        {/* With a loop, the video stands alone (its poster is its first frame);
+            otherwise the photo, with embers standing in for the fire. */}
+        {hero.loop ? (
+          <figure className="relative -mt-6 lg:absolute lg:inset-y-0 lg:right-0 lg:mt-0 lg:w-[54%]">
+            <HeroLoop
+              video={hero.loop}
+              className="fade-photo aspect-square w-full object-cover sm:aspect-[16/10] lg:aspect-auto lg:h-full"
+            />
+          </figure>
+        ) : hero.media ? (
           <figure className="relative -mt-6 lg:absolute lg:inset-y-0 lg:right-0 lg:mt-0 lg:w-[54%]">
             <Media
               media={hero.media}
@@ -116,16 +128,7 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
               preload
               className="fade-photo hero-settle aspect-square w-full object-cover sm:aspect-[16/10] lg:aspect-auto lg:h-full"
             />
-            {/* A real loop (when there is one) brings its own fire; the embers
-                stand in for it over the still photo. */}
-            {hero.loop ? (
-              <HeroLoop
-                video={hero.loop}
-                className="fade-photo absolute inset-0 h-full w-full object-cover"
-              />
-            ) : (
-              <Embers />
-            )}
+            <Embers />
           </figure>
         ) : null}
       </section>

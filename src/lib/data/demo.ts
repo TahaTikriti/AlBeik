@@ -103,6 +103,7 @@ export function demoHome(): HomePageData {
             url: `/seed/${content.heroLoop.file}`,
             alt: images.hero.alt,
             mimeType: content.heroLoop.mimeType,
+            poster: `/seed/${content.heroLoop.poster}`,
           }
         : null,
     },

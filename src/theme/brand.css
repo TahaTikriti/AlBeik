@@ -334,16 +334,11 @@
     }
   }
 
-  /* The footer map, tinted dark to sit in the black footer; it shows its true
-     colours while you point at it or use it. invert + hue-rotate keeps the
-     red pin red. */
+  /* The footer map, tinted to the brand's warm charcoal so it sits in the
+     black footer. One fixed look; invert + hue-rotate keeps the pin red-ish
+     and the labels readable. */
   .map-dark {
-    filter: invert(0.92) hue-rotate(180deg) saturate(0.75) contrast(0.92);
-    transition: filter var(--duration-slow) var(--ease-out);
-  }
-  .map-card:hover .map-dark,
-  .map-card:focus-within .map-dark {
-    filter: none;
+    filter: invert(0.9) hue-rotate(180deg) sepia(0.2) saturate(0.8) brightness(0.92) contrast(0.95);
   }
 
   /* The menu's category pill (CategoryNav) glides, with a little overshoot. */

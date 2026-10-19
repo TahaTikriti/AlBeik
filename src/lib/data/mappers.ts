@@ -39,7 +39,7 @@ export function toImage(media: Ref<Media>): ImageVM | null {
 
 export function toMedia(media: Ref<Media>): MediaVM | null {
   if (isPopulated(media) && media.url && media.mimeType?.startsWith('video/')) {
-    return { kind: 'video', url: media.url, alt: media.alt, mimeType: media.mimeType }
+    return { kind: 'video', url: media.url, alt: media.alt, mimeType: media.mimeType, poster: null }
   }
   return toImage(media)
 }

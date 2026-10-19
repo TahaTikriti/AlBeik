@@ -44,9 +44,11 @@ export const images = {
 // Pexels video 14554564 (free licence, commercial use, no credit needed):
 // chicken tawouk over coals, cropped to the food (the hand turning skewers is
 // cut out) and crossfaded end-to-start so it loops seamlessly; 10.5 s, 720x944.
-export const heroLoop: { file: string; mimeType: string } | null = {
+// Its poster is the loop's own first frame, so nothing else shows behind it.
+export const heroLoop: { file: string; mimeType: string; poster: string } | null = {
   file: 'hero-loop.mp4',
   mimeType: 'video/mp4',
+  poster: 'hero-loop-poster.webp',
 }
 
 export type SeedCategory = { name: string; sortOrder: number }

@@ -26,7 +26,7 @@ export function Footer({ site }: { site: SiteVM }) {
           </div>
 
           {location?.mapEmbedUrl ? (
-            <figure className="map-card grid overflow-clip rounded-card bg-charcoal ring-1 ring-white/10 md:row-span-2">
+            <figure className="grid overflow-clip rounded-card bg-charcoal ring-1 ring-white/10 md:row-span-2">
               {/* Lazy: Google's map code only loads once the footer is near. */}
               <iframe
                 src={location.mapEmbedUrl}

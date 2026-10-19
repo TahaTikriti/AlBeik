@@ -39,6 +39,8 @@ export type VideoVM = {
   url: string
   alt: string
   mimeType: string
+  /** Still shown before (and instead of) playback: ideally the first frame. */
+  poster: string | null
 }
 
 export type MediaVM = ImageVM | VideoVM
