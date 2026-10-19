@@ -105,7 +105,7 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
             />
             <Link
               href="/menu"
-              className="btn btn-ghost min-h-14 px-3 text-[1.3rem] max-lg:bg-black/45 max-lg:backdrop-blur-sm sm:px-7 sm:text-[1.5rem]"
+              className="btn btn-ghost min-h-14 px-3 text-[1.3rem] max-lg:bg-black/55 sm:px-7 sm:text-[1.5rem]"
             >
               {copy.home.seeMenu}
             </Link>
@@ -115,8 +115,8 @@ export function HomeView({ hero, promise, featured, promo, testimonials, site }:
         {/* With a loop, the video stands alone (its poster is its first frame);
             otherwise the photo, with embers standing in for the fire. */}
         {hero.loop ? (
-          <figure className="absolute inset-0 lg:left-auto lg:w-[54%]">
-            <HeroLoop video={hero.loop} className="fade-photo h-full w-full object-cover" />
+          <figure className="hero-shade absolute inset-0 lg:left-auto lg:w-[54%]">
+            <HeroLoop video={hero.loop} className="h-full w-full object-cover" />
           </figure>
         ) : hero.media ? (
           <figure className="absolute inset-0 lg:left-auto lg:w-[54%]">

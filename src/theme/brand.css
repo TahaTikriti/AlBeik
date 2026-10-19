@@ -3,13 +3,6 @@
  * motion. Everything animated respects prefers-reduced-motion.
  */
 
-/* Animatable length for the scroll fuse (see .fuse). */
-@property --fuse {
-  syntax: '<percentage>';
-  inherits: true;
-  initial-value: 0%;
-}
-
 @layer base {
   html {
     color-scheme: dark;
@@ -137,6 +130,32 @@
     mask-repeat: no-repeat;
   }
 
+  /* The hero video's shade: the same fades as .fade-photo, laid over the video
+     as black gradients instead of masking it (masking a playing video costs an
+     extra pass every frame). Over a black section the result is identical.
+     Phones and tablets: dimmed under the copy; lg: faded on the left and bottom. */
+  .hero-shade::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      to bottom,
+      rgb(0 0 0 / 0.68),
+      rgb(0 0 0 / 0.58) 40%,
+      transparent 66%,
+      transparent 88%,
+      #000
+    );
+  }
+  @media (width >= 64rem) {
+    .hero-shade::after {
+      background:
+        linear-gradient(to right, #000, transparent 45%),
+        linear-gradient(to top, #000, transparent 28%);
+    }
+  }
+
   /* The hero dish fades into whatever is behind it (smoke included), so there's no seam.
      Phones and tablets: full screen behind the copy, dimmed under the words and
      full strength lower down. Beside the copy (lg): faded on the left and bottom. */
@@ -213,7 +232,8 @@
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
-  /* Smoke: soft blurred light, drifting slowly. */
+  /* Smoke: soft light, drifting slowly. No blur filter: the gradients are
+     already soft, and blurring a layer this big is heavy for slow phones. */
   .smoke {
     position: absolute;
     inset: -25% -15%;
@@ -223,8 +243,6 @@
       radial-gradient(38% 28% at 28% 62%, rgb(255 255 255 / 0.08), transparent 70%),
       radial-gradient(30% 24% at 72% 38%, rgb(255 255 255 / 0.06), transparent 70%),
       radial-gradient(34% 30% at 55% 85%, rgb(216 38 47 / 0.16), transparent 70%);
-    filter: blur(28px);
-    will-change: transform;
   }
 
   .steam {
@@ -294,13 +312,16 @@
     opacity: 0;
   }
 
-  /* Scroll progress: a fuse along the bottom of the header, spark at the tip. */
+  /* Scroll progress: a fuse along the bottom of the header, spark at the tip.
+     Moved only with scale and translate (in container units), so scrolling
+     never triggers layout or paint for it. */
   .fuse {
     position: absolute;
     inset-inline: 0;
     bottom: -2px;
     height: 3px;
     pointer-events: none;
+    container-type: inline-size;
     /* At 100% the spark would poke past the page edge and widen the page
        (phones zoom out); clip sideways, let it glow above and below. */
     overflow-x: clip;
@@ -308,22 +329,23 @@
   .fuse::before {
     content: '';
     position: absolute;
-    inset-block: 0;
-    left: 0;
-    width: var(--fuse);
+    inset: 0;
     background: linear-gradient(90deg, var(--p-red), var(--p-red-text));
+    transform-origin: left;
+    scale: 0 1;
   }
   .fuse::after {
     content: '';
     position: absolute;
     top: 50%;
-    left: var(--fuse);
+    left: 0;
     width: 9px;
     height: 9px;
     margin: -4.5px 0 0 -4.5px;
     border-radius: 50%;
     background: radial-gradient(circle, #fffbea 0 25%, #ffc160 50%, rgb(244 49 63 / 0) 75%);
     box-shadow: 0 0 10px 3px rgb(255 122 47 / 0.75);
+    opacity: 0;
   }
 
   /* Dish cards: a warm glow follows the pointer (Spotlight), behind the text. */
@@ -606,8 +628,8 @@
       animation: parallax linear both;
       animation-timeline: view();
     }
-    .fuse {
-      animation: fuse linear both;
+    .fuse::before {
+      animation: fuse-line linear both;
       animation-timeline: scroll(root);
     }
     /* Menu photos settle into their cards as they arrive. transform, not
@@ -645,7 +667,10 @@
       animation-range: entry 0% cover 55%;
     }
     .fuse::after {
-      animation: spark-flicker 180ms steps(2) infinite;
+      animation:
+        fuse-spark linear both,
+        spark-flicker 180ms steps(2) infinite;
+      animation-timeline: scroll(root), auto;
     }
   }
 }
@@ -668,16 +693,22 @@
   }
 }
 
-@keyframes fuse {
+@keyframes fuse-line {
+  to {
+    scale: 1 1;
+  }
+}
+
+@keyframes fuse-spark {
   from {
-    --fuse: 0%;
+    translate: 0 0;
     opacity: 0;
   }
   2% {
     opacity: 1;
   }
   to {
-    --fuse: 100%;
+    translate: 100cqw 0;
     opacity: 1;
   }
 }
@@ -685,7 +716,6 @@
 @keyframes spark-flicker {
   50% {
     scale: 1.35;
-    opacity: 0.8;
   }
 }
 

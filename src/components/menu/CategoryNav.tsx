@@ -61,7 +61,7 @@ export function CategoryNav({ categories }: { categories: CategoryRef[] }) {
   return (
     <nav
       aria-label={copy.menu.categoriesLabel}
-      className="sticky top-header z-(--z-sticky) border-b border-line bg-black/90 backdrop-blur-md"
+      className="sticky top-header z-(--z-sticky) border-b border-line bg-black/95"
     >
       <ul
         ref={listRef}
