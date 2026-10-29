@@ -189,6 +189,10 @@ export interface Category {
    */
   slug: string;
   /**
+   * One line introducing the category on the menu.
+   */
+  description?: string | null;
+  /**
    * Optional icon or photo for the category.
    */
   image?: (number | null) | Media;
@@ -388,6 +392,7 @@ export interface MenuItemsSelect<T extends boolean = true> {
 export interface CategoriesSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
+  description?: T;
   image?: T;
   sortOrder?: T;
   items?: T;

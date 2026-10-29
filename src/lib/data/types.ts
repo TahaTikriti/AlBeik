@@ -13,7 +13,7 @@ import type { OrderLink } from '@/lib/order'
 import type { Segment } from '@/lib/text'
 
 export type { Day, HoursLine, OpeningHours } from '@/lib/hours'
-export type { OrderLink, PlatformId } from '@/lib/order'
+export type { ModeLink, OrderLink, OrderMode, PlatformId } from '@/lib/order'
 export type { Segment } from '@/lib/text'
 
 export type MenuTag = 'spicy' | 'vegetarian' | 'popular' | 'new' | 'signature'
@@ -66,6 +66,8 @@ export type CategoryVM = {
   id: number
   slug: string
   name: string
+  /** A line introducing the category on the menu. */
+  description: string | null
   image: ImageVM | null
   items: MenuItemVM[]
 }
@@ -93,6 +95,8 @@ export type LocationVM = {
   mapUrl: string | null
   /** Google Maps "Embed a map" URL for an iframe; null shows no map. */
   mapEmbedUrl: string | null
+  /** The map pin, for search engines. */
+  geo: { latitude: number; longitude: number } | null
   /** Display lines, e.g. { days: 'Mon–Thu', time: '11:00 AM – 10:00 PM' }. */
   hours: HoursLine[]
   /** The same hours as data (24-hour times), for JSON-LD or an "open now" badge. */
@@ -104,6 +108,8 @@ export type SocialVM = { platform: string; label: string; url: string }
 
 export type SiteVM = {
   name: string
+  /** Another spelling people search for (e.g. the Google listing's). */
+  alternateName: string | null
   url: string
   logo: ImageVM | null
   showPrices: boolean
@@ -151,3 +157,26 @@ export type AboutPageData = {
 }
 
 export type LocationPageData = { locations: LocationVM[] }
+
+export type CateringItemVM = {
+  name: string
+  tag: 'vegan' | 'vegetarian' | null
+  price: number
+  /** "per person", "each"…; null for a tray or box priced whole. */
+  unit: string | null
+  description: string | null
+}
+
+export type CateringSectionVM = {
+  slug: string
+  title: string
+  note: string | null
+  items: CateringItemVM[]
+}
+
+export type CateringPageData = {
+  intro: string
+  sections: CateringSectionVM[]
+  /** Customer-facing ordering terms. */
+  terms: string[]
+}

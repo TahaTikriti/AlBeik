@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { isAllowedOrderUrl, resolveOrderLinks, toOrderAction } from '.'
+import { isAllowedOrderUrl, linkForMode, resolveOrderLinks, toOrderAction } from '.'
 
 const DD_ITEM = 'https://www.doordash.com/store/albeik-kansas-city-123/?itemId=456'
 const DD_STORE = 'https://www.doordash.com/store/albeik-kansas-city-123/'
@@ -120,5 +120,42 @@ describe('toOrderAction', () => {
 
   it('offers a choice when several platforms are available', () => {
     expect(toOrderAction([dd, ue])).toEqual({ kind: 'choose', links: [dd, ue] })
+  })
+})
+
+describe('linkForMode', () => {
+  const dd = { platform: 'doordash', label: 'DoorDash', href: DD_STORE, level: 'store' } as const
+  const ue = {
+    platform: 'ubereats',
+    label: 'Uber Eats',
+    href: 'https://www.ubereats.com/store/albeik/abc?diningMode=DELIVERY',
+    level: 'store',
+  } as const
+
+  it('switches Uber Eats to pickup through its diningMode parameter', () => {
+    const link = linkForMode(ue, 'pickup')
+    expect(new URL(link.href).searchParams.get('diningMode')).toBe('PICKUP')
+    expect(link).toMatchObject({ mode: 'pickup', preset: true, platform: 'ubereats' })
+  })
+
+  it('sets delivery on Uber Eats links that carry no mode yet', () => {
+    const link = linkForMode({ ...ue, href: UE_STORE }, 'delivery')
+    expect(new URL(link.href).searchParams.get('diningMode')).toBe('DELIVERY')
+  })
+
+  it('keeps the rest of an Uber Eats item link intact', () => {
+    const link = linkForMode({ ...ue, href: UE_ITEM, level: 'item' }, 'pickup')
+    const url = new URL(link.href)
+    expect(url.searchParams.get('mod')).toBe('quickView')
+    expect(url.searchParams.get('modctx')).toBe('item-789')
+    expect(url.searchParams.get('diningMode')).toBe('PICKUP')
+  })
+
+  it('leaves DoorDash links alone: it has no known pickup link', () => {
+    expect(linkForMode(dd, 'pickup')).toEqual({ ...dd, mode: 'pickup', preset: false })
+  })
+
+  it('counts DoorDash delivery as preset: its store page opens on delivery', () => {
+    expect(linkForMode(dd, 'delivery')).toEqual({ ...dd, mode: 'delivery', preset: true })
   })
 })

@@ -17,15 +17,17 @@ import { Smoke, Steam } from '@/theme/motifs'
  * Desktop puts the dish beside the name and details.
  */
 export function ItemView({ item }: ItemPageData) {
+  // Without a photo the page is one column: no empty half beside the name.
+  const two = item.image ? 'md:col-start-2' : ''
   return (
     <>
       <ScrollTopOnArrival />
       <article className="grain relative overflow-hidden">
         <Smoke />
         <div
-          className={`${ui.container} grid gap-6 pt-4 pb-section md:grid-cols-2 md:grid-rows-[auto_auto_1fr] md:gap-x-14 md:pt-10`}
+          className={`${ui.container} grid gap-6 pt-4 pb-section md:gap-x-14 md:pt-10 ${item.image ? 'md:grid-cols-2 md:grid-rows-[auto_auto_1fr]' : ''}`}
         >
-          <p className="md:col-span-2">
+          <p className={item.image ? 'md:col-span-2' : ''}>
             <Link
               href={`/menu#${item.category.slug}`}
               aria-label={copy.item.backTo(item.category.name)}
@@ -37,13 +39,15 @@ export function ItemView({ item }: ItemPageData) {
 
           {/* The menu card's photo and name morph into these (see MenuItemCard). */}
           <ViewTransition name={`dish-name-${item.slug}`} share="dish-name" default="none">
-            <h1 className="text-display-1 normal-case md:col-start-2 md:self-end md:text-[clamp(3rem,1.5rem+3.4vw,5.5rem)]">
+            <h1
+              className={`text-display-1 normal-case md:self-end md:text-[clamp(3rem,1.5rem+3.4vw,5.5rem)] ${two}`}
+            >
               {item.name}
             </h1>
           </ViewTransition>
 
-          <div className="relative w-full md:col-start-1 md:row-span-2 md:row-start-2 md:self-center">
-            {item.image ? (
+          {item.image ? (
+            <div className="relative w-full md:col-start-1 md:row-span-2 md:row-start-2 md:self-center">
               <ViewTransition name={`dish-${item.slug}`} share="dish-photo" default="none">
                 <Img
                   image={item.image}
@@ -52,11 +56,11 @@ export function ItemView({ item }: ItemPageData) {
                   className="aspect-square w-full rounded-card object-cover shadow-raised"
                 />
               </ViewTransition>
-            ) : null}
-            <Steam />
-          </div>
+              <Steam />
+            </div>
+          ) : null}
 
-          <div className="grid content-start gap-5 md:col-start-2">
+          <div className={`grid content-start gap-5 ${two}`}>
             {item.description ? (
               <p className="max-w-[40ch] text-xl leading-snug">{item.description}</p>
             ) : null}

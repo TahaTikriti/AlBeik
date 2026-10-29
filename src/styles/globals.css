@@ -14,6 +14,12 @@
        category chips and bottom order bar. */
     scroll-padding-block-start: calc(var(--sticky-offset) + var(--spacing-stack));
     scroll-padding-block-end: calc(var(--spacing-tap) + 1.5rem + var(--safe-bottom));
+
+    /* No bottom bar from md up (StickyOrderBar). Scroll timelines measure
+       inside this padding too, so a stale one delays titles landing. */
+    @variant md {
+      scroll-padding-block-end: 0;
+    }
   }
 
   @media (prefers-reduced-motion: no-preference) {

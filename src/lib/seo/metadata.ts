@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import type { ImageVM, SiteVM } from '@/lib/data/types'
 
 type PageMeta = {
-  /** Uses the layout's "%s · AlBeik" template. */
+  /** Uses the layout's "%s | AlBeik" template. */
   title?: string
   /** Bypasses the template (home page). */
   absoluteTitle?: string

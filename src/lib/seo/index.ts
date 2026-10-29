@@ -46,6 +46,8 @@ export function restaurantJsonLd(site: SiteVM) {
     '@context': 'https://schema.org',
     '@type': 'Restaurant',
     name: site.name,
+    alternateName: site.alternateName,
+    description: site.seo.description,
     url: site.url,
     servesCuisine: ['Lebanese', 'Halal'],
     hasMenu: absoluteUrl(site.url, '/menu'),
@@ -53,6 +55,8 @@ export function restaurantJsonLd(site: SiteVM) {
     address: Object.keys(address).length
       ? { '@type': 'PostalAddress', ...address, addressCountry: 'US' }
       : undefined,
+    geo: loc?.geo ? { '@type': 'GeoCoordinates', ...loc.geo } : undefined,
+    hasMap: loc?.mapUrl,
     telephone: loc?.phone,
     openingHoursSpecification: toSchemaOpeningHours(loc?.openingHours),
     sameAs: site.socials.map((s) => s.url),

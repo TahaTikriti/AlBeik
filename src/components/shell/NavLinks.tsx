@@ -5,20 +5,23 @@ import { usePathname } from 'next/navigation'
 
 import { copy } from '@/theme/copy'
 
+// Catering joins from lg: phones keep three links beside the logo (it's in
+// the footer and at the end of the menu there).
 const LINKS = [
-  { href: '/menu', label: copy.nav.menu },
-  { href: '/about', label: copy.nav.about },
-  { href: '/location', label: copy.nav.location },
+  { href: '/menu', label: copy.nav.menu, className: '' },
+  { href: '/our-story', label: copy.nav.about, className: '' },
+  { href: '/visit', label: copy.nav.location, className: '' },
+  { href: '/catering', label: copy.nav.catering, className: 'max-lg:hidden' },
 ] as const
 
 export function NavLinks() {
   const pathname = usePathname()
   return (
     <ul className="flex items-center sm:gap-3">
-      {LINKS.map(({ href, label }) => {
+      {LINKS.map(({ href, label, className }) => {
         const current = pathname.startsWith(href)
         return (
-          <li key={href}>
+          <li key={href} className={className}>
             <Link
               href={href}
               aria-current={current ? 'page' : undefined}

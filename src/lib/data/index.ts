@@ -16,7 +16,15 @@
 import type { Where } from 'payload'
 import { cache } from 'react'
 
-import { demoAbout, demoHome, demoItem, demoItemSlugs, demoMenu, demoSite } from './demo'
+import {
+  demoAbout,
+  demoCatering,
+  demoHome,
+  demoItem,
+  demoItemSlugs,
+  demoMenu,
+  demoSite,
+} from './demo'
 import {
   groupMenu,
   orderByIds,
@@ -29,6 +37,7 @@ import {
 } from './mappers'
 import type {
   AboutPageData,
+  CateringPageData,
   HomePageData,
   ItemPageData,
   LocationPageData,
@@ -157,6 +166,12 @@ export async function getAboutPageData(): Promise<AboutPageData> {
     body: about.body ?? null,
     images: (about.images ?? []).flatMap((row) => toImage(row.image) ?? []),
   }
+}
+
+// TODO(cms): a Catering collection; the client's catering menu is the
+// source in both modes today (src/seed/catering.ts).
+export async function getCateringPageData(): Promise<CateringPageData> {
+  return demoCatering()
 }
 
 export async function getLocationPageData(): Promise<LocationPageData> {

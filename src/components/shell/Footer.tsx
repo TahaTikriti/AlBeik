@@ -2,6 +2,7 @@ import Link from 'next/link'
 
 import type { SiteVM } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
+import { trackOnClick } from '@/lib/analytics'
 import { LogoPanel } from '@/theme/motifs'
 
 import { Emphasis } from '../ui/Emphasis'
@@ -26,7 +27,11 @@ export function Footer({ site }: { site: SiteVM }) {
           </div>
 
           {location?.mapEmbedUrl ? (
-            <figure className="grid overflow-clip rounded-card bg-charcoal ring-1 ring-white/10 md:row-span-2">
+            // The Visit page shows the map itself; this one hides there (brand.css).
+            <figure
+              data-footer-map
+              className="grid overflow-clip rounded-card bg-charcoal ring-1 ring-white/10 md:row-span-2"
+            >
               {/* Lazy: Google's map code only loads once the footer is near. */}
               <iframe
                 src={location.mapEmbedUrl}
@@ -51,6 +56,7 @@ export function Footer({ site }: { site: SiteVM }) {
                     target="_blank"
                     rel="noopener"
                     className="btn btn-red min-h-11 text-[1.1rem]"
+                    {...trackOnClick('directions_click', { placement: 'footer' })}
                   >
                     {copy.location.directions}
                   </a>
@@ -64,8 +70,9 @@ export function Footer({ site }: { site: SiteVM }) {
               <ul className="grid">
                 {[
                   { href: '/menu', label: copy.nav.menu },
-                  { href: '/about', label: copy.nav.about },
-                  { href: '/location', label: copy.nav.location },
+                  { href: '/our-story', label: copy.nav.about },
+                  { href: '/visit', label: copy.nav.location },
+                  { href: '/catering', label: copy.nav.catering },
                 ].map((link) => (
                   <li key={link.href}>
                     <Link

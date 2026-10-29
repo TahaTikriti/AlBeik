@@ -49,7 +49,8 @@ export function CategoryNav({ categories }: { categories: CategoryRef[] }) {
 
   useEffect(() => {
     const list = listRef.current
-    const chip = list?.querySelector<HTMLElement>(`[data-slug="${active}"]`)
+    // The list item, as for the pill: the link's offsetLeft is within its item.
+    const chip = list?.querySelector<HTMLElement>(`[data-slug="${active}"]`)?.parentElement
     if (!list || !chip) return
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     list.scrollTo({

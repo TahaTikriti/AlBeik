@@ -5,6 +5,7 @@ import type { Placement } from '@/lib/analytics'
 import type { MenuItemVM, MenuTag } from '@/lib/data/types'
 import { formatPrice } from '@/lib/text'
 import { copy } from '@/theme/copy'
+import { Mustache } from '@/theme/motifs'
 
 import { OrderButton } from '../order/OrderButton'
 import { Img } from '../ui/Img'
@@ -52,8 +53,9 @@ export function MenuItemCard({
               className="settle aspect-square w-full object-cover transition-transform duration-(--duration-slow) ease-out group-hover:scale-105 sm:aspect-[4/3]"
             />
           ) : (
-            <span className="grid aspect-square w-full place-items-center bg-black font-display text-4xl sm:aspect-[4/3]">
-              {item.name.charAt(0)}
+            // No photo yet: the brand's mustache holds the dish's place.
+            <span className="grid aspect-square w-full place-items-center bg-black text-red sm:aspect-[4/3]">
+              <Mustache className="h-auto w-1/2" />
             </span>
           )}
           {badge ? (

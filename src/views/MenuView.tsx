@@ -1,11 +1,17 @@
+import Link from 'next/link'
+
 import { CategoryNav } from '@/components/menu/CategoryNav'
 import { MenuSection } from '@/components/menu/MenuSection'
+import { Emphasis } from '@/components/ui/Emphasis'
 import { PunchLine } from '@/components/ui/PunchLine'
 import { ui } from '@/components/ui/classes'
-import type { MenuPageData } from '@/lib/data/types'
+import { trackOnClick } from '@/lib/analytics'
+import type { LocationVM, MenuPageData } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
 
-export function MenuView({ categories }: MenuPageData) {
+type Props = MenuPageData & { location: LocationVM | null }
+
+export function MenuView({ categories, location }: Props) {
   return (
     <>
       {/* Kept short: regulars come here to order, so the dishes start high on the page. */}
@@ -21,6 +27,31 @@ export function MenuView({ categories }: MenuPageData) {
             {categories.map((category, i) => (
               <MenuSection key={category.id} category={category} preloadFirst={i === 0} />
             ))}
+            {/* After the dishes: the halal answer, and where the big orders go. */}
+            <aside className="grid gap-4 md:grid-cols-2">
+              <div className="grid content-start gap-3 rounded-card bg-surface-raised p-6 md:p-8">
+                <p className="text-display-3 font-display uppercase">
+                  <Emphasis text={copy.menu.halalTitle} />
+                </p>
+                <p className="max-w-[44ch] text-ink-muted">{copy.menu.halalNote}</p>
+                {location?.phone && location.phoneHref ? (
+                  <a
+                    href={location.phoneHref}
+                    className="btn btn-ghost justify-self-start"
+                    {...trackOnClick('call_click', { placement: 'menu' })}
+                  >
+                    {copy.location.call(location.phone)}
+                  </a>
+                ) : null}
+              </div>
+              <div className="grid content-start gap-3 rounded-card bg-surface-raised p-6 md:p-8">
+                <p className="text-display-3 font-display uppercase">{copy.catering.band}</p>
+                <p className="max-w-[44ch] text-ink-muted">{copy.menu.cateringNote}</p>
+                <Link href="/catering" className="btn btn-ghost justify-self-start">
+                  {copy.catering.bandLink}
+                </Link>
+              </div>
+            </aside>
           </div>
         </>
       ) : (

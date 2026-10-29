@@ -6,7 +6,12 @@ import { copy } from '@/theme/copy'
 import { AboutView } from '@/views/AboutView'
 
 export async function generateMetadata(): Promise<Metadata> {
-  return pageMetadata(await getSite(), { title: copy.about.title, path: '/about' })
+  const site = await getSite()
+  return pageMetadata(site, {
+    title: copy.seo.storyTitle,
+    description: copy.seo.storyDescription(site.name),
+    path: '/our-story',
+  })
 }
 
 export default async function AboutPage() {

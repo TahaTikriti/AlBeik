@@ -76,7 +76,12 @@ export async function seed(payload: Payload, { admin, log = () => {} }: Options 
       (bump('categories'),
       await payload.create({
         collection: 'categories',
-        data: { name: category.name, slug, sortOrder: category.sortOrder },
+        data: {
+          name: category.name,
+          slug,
+          description: category.description,
+          sortOrder: category.sortOrder,
+        },
         context,
       }))
     categoryIds.set(category.name, doc.id)
@@ -107,7 +112,7 @@ export async function seed(payload: Payload, { admin, log = () => {} }: Options 
         slug,
         shortDescription: item.description,
         category: categoryIds.get(item.category)!,
-        image: await upload(item.image.file, item.name),
+        image: item.image ? await upload(item.image.file, item.name) : undefined,
         tags: item.tags ?? [],
         available: true,
         sortOrder,
@@ -181,6 +186,7 @@ export async function seed(payload: Payload, { admin, log = () => {} }: Options 
         siteName: content.siteSettings.siteName,
         ...content.storeLinks,
         locations: [content.siteSettings.location],
+        socials: content.socials.map((s) => ({ ...s })),
         seo: { defaultDescription: content.siteSettings.defaultDescription },
       },
       context,

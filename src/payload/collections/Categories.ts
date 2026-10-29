@@ -26,6 +26,11 @@ export const Categories: CollectionConfig = {
     { name: 'name', type: 'text', required: true },
     slugField('name'),
     {
+      name: 'description',
+      type: 'textarea',
+      admin: { description: 'One line introducing the category on the menu.' },
+    },
+    {
       name: 'image',
       type: 'upload',
       relationTo: 'media',

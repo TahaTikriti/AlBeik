@@ -28,12 +28,23 @@ export function Header({ site }: { site: SiteVM }) {
         <nav aria-label={copy.nav.label} className="ms-auto">
           <NavLinks />
         </nav>
-        <div className="hidden md:block">
+        {/* Both journeys, side by side (phones have them in the bottom bar). */}
+        <div className="hidden items-center gap-2 md:flex">
           <OrderButton
             links={site.storeOrderLinks}
-            placement="sticky"
-            label={copy.order.stickyLabel}
-            className="btn btn-red min-h-11 text-[1.1rem] shadow-none"
+            placement="header"
+            mode="delivery"
+            label={copy.order.modes.delivery.short}
+            ariaLabel={copy.order.modes.delivery.cta}
+            className="btn btn-red min-h-11 px-4 text-[1.1rem] shadow-none"
+          />
+          <OrderButton
+            links={site.storeOrderLinks}
+            placement="header"
+            mode="pickup"
+            label={copy.order.modes.pickup.short}
+            ariaLabel={copy.order.modes.pickup.cta}
+            className="btn btn-charcoal min-h-11 px-4 text-[1.1rem] shadow-none"
           />
         </div>
       </div>

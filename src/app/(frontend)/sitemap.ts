@@ -9,8 +9,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     { url: url('/') },
     { url: url('/menu') },
-    { url: url('/about') },
-    { url: url('/location') },
+    { url: url('/our-story') },
+    { url: url('/visit') },
+    { url: url('/catering') },
     ...items.map((item) => ({ url: url(`/menu/${item.slug}`), lastModified: item.updatedAt })),
   ]
 }

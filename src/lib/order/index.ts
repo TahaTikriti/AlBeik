@@ -20,6 +20,12 @@ export type StoreOrderUrls = {
   uberEatsStoreUrl?: string | null
 }
 
+/** How the customer gets the food. */
+export type OrderMode = 'delivery' | 'pickup'
+
+/** A link for one mode; `preset` is false when the app can't be opened in it. */
+export type ModeLink = OrderLink & { mode: OrderMode; preset: boolean }
+
 export type OrderAction =
   { kind: 'none' } | { kind: 'direct'; link: OrderLink } | { kind: 'choose'; links: OrderLink[] }
 
@@ -71,6 +77,18 @@ export function toOrderAction(links: OrderLink[]): OrderAction {
   if (!first) return { kind: 'none' }
   if (links.length === 1) return { kind: 'direct', link: first }
   return { kind: 'choose', links }
+}
+
+/**
+ * The link that opens the platform in the given mode, where its URLs allow
+ * it. Other platforms keep their link; their store page opens on delivery.
+ */
+export function linkForMode(link: OrderLink, mode: OrderMode): ModeLink {
+  const param = getPlatform(link.platform).modeParam
+  if (!param) return { ...link, mode, preset: mode === 'delivery' }
+  const url = new URL(link.href)
+  url.searchParams.set(param.name, param[mode])
+  return { ...link, href: url.toString(), mode, preset: true }
 }
 
 function toLink(platformId: PlatformId, href: string, level: OrderLink['level']): OrderLink {

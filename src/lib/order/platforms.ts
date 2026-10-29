@@ -14,6 +14,8 @@ export const PLATFORMS = [
     hosts: ['doordash.com', 'drd.sh'],
     itemField: 'doordashUrl',
     storeField: 'doordashStoreUrl',
+    // No documented way to open the store on pickup; its page opens on delivery.
+    modeParam: null,
   },
   {
     id: 'ubereats',
@@ -21,6 +23,8 @@ export const PLATFORMS = [
     hosts: ['ubereats.com'],
     itemField: 'uberEatsUrl',
     storeField: 'uberEatsStoreUrl',
+    // Checked on AlBeik's store page (2026-10-29): it opens in that mode.
+    modeParam: { name: 'diningMode', delivery: 'DELIVERY', pickup: 'PICKUP' },
   },
 ] as const
 

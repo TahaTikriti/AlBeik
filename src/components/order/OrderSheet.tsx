@@ -2,27 +2,34 @@
 
 import { useId, useRef, type PointerEvent, type Ref } from 'react'
 
-import type { OrderLink } from '@/lib/data/types'
+import type { ModeLink, OrderMode } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
 import { Mustache } from '@/theme/motifs'
 
+import { linkNotes, PlatformLink } from './PlatformLink'
+
 type Props = {
   ref: Ref<HTMLDialogElement>
-  links: OrderLink[]
+  /** Already set to `mode` (see linkForMode). */
+  links: ModeLink[]
+  mode: OrderMode
+  onModeChange: (mode: OrderMode) => void
   item: { slug: string; name: string } | null
-  onChoose: (link: OrderLink) => void
+  onChoose: (link: ModeLink) => void
 }
+
+const MODES: OrderMode[] = ['delivery', 'pickup']
 
 /** How far the sheet must be dragged down before letting go closes it. */
 const DISMISS_PX = 80
 
 /**
  * The "which app?" sheet: a native modal <dialog> that slides up from the
- * bottom. Focus is trapped; Esc, a tap on the backdrop, or dragging the red
- * band down closes it. Links open in the same tab so the platform's app can
- * take over.
+ * bottom, with a delivery / pickup switch above the apps. Focus is trapped;
+ * Esc, a tap on the backdrop, or dragging the red band down closes it. Links
+ * open in the same tab so the platform's app can take over.
  */
-export function OrderSheet({ ref, links, item, onChoose }: Props) {
+export function OrderSheet({ ref, links, mode, onModeChange, item, onChoose }: Props) {
   const titleId = useId()
   const drag = useRef<{ startY: number; dy: number } | null>(null)
 
@@ -51,7 +58,8 @@ export function OrderSheet({ ref, links, item, onChoose }: Props) {
     <dialog
       ref={ref}
       aria-labelledby={titleId}
-      className="sheet fixed inset-x-0 top-auto bottom-0 m-0 w-full max-w-none overflow-hidden rounded-t-sheet bg-charcoal p-0 text-white shadow-sheet md:inset-x-auto md:right-6 md:bottom-6 md:left-auto md:w-[26rem] md:rounded-sheet"
+      tabIndex={-1}
+      className="sheet fixed outline-none inset-x-0 top-auto bottom-0 m-0 w-full max-w-none overflow-hidden rounded-t-sheet bg-charcoal p-0 text-white shadow-sheet md:inset-x-auto md:right-6 md:bottom-6 md:left-auto md:w-[26rem] md:rounded-sheet"
       onClick={(event) => {
         if (event.target === event.currentTarget) event.currentTarget.close()
       }}
@@ -79,39 +87,39 @@ export function OrderSheet({ ref, links, item, onChoose }: Props) {
               {item ? copy.order.sheetIntroFor(item.name) : copy.order.sheetIntro}
             </p>
           </div>
+          <div className="grid gap-2">
+            <div
+              role="group"
+              aria-label={copy.order.modeLabel}
+              className="grid grid-cols-2 gap-1 rounded-full bg-black p-1"
+            >
+              {MODES.map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  aria-pressed={m === mode}
+                  onClick={() => onModeChange(m)}
+                  className="min-h-11 rounded-full font-display text-[1.2rem] tracking-[0.04em] uppercase transition-colors duration-(--duration-fast) aria-pressed:bg-white aria-pressed:text-black"
+                >
+                  {copy.order.modes[m].short}
+                </button>
+              ))}
+            </div>
+            <p aria-live="polite" className="text-small text-ink-muted">
+              {copy.order.modes[mode].line}
+            </p>
+          </div>
           <ul className="grid gap-3">
             {links.map((link) => (
               <li key={link.platform}>
-                <a
-                  href={link.href}
-                  aria-label={
-                    item && link.level === 'store'
-                      ? `${copy.order.on(link.label)}, ${copy.order.storeLevelNote}`
-                      : copy.order.on(link.label)
-                  }
-                  className="group flex min-h-[4.25rem] items-center justify-between rounded-control bg-white px-5 text-black transition-transform duration-(--duration-fast) active:scale-[0.98]"
+                <PlatformLink
+                  link={link}
+                  notes={linkNotes(link, item)}
                   onClick={(event) => {
                     onChoose(link)
                     event.currentTarget.closest('dialog')?.close()
                   }}
-                >
-                  <span className="grid">
-                    <span className="font-display text-[1.6rem] leading-none uppercase">
-                      {link.label}
-                    </span>
-                    {item && link.level === 'store' ? (
-                      <span className="text-[0.8rem] text-charcoal/70">
-                        {copy.order.storeLevelNote}
-                      </span>
-                    ) : null}
-                  </span>
-                  <span
-                    aria-hidden
-                    className="grid size-10 place-items-center rounded-full bg-red text-white transition-transform duration-(--duration-base) group-hover:translate-x-1"
-                  >
-                    →
-                  </span>
-                </a>
+                />
               </li>
             ))}
           </ul>

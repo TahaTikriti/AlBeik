@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 import { Img } from '@/components/ui/Img'
 import { PunchLine } from '@/components/ui/PunchLine'
 import { RichText } from '@/components/ui/RichText'
@@ -36,14 +38,23 @@ export function AboutView({ headline, body, images }: AboutPageData) {
         </figure>
       ) : null}
 
-      {body ? (
-        <div className={`${ui.container} py-section`}>
+      <div className={`${ui.container} grid gap-10 py-section`}>
+        {body ? (
           <RichText
             data={body}
-            className="mx-auto grid max-w-[40rem] gap-6 text-xl leading-relaxed [&_h2]:pt-8 [&_h2]:text-display-2 [&_h2]:text-red-text [&_h3]:text-display-3 [&_ol]:list-decimal [&_ol]:ps-6 [&_p:first-child]:text-[1.45rem] [&_p:first-child]:leading-snug [&_p:first-child]:font-medium [&_p:first-child]:text-white [&_ul]:list-disc [&_ul]:ps-6"
+            className="mx-auto grid w-full max-w-[40rem] gap-6 text-xl leading-relaxed [&_h2]:pt-8 [&_h2]:text-display-2 [&_h2]:text-red-text [&_h3]:text-display-3 [&_ol]:list-decimal [&_ol]:ps-6 [&_p:first-child]:text-[1.45rem] [&_p:first-child]:leading-snug [&_p:first-child]:font-medium [&_p:first-child]:text-white [&_ul]:list-disc [&_ul]:ps-6"
           />
+        ) : null}
+        {/* Never a dead end: the menu, or the way to the door. */}
+        <div className="mx-auto flex w-full max-w-[40rem] flex-wrap gap-3">
+          <Link href="/menu" className="btn btn-red">
+            {copy.about.menuCta}
+          </Link>
+          <Link href="/visit" className="btn btn-ghost">
+            {copy.about.visitCta}
+          </Link>
         </div>
-      ) : null}
+      </div>
 
       <Divider />
 

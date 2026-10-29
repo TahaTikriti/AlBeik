@@ -38,6 +38,17 @@ const payloadHeaders = config.headers
 
 export default {
   ...config,
+  // The blueprint's clean URLs, plus the old albeik.us paths, so earlier links
+  // and search results land on the right page.
+  async redirects() {
+    return [
+      { source: '/about', destination: '/our-story', permanent: true },
+      { source: '/about-us', destination: '/our-story', permanent: true },
+      { source: '/location', destination: '/visit', permanent: true },
+      { source: '/contact-us', destination: '/visit', permanent: true },
+      { source: '/our-menu', destination: '/menu', permanent: true },
+    ]
+  },
   // withPayload sends `Critical-CH: Sec-CH-Prefers-Color-Scheme` (the admin's
   // color theme) on every route. On the public site that makes Chrome restart
   // the first navigation, costing ~600 ms on mobile. Keep it on the admin only.

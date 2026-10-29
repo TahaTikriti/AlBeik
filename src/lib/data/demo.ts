@@ -8,11 +8,13 @@ import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical
 
 import { resolveOrderLinks } from '@/lib/order'
 import { slugify } from '@/lib/text'
+import * as catering from '@/seed/catering'
 import * as content from '@/seed/content'
 
-import { toLocation, toRichLine } from './mappers'
+import { toLocation, toRichLine, toSocial } from './mappers'
 import type {
   AboutPageData,
+  CateringPageData,
   CategoryVM,
   HomePageData,
   ImageVM,
@@ -46,8 +48,8 @@ const items: MenuItemVM[] = content.menuItems.map((item, i) => {
     slug,
     name: item.name,
     href: `/menu/${slug}`,
-    description: item.description,
-    image: image(item.image, item.name),
+    description: item.description ?? null,
+    image: item.image ? image(item.image, item.name) : null,
     price: null,
     tags: item.tags ?? [],
     category: { slug: slugify(item.category), name: item.category },
@@ -58,13 +60,14 @@ const items: MenuItemVM[] = content.menuItems.map((item, i) => {
 export function demoSite(url: string): SiteVM {
   return {
     name: content.siteSettings.siteName,
+    alternateName: content.siteSettings.alternateName,
     url,
     logo: null,
     showPrices: false,
     timezone: 'America/Chicago',
     storeOrderLinks: storeLinks,
     locations: [toLocation(content.siteSettings.location)],
-    socials: [],
+    socials: content.socials.map(toSocial),
     seo: { description: content.siteSettings.defaultDescription, ogImage: null },
   }
 }
@@ -74,6 +77,7 @@ export function demoMenu(): MenuPageData {
     id: i + 1,
     slug: slugify(category.name),
     name: category.name,
+    description: category.description,
     image: null,
     items: items.filter((item) => item.category.name === category.name),
   }))
@@ -121,6 +125,25 @@ export function demoHome(): HomePageData {
       source: null,
       sourceUrl: null,
       avatar: null,
+    })),
+  }
+}
+
+export function demoCatering(): CateringPageData {
+  return {
+    intro: catering.cateringIntro,
+    terms: catering.cateringTerms,
+    sections: catering.cateringSections.map((section) => ({
+      slug: slugify(section.title),
+      title: section.title,
+      note: section.note ?? null,
+      items: section.items.map((item) => ({
+        name: item.name,
+        tag: item.tag ?? null,
+        price: item.price,
+        unit: item.unit ?? null,
+        description: item.description ?? null,
+      })),
     })),
   }
 }

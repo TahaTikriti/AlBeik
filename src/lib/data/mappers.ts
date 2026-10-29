@@ -12,6 +12,7 @@ import type {
   MenuItemVM,
   RichLine,
   SiteVM,
+  SocialVM,
   TestimonialVM,
 } from './types'
 
@@ -73,6 +74,7 @@ export function groupMenu(categories: Category[], items: MenuItemVM[]): Category
       id: category.id,
       slug: category.slug,
       name: category.name,
+      description: orNull(category.description),
       image: toImage(category.image),
       items: items.filter((i) => i.category.slug === category.slug),
     }))
@@ -108,8 +110,13 @@ export function toTestimonial(doc: Testimonial): TestimonialVM {
 
 type LocationRow = NonNullable<SiteSetting['locations']>[number]
 
-// TODO(cms): a field for the map embed; the demo content sets it today.
-export function toLocation(row: LocationRow & { mapEmbedUrl?: string | null }): LocationVM {
+type DemoLocationFields = {
+  mapEmbedUrl?: string | null
+  geo?: { latitude: number; longitude: number } | null
+}
+
+// TODO(cms): fields for the map embed and pin; the demo content sets them today.
+export function toLocation(row: LocationRow & DemoLocationFields): LocationVM {
   const streetAddress = orNull(row.streetAddress)
   const city = orNull(row.city)
   const region = orNull(row.region)
@@ -129,6 +136,7 @@ export function toLocation(row: LocationRow & { mapEmbedUrl?: string | null }): 
     phoneHref: phone ? toTelHref(phone) : null,
     mapUrl: orNull(row.mapUrl),
     mapEmbedUrl: orNull(row.mapEmbedUrl),
+    geo: row.geo ?? null,
     hours: formatHours(row.hours),
     openingHours: completeHours(row.hours),
     hoursNote: orNull(row.hoursNote),
@@ -144,7 +152,9 @@ function toTelHref(phone: string): string | null {
   return `tel:${digits}`
 }
 
-const SOCIAL_LABELS: Record<NonNullable<SiteSetting['socials']>[number]['platform'], string> = {
+type SocialPlatform = NonNullable<SiteSetting['socials']>[number]['platform']
+
+const SOCIAL_LABELS: Record<SocialPlatform, string> = {
   instagram: 'Instagram',
   tiktok: 'TikTok',
   facebook: 'Facebook',
@@ -155,20 +165,22 @@ const SOCIAL_LABELS: Record<NonNullable<SiteSetting['socials']>[number]['platfor
   other: 'Link',
 }
 
+export function toSocial(social: { platform: SocialPlatform; url: string }): SocialVM {
+  return { platform: social.platform, label: SOCIAL_LABELS[social.platform], url: social.url }
+}
+
 export function toSite(settings: SiteSetting, url: string): SiteVM {
   return {
     name: settings.siteName,
+    // TODO(cms): a Site settings field; the demo content sets it today.
+    alternateName: null,
     url,
     logo: toImage(settings.logo),
     showPrices: settings.showPrices ?? false,
     timezone: settings.timezone || 'America/Chicago',
     storeOrderLinks: resolveOrderLinks(null, settings),
     locations: (settings.locations ?? []).map(toLocation),
-    socials: (settings.socials ?? []).map((s) => ({
-      platform: s.platform,
-      label: SOCIAL_LABELS[s.platform],
-      url: s.url,
-    })),
+    socials: (settings.socials ?? []).map(toSocial),
     seo: {
       description: orNull(settings.seo?.defaultDescription),
       ogImage: toImage(settings.seo?.ogImage),

@@ -24,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const site = await getSite()
   return {
     metadataBase: new URL(site.url),
-    title: { default: site.name, template: `%s · ${site.name}` },
+    title: { default: site.name, template: `%s | ${site.name}` },
     description: site.seo.description ?? undefined,
   }
 }
