@@ -22,8 +22,8 @@ type CategoryLink = { slug: string; name: string; count: number }
 type Props = HomePageData & { site: SiteVM; categories: CategoryLink[] }
 
 /**
- * Splits "The recipe is *Lebanese*. The extra attitude is ours." into the
- * shout ("The recipe is Lebanese.") and the follow-up line.
+ * Splits the slogan, "Come hungry. Leave a little *Lebanese*.", into its two
+ * lines.
  */
 function splitFirstSentence(line: RichLine): [RichLine, RichLine | null] {
   const first: RichLine['segments'] = []
@@ -91,20 +91,21 @@ export function HomeView({
           strength below); from lg it sits beside the copy. The page's one
           orchestrated moment: the words punch in, LEBANESE settles in after them,
           the grill throws embers. The order buttons never wait for it. */}
-      <section className="grain relative overflow-hidden max-lg:min-h-[calc(100svh-var(--spacing-header))]">
+      <section className="grain fade-floor relative overflow-hidden max-lg:min-h-[calc(100svh-var(--spacing-header))]">
         <Smoke />
         <div
           className={`${ui.container} relative z-10 grid gap-6 pt-9 pb-10 lg:min-h-[min(44rem,calc(100dvh-var(--spacing-header)))] lg:grid-cols-[minmax(0,52%)_1fr] lg:content-center lg:py-20 lg:*:col-start-1`}
         >
           <div className="grid gap-3">
             <p className="label text-red-text">{copy.home.heroKicker}</p>
-            <h1>
-              <span className="text-display-1 block">
+            {/* Sized so "Come hungry." and "Leave a little" (about 5.5em) each hold a line. */}
+            <h1 className="text-display-1 max-[23rem]:text-[calc(18vw-0.5rem)] lg:text-[min(8.9vw,6.5rem)]">
+              <span className="block">
                 <PunchLine line={shout} />
               </span>
               {followUp ? (
-                <span className="swipe-in mt-[0.35em] block font-display text-[clamp(1.6rem,1.2rem+2vw,2.6rem)] leading-none">
-                  <Emphasis line={followUp} />
+                <span className="block">
+                  <PunchLine line={followUp} start={shout.text.split(' ').length} />
                 </span>
               ) : null}
             </h1>
@@ -194,10 +195,13 @@ export function HomeView({
       {/* PROMISE */}
       {promise ? (
         <section data-theme="inverse" className="wipe-open grain relative overflow-clip">
-          <div className={`${ui.container} grid gap-10 py-section md:grid-cols-2 md:items-center`}>
+          <div
+            className={`${ui.container} grid gap-10 py-section md:grid-cols-2 md:items-center md:gap-14`}
+          >
             <div className="grid gap-6">
               {promise.headline.text ? (
-                <h2 className="text-mega text-black">
+                // Sized to its column, like the hero: "A lot to love." holds a line.
+                <h2 className="text-display-1 text-black max-[23rem]:text-[calc(18vw-0.5rem)] md:text-[min(8vw,6.25rem)] [&_em]:text-white">
                   <PromiseHeadline line={promise.headline} />
                 </h2>
               ) : null}
@@ -291,9 +295,10 @@ export function HomeView({
                 <li key={t.id} className="w-[86%] shrink-0 snap-start md:w-auto">
                   <figure className="grid h-full content-between gap-6 rounded-card bg-black p-6 text-white">
                     <blockquote className="grid gap-3">
+                      {/* Cropped to the mark, which sits at the top of its line box. */}
                       <span
                         aria-hidden
-                        className="font-display text-7xl leading-[0.5] text-red-text"
+                        className="h-[0.36em] font-display text-7xl leading-none text-red-text"
                       >
                         “
                       </span>
@@ -315,10 +320,10 @@ export function HomeView({
       <Marquee items={copy.marqueeLate} reverse />
 
       {/* VISIT */}
-      <section aria-labelledby="visit-heading" className="grain relative overflow-clip">
+      <section aria-labelledby="visit-heading" className="grain fade-floor relative overflow-clip">
         <Smoke className="opacity-70" />
         <div
-          className={`${ui.container} ${ui.section} grid gap-8 lg:grid-cols-[auto_1fr] lg:items-end lg:gap-12`}
+          className={`${ui.container} ${ui.section} relative z-10 grid gap-8 lg:grid-cols-[auto_1fr] lg:items-end lg:gap-12`}
         >
           <div className="grid gap-4">
             <h2 id="visit-heading" className="kinetic text-mega lg:whitespace-nowrap">
@@ -368,7 +373,10 @@ export function HomeView({
       </section>
 
       {/* LAST CALL: the two journeys again, as the blueprint's entry cards. */}
-      <section aria-labelledby="final-heading" className={`${ui.container} grid gap-8 pb-section`}>
+      <section
+        aria-labelledby="final-heading"
+        className={`${ui.container} grid gap-8 pt-6 pb-section md:pt-10`}
+      >
         <h2 id="final-heading" className="kinetic text-display-1">
           <Emphasis text={copy.home.finalTitle} />
         </h2>
@@ -411,22 +419,19 @@ export function HomeView({
   )
 }
 
-/** "100% *Halal*, Fresh & Delicious" → a giant white "100%", the rest stacked below. */
+/** "A little *Lebanese*. A lot to love." → a line for each sentence. */
 function PromiseHeadline({ line }: { line: RichLine }) {
-  const [first, ...rest] = line.text.split(' ')
-  if (!first || !/\d/.test(first)) return <Emphasis line={line} />
-  const restLine: RichLine = {
-    text: rest.join(' '),
-    segments: line.segments
-      .map((s, i) => (i === 0 ? { ...s, text: s.text.replace(first, '').trimStart() } : s))
-      .filter((s) => s.text),
-  }
+  const [first, second] = splitFirstSentence(line)
   return (
     <>
-      <span className="block text-white">{first}</span>
-      <span className="block text-[0.62em] leading-[0.98] [&_em]:text-white">
-        <Emphasis line={restLine} />
+      <span className="block">
+        <Emphasis line={first} />
       </span>
+      {second ? (
+        <span className="block">
+          <Emphasis line={second} />
+        </span>
+      ) : null}
     </>
   )
 }
@@ -440,7 +445,6 @@ function SignatureCard({ item }: { item: MenuItemVM }) {
   return (
     <article
       {...dishPreloadAttrs(item.image)}
-      data-spotlight
       className={`group relative isolate grid aspect-[4/5] content-end overflow-hidden rounded-card shadow-raised ${item.image ? 'bg-charcoal' : 'grain bg-red'}`}
     >
       {item.image ? (

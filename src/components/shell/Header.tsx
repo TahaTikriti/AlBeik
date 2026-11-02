@@ -4,7 +4,7 @@ import type { SiteVM } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
 import { Logo } from '@/theme/motifs'
 
-import { OrderButton } from '../order/OrderButton'
+import { OrderMenu } from '../order/OrderMenu'
 import { ui } from '../ui/classes'
 import { NavLinks } from './NavLinks'
 
@@ -28,24 +28,9 @@ export function Header({ site }: { site: SiteVM }) {
         <nav aria-label={copy.nav.label} className="ms-auto">
           <NavLinks />
         </nav>
-        {/* Both journeys, side by side (phones have them in the bottom bar). */}
-        <div className="hidden items-center gap-2 md:flex">
-          <OrderButton
-            links={site.storeOrderLinks}
-            placement="header"
-            mode="delivery"
-            label={copy.order.modes.delivery.short}
-            ariaLabel={copy.order.modes.delivery.cta}
-            className="btn btn-red min-h-11 px-4 text-[1.1rem] shadow-none"
-          />
-          <OrderButton
-            links={site.storeOrderLinks}
-            placement="header"
-            mode="pickup"
-            label={copy.order.modes.pickup.short}
-            ariaLabel={copy.order.modes.pickup.cta}
-            className="btn btn-charcoal min-h-11 px-4 text-[1.1rem] shadow-none"
-          />
+        {/* "Order now" unfolds both journeys (phones have them in the bottom bar). */}
+        <div className="hidden md:block">
+          <OrderMenu links={site.storeOrderLinks} />
         </div>
       </div>
       {/* A fuse burning along the header's edge as the page scrolls (brand.css). */}

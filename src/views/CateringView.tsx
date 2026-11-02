@@ -11,32 +11,47 @@ type Props = CateringPageData & { location: LocationVM | null }
 
 /**
  * The catering menu as a price list: trays, boxes and buffets by section,
- * with the section chips from the menu page. Ordering is a phone call (the
- * client hasn't named another channel yet), offered at the top and the end.
+ * with the section chips from the menu page. Ordering is by phone or email,
+ * catering's own and not the ordering line, offered at the top and the end.
+ * Until the client shares them, the restaurant's phone stands in.
  */
-export function CateringView({ intro, sections, terms, location }: Props) {
-  const call =
-    location?.phone && location.phoneHref ? (
-      <a
-        href={location.phoneHref}
-        className="btn btn-red"
-        {...trackOnClick('call_click', { placement: 'catering' })}
-      >
-        {copy.catering.call(location.phone)}
-      </a>
-    ) : null
+export function CateringView({ intro, sections, terms, contact, location }: Props) {
+  const phone = contact.phone ?? location?.phone
+  const phoneHref = contact.phoneHref ?? location?.phoneHref
+  const reachUs = (
+    <>
+      {phone && phoneHref ? (
+        <a
+          href={phoneHref}
+          className="btn btn-red"
+          {...trackOnClick('call_click', { placement: 'catering' })}
+        >
+          {copy.catering.call(phone)}
+        </a>
+      ) : null}
+      {contact.email ? (
+        <a
+          href={`mailto:${contact.email}`}
+          className="btn btn-ghost wrap-anywhere normal-case"
+          {...trackOnClick('email_click', { placement: 'catering' })}
+        >
+          {copy.catering.email(contact.email)}
+        </a>
+      ) : null}
+    </>
+  )
 
   return (
     <>
-      <header className="grain relative overflow-hidden">
+      <header className="grain fade-floor relative overflow-hidden">
         <Smoke />
-        <div className={`${ui.container} grid gap-6 pt-12 pb-10 md:pt-20`}>
+        <div className={`${ui.container} relative z-10 grid gap-6 pt-12 pb-10 md:pt-20`}>
           <h1 className="text-display-1 max-w-[14ch]">
             <PunchLine text={copy.catering.heading} />
           </h1>
           <p className="max-w-[44ch] text-xl leading-snug">{intro}</p>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
-            {call}
+            {reachUs}
             <p className="text-ink-muted">{copy.catering.leadTime}</p>
           </div>
         </div>
@@ -112,7 +127,7 @@ export function CateringView({ intro, sections, terms, location }: Props) {
               ))}
             </address>
           ) : null}
-          <div className="justify-self-start">{call}</div>
+          <div className="flex flex-wrap gap-3">{reachUs}</div>
         </section>
       </div>
     </>

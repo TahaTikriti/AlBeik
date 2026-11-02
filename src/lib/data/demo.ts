@@ -11,7 +11,7 @@ import { slugify } from '@/lib/text'
 import * as catering from '@/seed/catering'
 import * as content from '@/seed/content'
 
-import { toLocation, toRichLine, toSocial } from './mappers'
+import { toLocation, toRichLine, toSocial, toTelHref } from './mappers'
 import type {
   AboutPageData,
   CateringPageData,
@@ -130,9 +130,11 @@ export function demoHome(): HomePageData {
 }
 
 export function demoCatering(): CateringPageData {
+  const { phone, email } = catering.cateringContact
   return {
     intro: catering.cateringIntro,
     terms: catering.cateringTerms,
+    contact: { phone, phoneHref: phone ? toTelHref(phone) : null, email },
     sections: catering.cateringSections.map((section) => ({
       slug: slugify(section.title),
       title: section.title,

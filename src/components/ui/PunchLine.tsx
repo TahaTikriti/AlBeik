@@ -6,10 +6,10 @@ import { emphasisSegments, type EmphasisProps } from './Emphasis'
  * A display headline, one word at a time: plain words punch up out of a mask
  * in turn, then the red word settles in a beat later (see .punch / .stamp in
  * brand.css). Reads as normal text to assistive tech; static with reduced
- * motion.
+ * motion. `start` continues the sequence from an earlier line.
  */
-export function PunchLine(props: EmphasisProps) {
-  let index = 0
+export function PunchLine(props: EmphasisProps & { start?: number }) {
+  let index = props.start ?? 0
   return (
     <>
       {emphasisSegments(props).map((segment, s) =>

@@ -31,6 +31,7 @@ export type AnalyticsEvents = {
   }
   directions_click: { placement: ContactPlacement }
   call_click: { placement: ContactPlacement }
+  email_click: { placement: ContactPlacement }
 }
 
 type UmamiWindow = {

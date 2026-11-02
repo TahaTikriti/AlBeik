@@ -391,10 +391,9 @@ export const testimonials = [
 
 export const homepage = {
   hero: {
-    // From AlBeik's Instagram rebrand ("THE RECIPE IS LEBANESE / THE EXTRA
-    // ATTITUDE IS OURS", with LEBANESE highlighted). Kept: the client's review
-    // calls it excellent.
-    headline: 'The recipe is *Lebanese*. The extra attitude is ours.',
+    // The client's slogan (2026-11-02), with LEBANESE highlighted as in their
+    // earlier "The recipe is Lebanese" line, which now runs in the home strip.
+    headline: 'Come hungry. Leave a little *Lebanese*.',
     // The blueprint's hero headline and promise (section 2), as the follow-up.
     subline:
       'Discover the Lebanese in you. Big flavor and generous comfort, right on State Line Road.',
@@ -434,7 +433,7 @@ export const about = {
   headline: 'Lebanese flavor. *Kansas City* welcome.',
   markdown: `AlBeik brings the flavors we love to a table close to home. Think charcoal-grilled favorites, comforting sandwiches, bright salads and Lebanese dishes made for sharing. Know exactly what you came for, or ready to try something new? There's a place for you here.
 
-## Come hungry. Leave with a new favorite.
+## Come hungry. Leave a little Lebanese.
 
 Some meals are quick. Some turn into a table full of dishes and “just one more bite.” We make room for both. Find your usual order, bring someone along, and let the menu do the rest.`,
 }
@@ -487,7 +486,8 @@ export const TODO = [
   'Menu: which catering dishes are also sold individually (wings, falafel, gyro, fries, rice, Shawarma Feast, Fajitanon…)',
   'In-store prices (and decide whether to show them: Site settings → Show prices)',
   'Item-level DoorDash / Uber Eats links, if the client wants to collect them (optional)',
-  'Confirm phone and opening hours (from the old albeik.us footer); holiday hours, parking, dine-in',
+  'Confirm phone and opening hours (from the old albeik.us footer); holiday hours once decided',
+  'Catering phone and email, separate from the ordering line (cateringContact in src/seed/catering.ts)',
   'Logo files (Site settings)',
   'Testimonial sources (Google, Yelp…)',
   'Dietary tags (spicy, vegetarian) once the client confirms them',

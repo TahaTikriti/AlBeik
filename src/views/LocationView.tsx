@@ -73,6 +73,18 @@ export function LocationView({
                 </div>
 
                 <div className="grid content-start gap-4">
+                  <p className="label text-red-text">{copy.location.goodToKnow}</p>
+                  <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-xl">
+                    {copy.location.facts.map((fact) => (
+                      <div key={fact.label} className="contents">
+                        <dt className="font-display uppercase">{fact.label}</dt>
+                        <dd>{fact.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+
+                <div className="grid content-start gap-4">
                   <p className="label text-red-text">{copy.location.hours}</p>
                   {location.hours.length ? (
                     <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-xl">

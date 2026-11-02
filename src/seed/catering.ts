@@ -17,6 +17,15 @@ export type SeedCateringSection = { title: string; note?: string; items: SeedCat
 export const cateringIntro =
   'Fresh Lebanese catering for meetings, office lunches, celebrations, and large group orders.'
 
+/**
+ * Catering's own phone and email, separate from the ordering line (client,
+ * 2026-11-02). Not shared yet: until then the page shows the restaurant's phone.
+ */
+export const cateringContact: { phone: string | null; email: string | null } = {
+  phone: null,
+  email: null,
+}
+
 /** The order information printed at the end, for customers. */
 export const cateringTerms = [
   'Advance ordering recommended: 24–48 hours for standard orders; longer for 50+ meals.',

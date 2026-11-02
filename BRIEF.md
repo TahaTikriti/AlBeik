@@ -8,6 +8,7 @@
 
 - Current site: <https://albeik.us> (built by Codeloops, menu only, no ordering)
 - Existing taglines: "A taste of home, miles away from Beirut", "Rooted in Flavor, Driven by Purpose", "100% Halal, Fresh & Delicious"
+- Slogan (from the client, 2026-11-02): "Come hungry. Leave a little Lebanese."
 - Instagram voice (recent rebrand): "Juicier. Meatier. Tastier.", "The recipe is Lebanese. The extra attitude is ours.", "Spice bomb is waiting."
 
 Scraped content of the current site is in `docs/content/` (home + about). Use it as seed data. The full menu lives at `/our-menu` on the live site and is **not** scraped yet; seed what we have and mark the rest as TODO.

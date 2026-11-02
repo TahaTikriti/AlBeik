@@ -17,9 +17,10 @@ export const copy = {
   // Facts, not filler: the charcoal grill and family recipes are from press coverage.
   marquee: ['Charcoal-grilled', 'Family recipes', 'Beirut street food', 'Kansas City'],
   // The second strip, lower on the home page: lines from the Instagram posts.
-  marqueeLate: ['Juicier', 'Meatier', 'Tastier', 'Spice bomb is waiting'],
+  marqueeLate: ['Juicier', 'Meatier', 'Tastier', 'The extra attitude is ours'],
   order: {
     cta: 'Order',
+    now: 'Order now',
     ctaFor: (item: string) => `Order ${item}`,
     ctaForOn: (item: string, platform: string) => `Order on ${platform}: ${item}`,
     on: (platform: string) => `Order on ${platform}`,
@@ -28,9 +29,9 @@ export const copy = {
     sheetIntroFor: (item: string) => `${item}. Coming right up.`,
     storeLevelNote: 'Opens AlBeik’s page',
     close: 'Not yet',
-    stickyLabel: 'Order now',
     stickyKicker: 'Spice bomb is waiting',
-    // The blueprint's two journeys (section 1): never just "Order now".
+    // The blueprint's two journeys (section 1); the header's "Order now"
+    // unfolds into them.
     modes: {
       delivery: {
         short: 'Delivery',
@@ -116,6 +117,12 @@ export const copy = {
     phone: 'Phone',
     directions: 'Get directions',
     orderAhead: 'Order ahead',
+    // Confirmed by the client (2026-11-02). Holiday hours aren't decided yet.
+    goodToKnow: 'Good to know',
+    facts: [
+      { label: 'Dine in', value: 'Yes. Grab a table.' },
+      { label: 'Parking', value: 'Yes. Pull right in.' },
+    ],
     call: (phone: string) => `Call ${phone}`,
     detailsSoon: 'Address and hours are on their way. Hungry now? Order online.',
     hoursSoon: 'Opening hours are on their way. Hungry now? Order online.',
@@ -123,6 +130,7 @@ export const copy = {
   catering: {
     heading: '*Catering* for the whole crew',
     call: (phone: string) => `Call ${phone} to order`,
+    email: (address: string) => `Email ${address}`,
     leadTime: 'Order 24–48 hours ahead; longer for 50+ meals.',
     howTo: 'How to order',
     tags: { vegan: 'Vegan', vegetarian: 'Vegetarian' },
@@ -161,13 +169,13 @@ export const copy = {
     visitTitle: (site: string, address: string) => `Visit ${site} | ${address}`,
     cateringTitle: (site: string) => `Catering | ${site} Lebanese Catering in Kansas City`,
     cateringDescription: (site: string) =>
-      `Lebanese catering in Kansas City from ${site}: mezze trays, sandwich boxes, lunch boxes and buffets for offices and events. Call to order.`,
+      `Lebanese catering in Kansas City from ${site}: mezze trays, sandwich boxes, lunch boxes and buffets for offices and events. Contact us to order.`,
     visitDescription: (site: string) =>
       `Find ${site} on State Line Road. View current hours, get directions, call the restaurant, or place a pickup order.`,
   },
   footer: {
-    // As in the brand guidelines, LEBANESE in red.
-    tagline: 'The recipe is *Lebanese*. The extra attitude is ours.',
+    // The client's slogan, LEBANESE in red as in the brand guidelines.
+    tagline: 'Come hungry. Leave a little *Lebanese*.',
     mapLabel: 'Find us',
     mapTitle: 'Map: AlBeik on State Line Rd, Kansas City',
     follow: 'Follow us',

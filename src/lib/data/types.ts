@@ -179,4 +179,6 @@ export type CateringPageData = {
   sections: CateringSectionVM[]
   /** Customer-facing ordering terms. */
   terms: string[]
+  /** Catering's own line, not the ordering number; null until known. */
+  contact: { phone: string | null; phoneHref: string | null; email: string | null }
 }

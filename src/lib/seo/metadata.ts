@@ -41,7 +41,7 @@ export function pageMetadata(site: SiteVM, page: PageMeta): Metadata {
               url: '/og.png',
               width: 1200,
               height: 630,
-              alt: `${site.name} Lebanese Restaurant: the recipe is Lebanese, the extra attitude is ours`,
+              alt: `${site.name} Lebanese Restaurant: come hungry, leave a little Lebanese`,
             },
       ],
     },

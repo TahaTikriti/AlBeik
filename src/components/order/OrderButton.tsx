@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef, useState, type MouseEvent } from 'react'
 
 import { track, type Placement } from '@/lib/analytics'
 import type { ModeLink, OrderLink, OrderMode } from '@/lib/data/types'
@@ -11,11 +11,13 @@ import { ui } from '../ui/classes'
 import { emberBurst } from './emberBurst'
 import { OrderSheet } from './OrderSheet'
 
+type Item = { slug: string; name: string }
+
 type Props = {
   /** Already resolved through the fallback chain (item → store → hidden). */
   links: OrderLink[]
   /** The dish being ordered; null for store-level CTAs. */
-  item?: { slug: string; name: string } | null
+  item?: Item | null
   placement: Placement
   /** The journey this control starts: "Order for Pickup" opens on pickup. */
   mode?: OrderMode
@@ -23,6 +25,59 @@ type Props = {
   /** For a short visible label ("Pickup") that needs its full meaning read out. */
   ariaLabel?: string
   className?: string
+}
+
+/**
+ * The platform sheet and how to open it. A hook rather than part of the
+ * button so OrderMenu can keep the sheet outside its folding panel: a modal
+ * inside a hidden element doesn't show.
+ */
+export function useOrderSheet({
+  links,
+  item = null,
+  placement,
+}: {
+  links: OrderLink[]
+  item?: Item | null
+  placement: Placement
+}) {
+  const dialog = useRef<HTMLDialogElement>(null)
+  const [mode, setMode] = useState<OrderMode>('delivery')
+  const itemKey = item?.slug ?? 'store'
+
+  const onChoose = (link: ModeLink) =>
+    track('order_click', {
+      item: itemKey,
+      platform: link.platform,
+      level: link.level,
+      placement,
+      mode: link.mode,
+    })
+
+  const open = (startMode: OrderMode, event: MouseEvent<HTMLElement>) => {
+    // Each opening starts on this control's journey.
+    setMode(startMode)
+    dialog.current?.showModal()
+    // The sheet itself takes focus: the browser would put it on the
+    // first mode button, which then looks chosen when it isn't.
+    dialog.current?.focus()
+    // After showModal, so the sparks land above the sheet's backdrop.
+    emberBurst(event.currentTarget, event.clientX, event.clientY)
+    track('order_sheet_open', { item: itemKey, placement, mode: startMode })
+  }
+
+  const sheet = (
+    <OrderSheet
+      ref={dialog}
+      links={links.map((link) => linkForMode(link, mode))}
+      mode={mode}
+      onModeChange={setMode}
+      item={item}
+      onChoose={onChoose}
+    />
+  )
+
+  return { open, sheet, onChoose }
 }
 
 /**
@@ -39,19 +94,12 @@ export function OrderButton({
   ariaLabel,
   className = ui.buttonPrimary,
 }: Props) {
-  const dialog = useRef<HTMLDialogElement>(null)
-  const [mode, setMode] = useState(startMode)
   const action = toOrderAction(links)
-  const itemKey = item?.slug ?? 'store'
-
-  const onChoose = (link: ModeLink) =>
-    track('order_click', {
-      item: itemKey,
-      platform: link.platform,
-      level: link.level,
-      placement,
-      mode: link.mode,
-    })
+  const { open, sheet, onChoose } = useOrderSheet({
+    links: action.kind === 'choose' ? action.links : [],
+    item,
+    placement,
+  })
 
   if (action.kind === 'none') return null
 
@@ -79,28 +127,11 @@ export function OrderButton({
         className={className}
         aria-haspopup="dialog"
         aria-label={ariaLabel ?? (item ? copy.order.ctaFor(item.name) : undefined)}
-        onClick={(event) => {
-          // Each opening starts on this control's journey.
-          setMode(startMode)
-          dialog.current?.showModal()
-          // The sheet itself takes focus: the browser would put it on the
-          // first mode button, which then looks chosen when it isn't.
-          dialog.current?.focus()
-          // After showModal, so the sparks land above the sheet's backdrop.
-          emberBurst(event.currentTarget, event.clientX, event.clientY)
-          track('order_sheet_open', { item: itemKey, placement, mode: startMode })
-        }}
+        onClick={(event) => open(startMode, event)}
       >
         {label ?? copy.order.cta}
       </button>
-      <OrderSheet
-        ref={dialog}
-        links={action.links.map((link) => linkForMode(link, mode))}
-        mode={mode}
-        onModeChange={setMode}
-        item={item}
-        onChoose={onChoose}
-      />
+      {sheet}
     </>
   )
 }

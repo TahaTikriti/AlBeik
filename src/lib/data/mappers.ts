@@ -143,7 +143,7 @@ export function toLocation(row: LocationRow & DemoLocationFields): LocationVM {
   }
 }
 
-function toTelHref(phone: string): string | null {
+export function toTelHref(phone: string): string | null {
   const digits = phone.replace(/[^\d+]/g, '')
   if (!digits) return null
   if (digits.startsWith('+')) return `tel:${digits}`

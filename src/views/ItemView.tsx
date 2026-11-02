@@ -80,7 +80,7 @@ export function ItemView({ item }: ItemPageData) {
               links={item.orderLinks}
               item={item}
               placement="item"
-              label={copy.order.stickyLabel}
+              label={copy.order.now}
               className="btn btn-red min-h-16 w-full text-[1.6rem] md:w-auto md:justify-self-start md:px-10"
             />
           </div>

@@ -15,8 +15,8 @@ export function MenuView({ categories, location }: Props) {
   return (
     <>
       {/* Kept short: regulars come here to order, so the dishes start high on the page. */}
-      <div className="grain relative">
-        <h1 className={`${ui.container} text-display-1 pt-8 pb-6 md:pt-14 md:pb-8`}>
+      <div className="grain fade-floor relative">
+        <h1 className={`${ui.container} text-display-1 relative z-10 pt-8 pb-6 md:pt-14 md:pb-8`}>
           <PunchLine text="The *menu*" />
         </h1>
       </div>

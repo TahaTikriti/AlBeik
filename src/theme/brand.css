@@ -149,8 +149,9 @@
 
   /* The hero video's shade: the same fades as .fade-photo, laid over the video
      as black gradients instead of masking it (masking a playing video costs an
-     extra pass every frame). Over a black section the result is identical.
-     Phones and tablets: dimmed under the copy; lg: faded on the left and bottom. */
+     extra pass every frame).
+     Phones and tablets: dimmed under the copy; lg: faded on the left, eased so
+     the fade has no visible start or end. */
   .hero-shade::after {
     content: '';
     position: absolute;
@@ -166,11 +167,41 @@
     );
   }
   @media (width >= 64rem) {
-    .hero-shade::after {
-      background:
-        linear-gradient(to right, #000, transparent 45%),
-        linear-gradient(to top, #000, transparent 28%);
+    /* Beside the copy the video sits under the section's smoke and grain
+       (z-index -1): they'd otherwise stop dead at its opaque black edge, a
+       visible seam, because the haze makes the copy's side lighter than #000. */
+    .hero-shade {
+      z-index: -2;
     }
+    .hero-shade::after {
+      background: linear-gradient(
+        to right,
+        #000,
+        rgb(0 0 0 / 0.9) 10%,
+        rgb(0 0 0 / 0.68) 20%,
+        rgb(0 0 0 / 0.4) 31%,
+        rgb(0 0 0 / 0.16) 42%,
+        transparent 54%
+      );
+    }
+  }
+
+  /* A grainy, smoky section melts into the plain black below it. On its own the
+     haze stops at a hard line, because it makes the section lighter than #000.
+     Above the smoke and grain, under anything with a z-index (give the content one). */
+  .fade-floor::before {
+    content: '';
+    position: absolute;
+    inset: auto 0 0;
+    height: 34%;
+    pointer-events: none;
+    background: linear-gradient(
+      to top,
+      #000,
+      rgb(0 0 0 / 0.72) 30%,
+      rgb(0 0 0 / 0.3) 65%,
+      transparent
+    );
   }
 
   /* The hero dish fades into whatever is behind it (smoke included), so there's no seam.
@@ -365,29 +396,6 @@
     opacity: 0;
   }
 
-  /* Dish cards: a warm glow follows the pointer (Spotlight), behind the text. */
-  [data-spotlight]::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    pointer-events: none;
-    background: radial-gradient(
-      280px circle at var(--mx, 50%) var(--my, 50%),
-      rgb(244 49 63 / 0.24),
-      transparent 65%
-    );
-    box-shadow: inset 0 0 0 1px rgb(244 49 63 / 0.3);
-    opacity: 0;
-    transition: opacity var(--duration-base);
-  }
-  @media (hover: hover) {
-    [data-spotlight]:hover::before {
-      opacity: 1;
-    }
-  }
-
   /* The footer map, tinted to the brand's warm charcoal so it sits in the
      black footer. One fixed look; invert + hue-rotate keeps the pin red-ish
      and the labels readable. */
@@ -411,8 +419,32 @@
     width: max-content;
   }
 
-  /* The order sheet slides up from the bottom. */
+  /* The header's order options unfold under "Order now" (OrderMenu). */
+  .order-menu {
+    display: none;
+    opacity: 0;
+    translate: 0 -0.5rem;
+    transition:
+      opacity var(--duration-fast),
+      translate var(--duration-base) var(--ease-out),
+      display var(--duration-fast) allow-discrete;
+  }
+  .order-menu[data-open] {
+    display: grid;
+    opacity: 1;
+    translate: 0 0;
+  }
+  @starting-style {
+    .order-menu[data-open] {
+      opacity: 0;
+      translate: 0 -0.5rem;
+    }
+  }
+
+  /* The order sheet slides up from the bottom. Always charcoal, so its muted
+     text can't take the white header's dark ink when it's opened from there. */
   .sheet {
+    --color-ink-muted: rgb(255 255 255 / 0.7);
     translate: 0 100%;
     transition:
       translate var(--duration-slow) var(--ease-out),
@@ -493,16 +525,13 @@
       hero-settle 1.4s var(--ease-out) both,
       hero-drift 16s ease-in-out 1.4s infinite alternate;
   }
-  /* The words punch up in turn, the red word settles in a beat later, and the
-     follow-up line swipes in. About a second, once. */
+  /* The words punch up in turn and the red word settles in a beat later.
+     About a second, once. */
   .punch > span {
     animation: punch-up 620ms var(--ease-out) calc(var(--i) * 90ms) both;
   }
   .stamp {
     animation: stamp 520ms var(--ease-out) calc(var(--i) * 90ms + 100ms) both;
-  }
-  .swipe-in {
-    animation: swipe-in 700ms var(--ease-out) 820ms both;
   }
   .embers > span {
     animation: ember-rise var(--d) linear var(--delay) infinite;
@@ -571,16 +600,6 @@
   from {
     opacity: 0;
     scale: 1.12;
-  }
-}
-
-@keyframes swipe-in {
-  from {
-    clip-path: inset(-0.2em 100% -0.2em 0);
-    translate: -0.5em 0;
-  }
-  to {
-    clip-path: inset(-0.2em -0.2em -0.2em 0);
   }
 }
 
