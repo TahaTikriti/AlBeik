@@ -4,6 +4,7 @@ import { ViewTransition } from 'react'
 import type { Placement } from '@/lib/analytics'
 import type { MenuItemVM } from '@/lib/data/types'
 import { formatPrice } from '@/lib/text'
+import { copy } from '@/theme/copy'
 
 import { OrderButton } from '../order/OrderButton'
 
@@ -34,7 +35,14 @@ export function MenuItemRow({ item, placement }: Props) {
       </div>
       <div className="flex items-center gap-3">
         {item.price !== null ? (
-          <span className="font-display text-2xl">{formatPrice(item.price)}</span>
+          <span className="grid text-end font-display text-2xl leading-none">
+            {formatPrice(item.price)}
+            {item.comboPrice !== null ? (
+              <span className="mt-1 text-[0.8rem] tracking-[0.06em] text-ink-muted uppercase">
+                {copy.menu.comboPrice(formatPrice(item.comboPrice))}
+              </span>
+            ) : null}
+          </span>
         ) : null}
         <OrderButton
           links={item.orderLinks}

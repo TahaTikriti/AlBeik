@@ -154,9 +154,13 @@ export interface MenuItem {
    */
   price?: number | null;
   /**
+   * USD, for sandwiches sold as a combo (with small fries and a fountain drink). Leave empty if there is no combo.
+   */
+  comboPrice?: number | null;
+  /**
    * Halal is site-wide, no tag needed.
    */
-  tags?: ('spicy' | 'vegetarian' | 'popular' | 'new' | 'signature')[] | null;
+  tags?: ('spicy' | 'vegetarian' | 'vegan' | 'popular' | 'new' | 'signature')[] | null;
   /**
    * In the DoorDash app, open the dish and use Share.
    */
@@ -376,6 +380,7 @@ export interface MenuItemsSelect<T extends boolean = true> {
   category?: T;
   image?: T;
   price?: T;
+  comboPrice?: T;
   tags?: T;
   doordashUrl?: T;
   uberEatsUrl?: T;

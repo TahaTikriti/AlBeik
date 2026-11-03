@@ -18,6 +18,7 @@ export function serializeJsonLd(data: unknown): string {
 
 const HALAL = 'https://schema.org/HalalDiet'
 const VEGETARIAN = 'https://schema.org/VegetarianDiet'
+const VEGAN = 'https://schema.org/VeganDiet'
 
 /** Drops keys whose value is undefined, null, '' or an empty array/object. */
 function compact<T extends Record<string, unknown>>(obj: T): Partial<T> {
@@ -79,7 +80,11 @@ export function menuJsonLd(site: SiteVM, categories: CategoryVM[]) {
           url: absoluteUrl(site.url, item.href),
           description: item.description,
           image: item.image ? absoluteUrl(site.url, item.image.url) : undefined,
-          suitableForDiet: item.tags.includes('vegetarian') ? [HALAL, VEGETARIAN] : [HALAL],
+          suitableForDiet: [
+            HALAL,
+            ...(item.tags.includes('vegan') ? [VEGAN, VEGETARIAN] : []),
+            ...(item.tags.includes('vegetarian') ? [VEGETARIAN] : []),
+          ],
           offers:
             item.price !== null
               ? { '@type': 'Offer', price: item.price.toFixed(2), priceCurrency: 'USD' }

@@ -10,7 +10,14 @@ import { copy } from '@/theme/copy'
  * without JS); JS highlights the chip for the section in view, keeps it
  * centred in the bar, and glides one red pill behind the chips to it.
  */
-export function CategoryNav({ categories }: { categories: CategoryRef[] }) {
+export function CategoryNav({
+  categories,
+  label = copy.menu.categoriesLabel,
+}: {
+  categories: CategoryRef[]
+  /** The bar's accessible name: the menu's categories or catering's sections. */
+  label?: string
+}) {
   const [active, setActive] = useState(categories[0]?.slug)
   const listRef = useRef<HTMLUListElement>(null)
   const [pill, setPill] = useState<{ x: number; width: number } | null>(null)
@@ -61,7 +68,7 @@ export function CategoryNav({ categories }: { categories: CategoryRef[] }) {
 
   return (
     <nav
-      aria-label={copy.menu.categoriesLabel}
+      aria-label={label}
       className="sticky top-header z-(--z-sticky) border-b border-line bg-black/95"
     >
       <ul

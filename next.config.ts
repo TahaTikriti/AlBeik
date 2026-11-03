@@ -47,6 +47,26 @@ export default {
       { source: '/location', destination: '/visit', permanent: true },
       { source: '/contact-us', destination: '/visit', permanent: true },
       { source: '/our-menu', destination: '/menu', permanent: true },
+      // Dishes renamed or dropped with the updated menu (2026-11-03). Not
+      // permanent: a dish could come back under its old name.
+      ...[
+        ['falafel', 'falafel-6-pieces'],
+        ['cheese-rolls', 'cheese-rolls-4-pieces'],
+        ['albeik-chicken-sandwich', 'albeik-chicken-sandwich-fajitanon'],
+        ['shawarma-feast', 'chicken-shawarma-feast-for-4'],
+        ['fries', 'small-fries'],
+        ['lebanese-lemonade', 'lemonade'],
+        ['laban-ayran', 'ayran'],
+      ].map(([from, to]) => ({
+        source: `/menu/${from}`,
+        destination: `/menu/${to}`,
+        permanent: false,
+      })),
+      ...['kafta-sandwich', 'hummus-and-falafel'].map((from) => ({
+        source: `/menu/${from}`,
+        destination: '/menu',
+        permanent: false,
+      })),
     ]
   },
   // withPayload sends `Critical-CH: Sec-CH-Prefers-Color-Scheme` (the admin's

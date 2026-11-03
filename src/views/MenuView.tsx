@@ -16,9 +16,21 @@ export function MenuView({ categories, location }: Props) {
     <>
       {/* Kept short: regulars come here to order, so the dishes start high on the page. */}
       <div className="grain fade-floor relative">
-        <h1 className={`${ui.container} text-display-1 relative z-10 pt-8 pb-6 md:pt-14 md:pb-8`}>
-          <PunchLine text="The *menu*" />
-        </h1>
+        <div className={`${ui.container} relative z-10 grid gap-3 pt-8 pb-6 md:pt-14 md:pb-8`}>
+          <h1 className="text-display-1">
+            <PunchLine text="The *menu*" />
+          </h1>
+          {/* Says which menu this is: the everyday one, catering has its own. */}
+          <p className="flex flex-wrap items-baseline gap-x-3 text-ink-muted">
+            <span>{copy.menu.subline}</span>
+            <Link
+              href="/catering"
+              className="inline-flex min-h-tap items-center underline underline-offset-4 hover:text-red-text"
+            >
+              {copy.menu.cateringLink}
+            </Link>
+          </p>
+        </div>
       </div>
       {categories.length ? (
         <>

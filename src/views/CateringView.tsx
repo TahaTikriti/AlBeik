@@ -1,4 +1,7 @@
+import Link from 'next/link'
+
 import { CategoryNav } from '@/components/menu/CategoryNav'
+import { CateringCallBar } from '@/components/shell/StickyOrderBar'
 import { PunchLine } from '@/components/ui/PunchLine'
 import { ui } from '@/components/ui/classes'
 import { trackOnClick } from '@/lib/analytics'
@@ -12,8 +15,10 @@ type Props = CateringPageData & { location: LocationVM | null }
 /**
  * The catering menu as a price list: trays, boxes and buffets by section,
  * with the section chips from the menu page. Ordering is by phone or email,
- * catering's own and not the ordering line, offered at the top and the end.
- * Until the client shares them, the restaurant's phone stands in.
+ * catering's own and not the ordering line, offered at the top, the end and
+ * (phones) in the bottom bar, which replaces Delivery and Pickup here: those
+ * order from the everyday menu. Until the client shares catering's own
+ * phone, the restaurant's stands in.
  */
 export function CateringView({ intro, sections, terms, contact, location }: Props) {
   const phone = contact.phone ?? location?.phone
@@ -46,19 +51,29 @@ export function CateringView({ intro, sections, terms, contact, location }: Prop
       <header className="grain fade-floor relative overflow-hidden">
         <Smoke />
         <div className={`${ui.container} relative z-10 grid gap-6 pt-12 pb-10 md:pt-20`}>
-          <h1 className="text-display-1 max-w-[14ch]">
-            <PunchLine text={copy.catering.heading} />
-          </h1>
+          <div className="grid gap-3">
+            <p className="label text-red-text">{copy.catering.eyebrow}</p>
+            <h1 className="text-display-1 max-w-[14ch]">
+              <PunchLine text={copy.catering.heading} />
+            </h1>
+          </div>
           <p className="max-w-[44ch] text-xl leading-snug">{intro}</p>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
             {reachUs}
             <p className="text-ink-muted">{copy.catering.leadTime}</p>
           </div>
+          <Link
+            href="/menu"
+            className="inline-flex min-h-tap items-center justify-self-start text-ink-muted underline underline-offset-4 hover:text-red-text"
+          >
+            {copy.catering.menuLink}
+          </Link>
         </div>
       </header>
 
       {/* Chips use the part before the colon: "Lebanese Feast", not the whole title. */}
       <CategoryNav
+        label={copy.catering.sectionsLabel}
         categories={sections.map((s) => ({ slug: s.slug, name: s.title.split(':')[0]! }))}
       />
 
@@ -130,6 +145,7 @@ export function CateringView({ intro, sections, terms, contact, location }: Prop
           <div className="flex flex-wrap gap-3">{reachUs}</div>
         </section>
       </div>
+      {phone && phoneHref ? <CateringCallBar phone={phone} phoneHref={phoneHref} /> : null}
     </>
   )
 }

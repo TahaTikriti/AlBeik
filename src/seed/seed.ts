@@ -17,14 +17,25 @@ const context = { disableRevalidate: true }
 type Options = {
   admin?: { email: string; password: string }
   log?: (message: string) => void
+  /**
+   * Also bring the menu already in the database in line with content.ts
+   * (`pnpm seed:menu`): categories and dishes get its names, descriptions,
+   * prices, tags and order; dishes no longer on it are hidden (unticked
+   * "available", not deleted); the home page's signatures follow; prices are
+   * switched on. This does overwrite menu edits made in the admin.
+   */
+  syncMenu?: boolean
 }
 
 /**
  * Fills an empty database with the scraped content. Safe to re-run: it only
  * creates what's missing and never overwrites existing documents, so it
- * can't clobber edits made in the admin.
+ * can't clobber edits made in the admin (unless `syncMenu` is set).
  */
-export async function seed(payload: Payload, { admin, log = () => {} }: Options = {}) {
+export async function seed(
+  payload: Payload,
+  { admin, log = () => {}, syncMenu = false }: Options = {},
+) {
   const created: Record<string, number> = {}
   const bump = (key: string) => (created[key] = (created[key] ?? 0) + 1)
 
@@ -71,6 +82,19 @@ export async function seed(payload: Payload, { admin, log = () => {} }: Options 
       limit: 1,
       depth: 0,
     })
+    if (docs[0] && syncMenu) {
+      await payload.update({
+        collection: 'categories',
+        id: docs[0].id,
+        data: {
+          name: category.name,
+          description: category.description,
+          sortOrder: category.sortOrder,
+        },
+        context,
+      })
+      bump('categories updated')
+    }
     const doc =
       docs[0] ??
       (bump('categories'),
@@ -101,8 +125,32 @@ export async function seed(payload: Payload, { admin, log = () => {} }: Options 
       limit: 1,
       depth: 0,
     })
-    if (docs[0]) {
-      itemIds.set(item.name, docs[0].id)
+    const existing = docs[0]
+    if (existing) {
+      itemIds.set(item.name, existing.id)
+      if (syncMenu) {
+        await payload.update({
+          collection: 'menu-items',
+          id: existing.id,
+          data: {
+            name: item.name,
+            shortDescription: item.description ?? null,
+            category: categoryIds.get(item.category)!,
+            price: item.price ?? null,
+            comboPrice: item.comboPrice ?? null,
+            tags: item.tags ?? [],
+            available: true,
+            sortOrder,
+            // A photo added in the admin stays; one is only added where missing.
+            ...(!existing.image && item.image
+              ? { image: await upload(item.image.file, item.name) }
+              : {}),
+            _status: 'published',
+          },
+          context,
+        })
+        bump('menu-items updated')
+      }
       continue
     }
     const doc = await payload.create({
@@ -113,6 +161,8 @@ export async function seed(payload: Payload, { admin, log = () => {} }: Options 
         shortDescription: item.description,
         category: categoryIds.get(item.category)!,
         image: item.image ? await upload(item.image.file, item.name) : undefined,
+        price: item.price,
+        comboPrice: item.comboPrice,
         tags: item.tags ?? [],
         available: true,
         sortOrder,
@@ -122,6 +172,31 @@ export async function seed(payload: Payload, { admin, log = () => {} }: Options 
     })
     bump('menu-items')
     itemIds.set(item.name, doc.id)
+  }
+
+  if (syncMenu) {
+    // Dishes that aren't on the menu any more: hidden, not deleted.
+    const { docs: stale } = await payload.find({
+      collection: 'menu-items',
+      where: {
+        and: [
+          { slug: { not_in: content.menuItems.map((item) => slugify(item.name)) } },
+          { available: { equals: true } },
+        ],
+      },
+      limit: 0,
+      pagination: false,
+      depth: 0,
+    })
+    for (const doc of stale) {
+      await payload.update({
+        collection: 'menu-items',
+        id: doc.id,
+        data: { available: false, _status: 'published' },
+        context,
+      })
+      bump('menu-items hidden')
+    }
   }
 
   // Testimonials
@@ -158,6 +233,16 @@ export async function seed(payload: Payload, { admin, log = () => {} }: Options 
       context,
     })
     bump('homepage')
+  } else if (syncMenu) {
+    await payload.updateGlobal({
+      slug: 'homepage',
+      data: {
+        featuredItems: content.homepage.featured.map((name) => itemIds.get(name)!),
+        _status: 'published',
+      },
+      context,
+    })
+    bump('homepage signatures updated')
   }
 
   const about = await payload.findGlobal({ slug: 'about', depth: 0 })
@@ -179,11 +264,18 @@ export async function seed(payload: Payload, { admin, log = () => {} }: Options 
   }
 
   const settings = await payload.findGlobal({ slug: 'site-settings', depth: 0 })
+  if (syncMenu && settings.locations?.length && !settings.showPrices) {
+    // The client's menu has in-store prices (2026-11-03).
+    await payload.updateGlobal({ slug: 'site-settings', data: { showPrices: true }, context })
+    bump('site-settings: prices shown')
+  }
   if (!settings.locations?.length) {
     await payload.updateGlobal({
       slug: 'site-settings',
       data: {
         siteName: content.siteSettings.siteName,
+        // The client's menu has in-store prices (2026-11-03).
+        showPrices: true,
         ...content.storeLinks,
         locations: [content.siteSettings.location],
         socials: content.socials.map((s) => ({ ...s })),
@@ -212,6 +304,6 @@ export async function seed(payload: Payload, { admin, log = () => {} }: Options 
   const summary = Object.entries(created)
     .map(([key, n]) => `${key}: ${n}`)
     .join(', ')
-  log(summary ? `Created ${summary}` : 'Nothing to create; the database is already seeded.')
+  log(summary ? `Done: ${summary}` : 'Nothing to do; the database is already seeded.')
   return created
 }

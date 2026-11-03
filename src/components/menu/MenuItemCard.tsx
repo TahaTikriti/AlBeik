@@ -20,7 +20,7 @@ type Props = {
 }
 
 /** One tag rides on the photo as a sticker; the item page lists them all. */
-const BADGE_ORDER: MenuTag[] = ['signature', 'popular', 'new', 'spicy', 'vegetarian']
+const BADGE_ORDER: MenuTag[] = ['signature', 'popular', 'new', 'spicy', 'vegan', 'vegetarian']
 
 /**
  * A menu card: the dish photo (a thumbnail on phones, full-bleed on top from
@@ -84,7 +84,14 @@ export function MenuItemCard({
         </div>
         <div className="flex items-center justify-end gap-3 sm:justify-start sm:px-5">
           {item.price !== null ? (
-            <span className="me-auto font-display text-2xl">{formatPrice(item.price)}</span>
+            <span className="me-auto grid font-display text-2xl leading-none">
+              {formatPrice(item.price)}
+              {item.comboPrice !== null ? (
+                <span className="mt-1 text-[0.8rem] tracking-[0.06em] text-ink-muted uppercase">
+                  {copy.menu.comboPrice(formatPrice(item.comboPrice))}
+                </span>
+              ) : null}
+            </span>
           ) : null}
           <OrderButton
             links={item.orderLinks}

@@ -1,3 +1,4 @@
+import { trackOnClick } from '@/lib/analytics'
 import type { OrderLink } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
 import { Mustache } from '@/theme/motifs'
@@ -70,4 +71,37 @@ export function StickyOrderBar({ links, item = null }: Props) {
 /** Reserves room at the end of the page so the bar never covers content. */
 export function StickyOrderBarSpacer() {
   return <div aria-hidden className="h-[calc(4.5rem+var(--safe-bottom))] md:hidden" />
+}
+
+/**
+ * The catering page's bar on phones: catering is ordered by phone, so it
+ * replaces Delivery and Pickup (which order from the everyday menu).
+ */
+export function CateringCallBar({ phone, phoneHref }: { phone: string; phoneHref: string }) {
+  return (
+    <div
+      data-order-bar="catering"
+      style={{ viewTransitionName: 'order-bar' }}
+      className="fixed inset-x-0 bottom-0 z-(--z-sticky) px-3 pb-[calc(0.6rem+var(--safe-bottom))] md:hidden"
+    >
+      <div className="flex items-center gap-3 rounded-card border border-white/10 bg-black/92 p-2 ps-4 shadow-raised">
+        {/* Room for the whole number on phones: the mustache only from 420px. */}
+        <Mustache className="h-3 w-auto shrink-0 text-red max-[419px]:hidden" />
+        <span className="grid min-w-0 flex-1">
+          <span className="label text-[0.62rem] tracking-[0.1em] text-ink-muted">
+            {copy.catering.barKicker}
+          </span>
+          <span className="font-display text-lg leading-tight whitespace-nowrap">{phone}</span>
+        </span>
+        <a
+          href={phoneHref}
+          aria-label={copy.catering.barCtaLabel(phone)}
+          className="btn btn-red ms-auto min-h-12 shrink-0 px-4"
+          {...trackOnClick('call_click', { placement: 'catering-bar' })}
+        >
+          {copy.catering.barCta}
+        </a>
+      </div>
+    </div>
+  )
 }

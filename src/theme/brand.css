@@ -870,7 +870,8 @@ body:has([data-page='visit']) [data-footer-map] {
   }
 }
 
-/* An item page swaps the site-wide order bar for one that orders that dish. */
-body:has([data-order-bar='item']) [data-order-bar='site'] {
+/* An item page swaps the site-wide order bar for one that orders that dish;
+   the catering page for one that calls the catering line. */
+body:has([data-order-bar='item'], [data-order-bar='catering']) [data-order-bar='site'] {
   display: none;
 }

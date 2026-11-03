@@ -1,8 +1,9 @@
 /**
- * Seed content, transcribed from docs/content/ (scraped from albeik.us on
- * 2026-10-12). Corrections are commented next to the original wording.
- * Nothing here is invented: unknown facts (prices, hours, address, phone)
- * are left out on purpose. See TODO at the bottom.
+ * Seed content. The menu is the client's updated menu with prices
+ * (docs/content/albeik-updated-menu-2026-11-03.md); the rest is transcribed from docs/content/
+ * (scraped from albeik.us on 2026-10-12) and the client's content blueprint.
+ * Corrections are commented next to the original wording. Nothing here is
+ * invented: unknown facts are left out on purpose. See TODO at the bottom.
  */
 import type { MenuTag } from '@/lib/data/types'
 import type { HoursRow } from '@/lib/hours'
@@ -55,52 +56,80 @@ export const heroLoop: { file: string; mimeType: string; poster: string } | null
 export type SeedCategory = { name: string; description: string; sortOrder: number }
 
 /**
- * Names and introductions from the client's content blueprint (2026-10-29,
- * not in the repo; section 4). Empty categories are hidden on the site.
+ * The client's updated menu (AL_BEIK_UPDATED_MENU.docx, 2026-11-03), in its
+ * order. Names and introductions from the content blueprint (2026-10-29)
+ * where a section matches one of its categories. Empty categories are hidden
+ * on the site.
  */
 export const categories: SeedCategory[] = [
   {
+    // "Appetizers" in the updated menu.
     name: 'Start with the Good Stuff',
     description: 'Little plates and Lebanese favorites made for the middle of the table.',
     sortOrder: 0,
   },
   {
+    // "Salads".
     name: 'Fresh from the Garden',
     description: 'Bright salads and crisp sides with herbs, vegetables, and Lebanese character.',
     sortOrder: 1,
   },
   {
-    name: 'From the Charcoal',
-    description:
-      'Smoky, satisfying plates grilled over charcoal and served with the restaurant’s chosen accompaniments.',
+    // "Sides".
+    name: 'Sides Worth Sharing',
+    description: 'A little extra for the table, or the part of the meal you keep to yourself.',
     sortOrder: 2,
   },
   {
-    name: 'Shawarma and More',
-    description: 'Slow-seasoned shawarma, served in the formats guests love.',
+    // "Al-Beik Specials", with the menu's combo line.
+    name: 'AlBeik Specials',
+    description:
+      'The house originals. Make it a combo with small fries and a 20 oz fountain drink of your choice.',
     sortOrder: 3,
   },
   {
+    // "Sandwiches", with the menu's combo line.
     name: 'Pita, Pressed, and Stacked',
-    // The combo line is from the old albeik.us menu.
     description:
-      'Handheld favorites with a proper filling and a good reason to take another bite. Make it a combo with small fries and a 20 oz fountain drink.',
+      'Handheld favorites with a proper filling and a good reason to take another bite. Make it a combo with small fries and a 20 oz fountain drink of your choice.',
     sortOrder: 4,
   },
   {
-    name: 'Sides Worth Sharing',
-    description: 'A little extra for the table, or the part of the meal you keep to yourself.',
+    name: 'Build Your Own Bowl',
+    description: 'Rice, fresh veggies, your protein and your favorite topping.',
     sortOrder: 5,
   },
   {
-    name: 'Something Sweet',
-    description: 'A sweet finish for one, or something to split after the last savory bite.',
+    // "Lebanese Feast" in the updated menu. Named for what's in it, so it
+    // isn't mistaken for catering's Lebanese Feast (20 and 50 sandwiches).
+    name: 'Shawarma Boxes and Feasts',
+    description:
+      'Shawarma sandwiches packed to share: a box for two, a feast for four. Feeding a bigger group? That’s the catering menu.',
     sortOrder: 6,
   },
   {
+    // "Platters", with the menu's line on what comes with them.
+    name: 'From the Charcoal',
+    description:
+      'Smoky, satisfying plates grilled over charcoal. Every platter comes with a salad of your choice, and rice or fries.',
+    sortOrder: 7,
+  },
+  {
+    name: 'Add-ons',
+    description: 'Extra pita, extra protein, extra sauce.',
+    sortOrder: 8,
+  },
+  {
+    // Fountain drinks in 20 oz cups ("120oz" in the menu is a typo).
     name: 'Drinks',
     description: 'Cool sips, familiar favorites, and something to balance the spice.',
-    sortOrder: 7,
+    sortOrder: 9,
+  },
+  {
+    // "Desserts".
+    name: 'Something Sweet',
+    description: 'A sweet finish for one, or something to split after the last savory bite.',
+    sortOrder: 10,
   },
 ]
 
@@ -108,6 +137,10 @@ export type SeedItem = {
   name: string
   category: string
   description?: string
+  /** In-store price, USD (the sandwich alone where there's a combo). */
+  price?: number
+  /** With small fries and a 20 oz fountain drink. */
+  comboPrice?: number
   /** Dishes without a photo yet show as text on the menu. */
   image?: { file: string; source: string; width: number; height: number }
   tags?: MenuTag[]
@@ -122,247 +155,365 @@ const photo = (file: string, size: number) => ({
 })
 
 /**
- * Item names are title-cased and use the "AlBeik" spelling; the live site
- * mixes "Albeik" and lower-case words. Descriptions are verbatim apart from
- * the commented fixes. Only `signature` is tagged (the copy says "Our
- * signature…"); dietary tags wait for the client.
+ * The client's updated menu (AL_BEIK_UPDATED_MENU.docx, 2026-11-03): dishes,
+ * descriptions, prices and the vegan/vegetarian marks as written there.
+ * Names in title case with the "AlBeik" spelling; dish names spelled one way
+ * throughout (Baba Ghannouj, Tabbouleh, Tawouk, Kabab). Other fixes are
+ * commented. Only `signature` is our tag: the old site calls those dishes
+ * "our signature".
  *
- * Sources: the old albeik.us home page and /our-menu; AlBeik's own Uber Eats
- * menu (2026-10-29: names and sizes only, it has no descriptions, and its
- * prices are app prices); for dishes only the blueprint names, the client's
- * catering menu (see catering.ts). Grouped as in the blueprint's menu
- * architecture.
+ * Not on the updated menu, so no longer listed: Kafta Sandwich, Hummus and
+ * Falafel (both were on the old site or Uber Eats).
  */
 export const menuItems: SeedItem[] = [
-  // ── Start with the Good Stuff ("Appetizers" on the old site)
+  // ── Start with the Good Stuff (Appetizers)
   {
-    name: 'Hummus',
+    name: 'Mezze Mix Platter', // was "MEZZZE MIX PLATTER"
     category: 'Start with the Good Stuff',
-    description: 'Freshly made hummus served with Pita Bread',
-    image: photo('hummus-brand.webp', 1254),
+    description:
+      'A Lebanese mezze platter featuring hummus, falafel with veggies and pickles (3 pcs), baba ghannouj, batata harra and cheese rolls (3 pcs). Served with pita bread.',
+    price: 21.99,
+    tags: ['vegetarian'],
+  },
+  {
+    name: 'Falafel (6 Pieces)',
+    category: 'Start with the Good Stuff',
+    description:
+      'Crispy chickpea patties seasoned with herbs and spices. Served with fresh vegetables, pickles, tahini sauce, and pita bread.',
+    price: 11.99,
+    tags: ['vegan'],
   },
   {
     name: 'Baba Ghannouj',
     category: 'Start with the Good Stuff',
-    // fixed: stray ")" after "bread"
     description:
-      'Smoky dip made from roasted eggplant, tahini, garlic and lemon juice. Served with Lebanese Pita bread',
+      'Smoky roasted eggplant blended with tahini, garlic, and lemon juice. Served with pita bread.',
+    price: 9.99,
     image: photo('baba-ghannouj-brand.webp', 1254),
+    tags: ['vegan'],
   },
   {
-    name: 'Falafel', // "Falafel- 6 pieces" on Uber Eats
+    name: 'Cheese Rolls (4 Pieces)',
     category: 'Start with the Good Stuff',
-    // From the catering menu's falafel tray.
-    description: 'Six crispy chickpea falafel with tahini sauce.',
+    description: 'Crispy rolls filled with melted cheese and parsley.',
+    price: 7.35,
+    tags: ['vegetarian'],
   },
   {
-    name: 'Hummus and Falafel', // on Uber Eats
+    name: 'Batata Harra',
     category: 'Start with the Good Stuff',
-    description: 'Freshly made hummus with crispy falafel. Served with Lebanese Pita bread',
+    description: 'Lebanese-style potatoes tossed with garlic, cilantro, and a spicy sauce.',
+    price: 9.99,
+    tags: ['vegan'],
   },
   {
-    // Named in the blueprint, 4 pieces on Uber Eats; description from the catering menu.
-    name: 'Cheese Rolls',
+    name: 'Hummus',
     category: 'Start with the Good Stuff',
-    description: 'Four crispy rolls filled with melted cheese and parsley.',
+    description: 'Chickpeas blended with tahini, lemon juice, and garlic. Served with pita bread.',
+    price: 9.99,
+    image: photo('hummus-brand.webp', 1254),
+    tags: ['vegan'],
+  },
+  {
+    name: 'Hummus with Chicken Shawarma',
+    category: 'Start with the Good Stuff',
+    description:
+      'Creamy hummus topped with tender, marinated chicken shawarma, served with pita bread.',
+    price: 12.35,
+    image: photo('hummus-with-chicken-shawarma-brand.webp', 1254),
+  },
+  {
+    name: 'Hummus with Beef Shawarma',
+    category: 'Start with the Good Stuff',
+    description: 'Hummus topped with tender, marinated beef shawarma, served with pita bread.',
+    price: 13.35,
+    image: photo('hummus-with-beef-shawarma-brand.webp', 1254),
+  },
+  {
+    name: 'Charbroiled Wings (6 Pieces)',
+    category: 'Start with the Good Stuff',
+    description:
+      'Juicy, flame-grilled chicken wings served with garlic sauce and Lebanese pita bread.',
+    price: 10.99,
   },
 
-  // ── Fresh from the Garden ("Salads" on the old /our-menu)
+  // ── Fresh from the Garden (Salads)
   {
     name: 'Fattoush',
     category: 'Fresh from the Garden',
     description:
-      'Fresh vegetables with crispy pieces of pita bread and pomegranate molasses dressing.',
+      'A fresh mix of lettuce, parsley, tomatoes, green onions, radishes, cucumbers, cabbage, and mint, tossed in a tangy pomegranate molasses dressing.',
+    price: 9.99,
+    tags: ['vegan'],
   },
   {
-    name: 'Tabbouleh', // was "Taboule"; the catering menu spells it Tabbouleh
+    name: 'Tabbouleh', // "Taboule" in the menu; the catering menu spells it Tabbouleh
     category: 'Fresh from the Garden',
-    // fixed: "Bulghur" → "bulgur"
-    description: 'Finely chopped parsley, tomatoes, green onions, fresh mint and bulgur wheat',
+    description:
+      'Finely chopped parsley, tomatoes, spring onions, fresh mint, and bulgur wheat, tossed in a tangy lemon dressing.',
+    price: 9.99,
+    tags: ['vegan'],
   },
 
-  // ── From the Charcoal ("Platters" on the old /our-menu)
-  {
-    name: 'Grill Platter',
-    category: 'From the Charcoal',
-    description:
-      'Our mixed grill platter of three skewers, served over rice or fries, our garlic and spicy garlic sauce, grilled veggies, biwaz salad and pickles with pita bread',
-  },
-  {
-    name: 'Charbroiled Half Chicken', // was "Charbroiled half chicken"
-    category: 'From the Charcoal',
-    description:
-      'Half chicken served over rice or fries, pickles, garlic sauce and spicy garlic sauce with Pita bread',
-  },
-  {
-    name: 'Charbroiled Whole Chicken', // was "Charbroiled whole Chicken"
-    category: 'From the Charcoal',
-    description:
-      'Charbroiled whole chicken served with Rice or Fries, pickles, garlic sauce and spicy garlic sauce with Pita bread',
-  },
+  // ── Sides Worth Sharing (Sides)
+  { name: 'Saffron Rice', category: 'Sides Worth Sharing', price: 3.49 }, // was "SAFROUN RICE"
+  { name: 'Small Fries', category: 'Sides Worth Sharing', price: 2.99 },
+  { name: 'Large Fries', category: 'Sides Worth Sharing', price: 4.49 },
 
-  // ── Shawarma and More
+  // ── AlBeik Specials (sandwich price, then combo)
   {
-    name: 'Chicken Shawarma Sandwich', // was "Chicken shawarma Sandwich"
-    category: 'Shawarma and More',
+    name: 'AlBeik Smashed Burger',
+    category: 'AlBeik Specials',
     description:
-      'Slices of Chicken shawarma with Garlic sauce and pickles wrapped in Lebanese Pita bread.',
-    image: photo('chicken-shawarma-sandwich-brand.webp', 1254),
-  },
-  {
-    name: 'Beef Shawarma Sandwich',
-    category: 'Shawarma and More',
-    description: 'Our signature beef shawarma sandwich with biwaz salad, pickles and tahini sauce',
-    image: photo('beef-shawarma-sandwich-brand.webp', 1254),
-  },
-  {
-    name: 'Hummus with Beef Shawarma', // was "Hummus with Beef shawarma"
-    category: 'Shawarma and More',
-    description: 'Hummus, topped with our signature beef shawarma. Served with Lebanese Pita bread',
-    image: photo('hummus-with-beef-shawarma-brand.webp', 1254),
-  },
-  {
-    name: 'Hummus with Chicken Shawarma', // was "Hummus with chicken shawarma"
-    category: 'Shawarma and More',
-    description:
-      'Hummus topped with our signature chicken shawarma. Served with Lebanese Pita bread.',
-    image: photo('hummus-with-chicken-shawarma-brand.webp', 1254),
-  },
-
-  {
-    // Uber Eats: Chicken / Beef Shawarma Box (for 2) and Feast (for 4).
-    name: 'Shawarma Feast',
-    category: 'Shawarma and More',
-    description: 'Chicken or beef shawarma, packed to share: a box for two or a feast for four.',
-  },
-
-  // ── Pita, Pressed, and Stacked ("AlBeik Specials", appetizer arayes and "Sandwiches")
-  {
-    name: 'AlBeik Smashed Burger', // was "Albeik Smashed Burger"
-    category: 'Pita, Pressed, and Stacked',
-    // fixed: "smashed smashed patty"
-    description: 'Our signature smashed patty topped with cheese, caramelized onion and coleslaw',
+      'Juicy smashed beef patty with melted cheese, caramelized onions, mushrooms, and coleslaw in a soft bun.',
+    price: 10.99,
+    comboPrice: 14.99,
     image: photo('albeik-smashed-burger-brand.webp', 1254),
     tags: ['signature'],
   },
   {
-    name: 'AlBeik Chicken Sandwich', // was "Albeik chicken sandwich"
-    category: 'Pita, Pressed, and Stacked',
+    name: 'AlBeik Chicken Sandwich (Fajitanon)',
+    category: 'AlBeik Specials',
     description:
-      'Our signature sandwich made of grilled seasoned chicken, melted cheese, grilled green pepper and onions, and a drizzle of our Avocado sauce',
+      'Seasoned grilled chicken with red peppers, corn, onions, mushrooms, melted cheese, and signature avocado sauce in a soft hoagie roll.',
+    price: 10.99,
+    comboPrice: 14.99,
     image: photo('albeik-chicken-sandwich-brand.webp', 1254),
     tags: ['signature'],
   },
   {
-    name: 'Arayes Sujuk',
-    category: 'Pita, Pressed, and Stacked',
+    name: 'Arayes Kafta',
+    category: 'AlBeik Specials',
     description:
-      'Lebanese sujuk spread on pita bread and toasted, topped with pickles, Mayo, corn, lettuce and tomatoes',
+      'Crispy grilled pita stuffed with seasoned ground beef, onions, and parsley, served with tahini sauce and pickles.',
+    price: 9.99,
+    comboPrice: 13.99,
+    image: photo('arayes-kafta-brand.webp', 1254),
+  },
+  {
+    name: 'Arayes Sujuk',
+    category: 'AlBeik Specials',
+    // The updated menu repeats the Arayes Kafta description here; this is
+    // the catering menu's wording until the client sends the right one.
+    description: 'Crispy grilled pita stuffed with spiced sujuk, served with pickles.',
+    price: 9.99,
+    comboPrice: 13.99,
     // No photo until the reshoot: the review said arayes-sujuk-brand.webp reads as pizza.
   },
   {
-    name: 'Arayes Kafta',
+    name: 'Fries Sandwich', // no combo
+    category: 'AlBeik Specials',
+    description:
+      'Crispy golden fries wrapped in warm pita bread with creamy coleslaw, crunchy pickles, garlic sauce, and ketchup.',
+    price: 9.99,
+    tags: ['vegetarian'],
+  },
+  {
+    name: 'AlBeik Shawarma Loaded Potato',
+    category: 'AlBeik Specials',
+    description:
+      'Fluffy baked potato loaded with tender beef or chicken shawarma, topped with your choice of signature sauce.',
+    price: 11.99,
+  },
+
+  // ── Pita, Pressed, and Stacked (Sandwiches: sandwich price, then combo)
+  {
+    name: 'Charbroiled Chicken Sandwich',
     category: 'Pita, Pressed, and Stacked',
-    description: 'Juicy Beef Kafta spread in pita bread and grilled',
-    image: photo('arayes-kafta-brand.webp', 1254),
+    description:
+      'Tender, charbroiled chicken with garlic sauce and pickles, wrapped in pita bread.',
+    price: 10.99,
+    comboPrice: 14.99,
+    image: photo('charbroiled-chicken-sandwich-brand.webp', 1254),
   },
   {
     name: 'Chicken Tawouk Sandwich',
     category: 'Pita, Pressed, and Stacked',
+    // fixed: "French fires"
     description:
-      'Charbroiled chicken breast pieces seasoned with our special spices, over garlic sauce, pickles and wrapped in Lebanese Pita bread.',
+      'Charbroiled chicken breast seasoned with signature spices, with garlic sauce, pickles, and French fries, wrapped in pita bread.',
+    price: 10.99,
+    comboPrice: 14.99,
     image: photo('chicken-tawouk-sandwich-brand.webp', 1254),
   },
   {
-    name: 'Charbroiled Chicken Sandwich', // was "Charbroiled Chicken sandwich"
+    name: 'Charbroiled Rib-eye Sandwich',
     category: 'Pita, Pressed, and Stacked',
     description:
-      'Charbroiled chicken with Garlic sauce, spicy garlic sauce and pickles wrapped in Lebanese Pita bread.',
-    image: photo('charbroiled-chicken-sandwich-brand.webp', 1254),
-  },
-  {
-    name: 'Charbroiled Rib-eye Sandwich', // fixed: "Ribe-eye"
-    category: 'Pita, Pressed, and Stacked',
-    description:
-      'Charbroiled rib-eye beef chunks with hummus and Biwaz salad (Parsley, Onion and Sumac) wrapped in Lebanese Pita Bread',
+      'Tender, charbroiled rib-eye beef chunks with hummus and biwaz salad (parsley, onions, and sumac), wrapped in pita bread.',
+    price: 12.99,
+    comboPrice: 16.99,
     image: photo('charbroiled-rib-eye-sandwich-brand.webp', 1254),
-  },
-  {
-    name: 'Kafta Sandwich',
-    category: 'Pita, Pressed, and Stacked',
-    description:
-      'Beef Kafta skewer wrapped in Lebanese Pita bread over hummus, biwaz, pickles, tomatoes and tahini sauce',
-    image: photo('kafta-sandwich-brand.webp', 1254),
   },
   {
     name: 'Kabab Sandwich',
     category: 'Pita, Pressed, and Stacked',
     description:
-      'Charbroiled beef Kabab, over hummus, tahini, pickles, tomatoes and Biwaz Salad. Wrapped in Lebanese Pita bread.',
+      'Charbroiled beef kabab with hummus and biwaz salad (parsley, onions, and sumac), wrapped in pita bread.',
+    price: 10.99,
+    comboPrice: 14.99,
     image: photo('kabab-sandwich-brand.webp', 1254),
   },
   {
     name: 'Kabab Orfali Sandwich',
     category: 'Pita, Pressed, and Stacked',
     description:
-      'Charbroiled special beef Kabab blend, tomatoes, over hummus and Biwaz Salad. Wrapped in Lebanese Pita Bread and drizzled with Tahini sauce',
+      'Charbroiled beef kabab made with our signature spice blend, served with hummus and biwaz salad, wrapped in pita bread.',
+    price: 10.99,
+    comboPrice: 14.99,
     image: photo('kabab-orfali-sandwich-brand.webp', 1254),
   },
   {
-    name: 'Francisco Sandwich', // was "Francisco sandwich"
+    name: 'Chicken Shawarma Sandwich',
     category: 'Pita, Pressed, and Stacked',
-    description: 'Grilled chicken over melted cheese with aioli sauce, pickles, lettuce and corn.',
-    image: photo('francisco-sandwich-brand.webp', 1254),
+    description:
+      'Tender slices of chicken shawarma with garlic sauce and pickles, wrapped in pita bread.',
+    price: 10.99,
+    comboPrice: 14.99,
+    image: photo('chicken-shawarma-sandwich-brand.webp', 1254),
+  },
+  {
+    name: 'Beef Shawarma Sandwich',
+    category: 'Pita, Pressed, and Stacked',
+    description:
+      'Tender slices of beef shawarma with tahini sauce and biwaz salad (parsley, onions, and sumac), wrapped in pita bread.',
+    price: 11.35,
+    comboPrice: 15.35,
+    image: photo('beef-shawarma-sandwich-brand.webp', 1254),
   },
   {
     name: 'Falafel Sandwich',
     category: 'Pita, Pressed, and Stacked',
     description:
-      'Crispy Falafel balls served in soft Lebanese Pita Bread with Tahini sauce and Vegetables (Tomatoes, Parsley, Turnip pickles)',
+      'Crispy falafel with tahini sauce, fresh tomatoes, parsley, and pickles, wrapped in pita bread.',
+    price: 9.99,
+    comboPrice: 12.99,
     image: photo('falafel-sandwich-brand.webp', 1254),
+    tags: ['vegan'],
   },
-
   {
-    name: 'Gyro', // on Uber Eats; description from the catering menu's gyro box
+    name: 'Francisco Sandwich',
     category: 'Pita, Pressed, and Stacked',
-    description: 'Gyro meat with lettuce, onions, tomatoes, cheese and tzatziki in pita bread.',
+    description:
+      'Grilled chicken breast with melted cheese, lettuce, corn, pickles, and our signature mayo sauce.',
+    price: 10.99,
+    comboPrice: 14.99,
+    image: photo('francisco-sandwich-brand.webp', 1254),
+  },
+  {
+    name: 'Gyro',
+    category: 'Pita, Pressed, and Stacked',
+    description:
+      'Tender gyro meat with lettuce, onions, tomatoes, and melted cheese in pita bread, served with tzatziki sauce.',
+    price: 10.99,
+    comboPrice: 14.99,
   },
 
-  // ── Sides Worth Sharing
+  // ── Build Your Own Bowl
   {
-    // Named in the blueprint; description from the catering menu.
-    name: 'Batata Harra',
-    category: 'Sides Worth Sharing',
-    description: 'Lebanese-style potatoes tossed with garlic, cilantro, and a spicy sauce.',
-  },
-  {
-    name: 'Fries', // small or large on Uber Eats
-    category: 'Sides Worth Sharing',
-    description: 'Crispy golden fries, small or large.',
+    name: 'Build Your Own Bowl',
+    category: 'Build Your Own Bowl',
+    description:
+      'Create your perfect bowl with rice, fresh veggies, and your choice of chicken shawarma, beef shawarma, shish tawouk, kabab, or falafel. Finish it with your favorite topping: garlic sauce, hummus, tahini, or baba ghannouj.',
+    price: 16.99,
   },
 
-  // ── Something Sweet: the two on Uber Eats (the catering menu's pistachio
-  // cake isn't sold on its own there)
-  { name: 'Lebanese Rice Pudding', category: 'Something Sweet' },
-  { name: 'Baklava', category: 'Something Sweet' },
+  // ── Shawarma Boxes and Feasts ("Lebanese Feast" in the menu)
+  {
+    name: 'Chicken Shawarma Box (for 2)',
+    category: 'Shawarma Boxes and Feasts',
+    description: 'Three chicken shawarma sandwiches with garlic sauce and pickles.',
+    price: 26.99,
+  },
+  {
+    name: 'Chicken Shawarma Feast (for 4)',
+    category: 'Shawarma Boxes and Feasts',
+    description:
+      'Five chicken shawarma sandwiches served with garlic sauce and spicy garlic sauce.',
+    price: 44.99,
+  },
+  {
+    name: 'Beef Shawarma Box (for 2)',
+    category: 'Shawarma Boxes and Feasts',
+    description:
+      'Three beef shawarma sandwiches with tahini sauce and biwaz salad (parsley, onions, and sumac).',
+    price: 29.99,
+  },
+  {
+    name: 'Beef Shawarma Feast (for 4)',
+    category: 'Shawarma Boxes and Feasts',
+    description:
+      'Five beef shawarma sandwiches with tahini sauce and biwaz salad (parsley, onions, and sumac).',
+    price: 49.99,
+  },
 
-  // ── Drinks (20 oz cups, per the old /our-menu)
+  // ── From the Charcoal (Platters)
   {
-    name: 'Lebanese Lemonade', // was "Lemonade"; Uber Eats' name
-    category: 'Drinks',
-    // fixed: "Lemonade the lebanese way"
-    description: 'Freshly squeezed homemade lemonade, the Lebanese way',
+    name: 'Grill Platter',
+    category: 'From the Charcoal',
+    description:
+      'Your choice of 3 skewers (kabab, kafta, orfali, or chicken tawouk), served with pickles, garlic sauce, biwaz salad, and pita bread.',
+    price: 22.99,
   },
   {
-    name: 'Laban Ayran', // was "Aryan(Yogurt)"; the blueprint's name
-    category: 'Drinks',
-    description: 'Yogurt drink with a pinch of salt',
+    name: 'Rib-eye Grill Platter', // "GRILL Ribeye" in the menu
+    category: 'From the Charcoal',
+    description:
+      'Two skewers of tender, charbroiled rib-eye, served with pickles, garlic sauce, biwaz salad, and pita bread.',
+    price: 26.99,
   },
   {
-    name: 'Fountain Drink', // on Uber Eats
+    name: 'Charbroiled Half Chicken',
+    category: 'From the Charcoal',
+    description:
+      'Half a charbroiled chicken, served with pita bread, pickles, garlic sauce, and spicy garlic sauce.',
+    price: 18.99,
+  },
+  {
+    name: 'Charbroiled Whole Chicken',
+    category: 'From the Charcoal',
+    description:
+      'Whole charbroiled chicken, served with pita bread, pickles, garlic sauce, and spicy garlic sauce.',
+    price: 28.99,
+  },
+  {
+    name: 'Vegan Platter',
+    category: 'From the Charcoal',
+    description:
+      'A Lebanese vegan mezze platter featuring hummus, falafel (4 pcs), dolma (3 pcs), baba ghannouj, and batata harra, with your choice of fattoush or tabbouleh. Served with pita bread.',
+    price: 24.99,
+    tags: ['vegan'],
+  },
+
+  // ── Add-ons
+  { name: 'Extra Pita Bread', category: 'Add-ons', price: 1.0 },
+  { name: 'Extra Protein', category: 'Add-ons', price: 5.99 },
+  { name: 'Extra Sauce', category: 'Add-ons', price: 0.75 },
+
+  // ── Drinks (20 oz cups). The menu has no descriptions; these are the old site's.
+  {
+    name: 'Fountain Drink', // "FOUNTAIN MACHINE DRINK"
     category: 'Drinks',
     description: 'A 20 oz cup, your pick.',
+    price: 2.99,
   },
+  {
+    name: 'Ayran', // "AYRAN (YOGURT)"
+    category: 'Drinks',
+    description: 'Yogurt drink with a pinch of salt',
+    price: 5.35,
+  },
+  {
+    name: 'Lemonade',
+    category: 'Drinks',
+    description: 'Freshly squeezed homemade lemonade, the Lebanese way',
+    price: 5.35,
+  },
+
+  // ── Something Sweet (Desserts)
+  { name: 'Lebanese Rice Pudding', category: 'Something Sweet', price: 4.49 },
+  { name: 'Pistachio Cake', category: 'Something Sweet', price: 5.99 },
+  { name: 'Baklava', category: 'Something Sweet', price: 4.49 },
 ]
 
 /** Customer quotes stay verbatim (surrounding spaces trimmed). Sources unknown; avatars were placeholders. */
@@ -403,20 +554,20 @@ export const homepage = {
     headline: 'A little *Lebanese*. A lot to love.',
     body: 'Come for the charcoal-grilled favorites. Stay for the spreads, the salads, the sandwiches and the dishes everyone reaches across the table to try. Quick lunch, easy dinner, or one more plate for the middle: AlBeik brings Lebanese flavor to Kansas City, with a little extra attitude.',
   },
-  // The blueprint's signature set (section 3) as far as the menu has it
-  // (Fajitanon is waiting on the client). Dishes with and without a photo
-  // alternate as far as the photos allow, so the grid reads as a pattern.
+  // The blueprint's signature set (section 3), named as on the updated menu
+  // (its Shawarma Feast is the feast for four). Dishes with and without a
+  // photo alternate as far as the photos allow, so the grid reads as a pattern.
   featured: [
     'AlBeik Smashed Burger',
     'Batata Harra',
-    'AlBeik Chicken Sandwich',
+    'AlBeik Chicken Sandwich (Fajitanon)',
     'Fattoush',
     'Charbroiled Rib-eye Sandwich',
     'Arayes Sujuk',
-    'Shawarma Feast',
+    'Chicken Shawarma Feast (for 4)',
     'Hummus with Beef Shawarma',
     'Charbroiled Half Chicken',
-    'Laban Ayran',
+    'Ayran',
   ],
   promo: {
     // Off by default; copy from the Instagram countdown posts.
@@ -483,12 +634,11 @@ export const storeLinks = {
 
 /** Printed after seeding; also listed in the README. */
 export const TODO = [
-  'Menu: which catering dishes are also sold individually (wings, falafel, gyro, fries, rice, Shawarma Feast, Fajitanon…)',
-  'In-store prices (and decide whether to show them: Site settings → Show prices)',
+  'Menu: the Arayes Sujuk description (the updated menu repeats the Arayes Kafta one)',
   'Item-level DoorDash / Uber Eats links, if the client wants to collect them (optional)',
   'Confirm phone and opening hours (from the old albeik.us footer); holiday hours once decided',
   'Catering phone and email, separate from the ordering line (cateringContact in src/seed/catering.ts)',
   'Logo files (Site settings)',
   'Testimonial sources (Google, Yelp…)',
-  'Dietary tags (spicy, vegetarian) once the client confirms them',
+  'Spicy tags, if the client wants them (vegan and vegetarian are from the updated menu)',
 ]

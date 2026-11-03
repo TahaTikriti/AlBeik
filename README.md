@@ -40,6 +40,8 @@ pnpm dev                # admin at /admin
 
 To start over with a clean database: `pnpm db:reset && pnpm seed`.
 
+**Menu updates.** The menu in `src/seed/content.ts` is the client's updated menu with prices (2026-11-03, text in `docs/content/`). A database seeded before then still has the old menu: run `pnpm migrate && pnpm seed:menu`. It updates names, descriptions, prices, tags and order, hides dishes no longer on the menu (nothing is deleted: tick "Available" in the admin to bring one back), refreshes the home page's signatures and turns on Site settings → Show prices.
+
 | Script                                       | What it does                                                                 |
 | -------------------------------------------- | ---------------------------------------------------------------------------- |
 | `pnpm dev` / `pnpm build` / `pnpm start`     | Next.js (with a database configured, the build reads it to prerender pages)  |
@@ -47,6 +49,7 @@ To start over with a clean database: `pnpm db:reset && pnpm seed`.
 | `pnpm migrate`                               | Apply database migrations                                                    |
 | `pnpm migrate:create <name>`                 | After changing a collection or global, create a migration and commit it      |
 | `pnpm seed`                                  | Add the scraped content. Only creates what's missing, so it's safe to re-run |
+| `pnpm seed:menu`                             | Make the CMS menu match `src/seed/content.ts` (overwrites admin menu edits)  |
 | `pnpm db:reset`                              | Drop every table and re-run the migrations                                   |
 
 ## Where things are
@@ -89,12 +92,12 @@ Clicks are tracked as Umami custom events (`order_sheet_open`, `order_click` wit
 
 ## Content still needed from the client
 
-- Full menu: Platters, Sides, Drinks and Desserts are empty (empty categories are hidden)
-- Prices, and whether to show them (Site settings → Show prices)
+- The Arayes Sujuk description (the updated menu repeats the Arayes Kafta one)
+- Catering's own phone and email (the restaurant's phone stands in)
 - Item-level DoorDash / Uber Eats links, if they're willing to collect them (optional)
 - Phone and opening hours (the address and Google Maps listing are in; demo content in `src/seed/content.ts`)
 - The logo as vector (SVG) files; social links, testimonial sources
-- Dietary tags (spicy, vegetarian), to be confirmed before tagging
+- Spicy tags, if wanted (vegan and vegetarian come from the updated menu)
 - Real photography to replace the illustrative menu images when it exists (see [docs/menu-images.md](docs/menu-images.md))
 
 ## Deploying

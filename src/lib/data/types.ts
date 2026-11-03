@@ -16,7 +16,7 @@ export type { Day, HoursLine, OpeningHours } from '@/lib/hours'
 export type { ModeLink, OrderLink, OrderMode, PlatformId } from '@/lib/order'
 export type { Segment } from '@/lib/text'
 
-export type MenuTag = 'spicy' | 'vegetarian' | 'popular' | 'new' | 'signature'
+export type MenuTag = 'spicy' | 'vegetarian' | 'vegan' | 'popular' | 'new' | 'signature'
 
 /** Display text with *emphasis*: render `segments`; use `text` where markup can't go. */
 export type RichLine = { segments: Segment[]; text: string }
@@ -56,6 +56,8 @@ export type MenuItemVM = {
   image: ImageVM | null
   /** Null when there is no price or prices are switched off site-wide. */
   price: number | null
+  /** The combo (small fries and a fountain drink); null as for price, or when there's no combo. */
+  comboPrice: number | null
   tags: MenuTag[]
   category: CategoryRef
   /** Already resolved through the fallback chain; empty means "hide ordering". */

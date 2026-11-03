@@ -61,6 +61,7 @@ export function toMenuItem(doc: MenuItem, ctx: ItemContext): MenuItemVM | null {
     description: orNull(doc.shortDescription),
     image: toImage(doc.image),
     price: ctx.showPrices && typeof doc.price === 'number' ? doc.price : null,
+    comboPrice: ctx.showPrices && typeof doc.comboPrice === 'number' ? doc.comboPrice : null,
     tags: doc.tags ?? [],
     category: { slug: doc.category.slug, name: doc.category.name },
     orderLinks: resolveOrderLinks(doc, ctx.store),

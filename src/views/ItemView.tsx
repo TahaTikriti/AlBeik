@@ -73,7 +73,21 @@ export function ItemView({ item }: ItemPageData) {
                 ))}
               </ul>
             ) : null}
-            {item.price !== null ? (
+            {item.price !== null && item.comboPrice !== null ? (
+              <div className="grid gap-2">
+                <dl className="flex flex-wrap gap-x-8 gap-y-2">
+                  <div className="grid">
+                    <dt className="label text-ink-muted">{copy.menu.sandwich}</dt>
+                    <dd className="font-display text-display-2">{formatPrice(item.price)}</dd>
+                  </div>
+                  <div className="grid">
+                    <dt className="label text-ink-muted">{copy.menu.combo}</dt>
+                    <dd className="font-display text-display-2">{formatPrice(item.comboPrice)}</dd>
+                  </div>
+                </dl>
+                <p className="text-small text-ink-muted">{copy.menu.comboNote}</p>
+              </div>
+            ) : item.price !== null ? (
               <p className="font-display text-display-2">{formatPrice(item.price)}</p>
             ) : null}
             <OrderButton

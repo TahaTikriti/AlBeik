@@ -56,6 +56,9 @@ export const copy = {
   menu: {
     title: 'Menu',
     categoriesLabel: 'Menu categories',
+    // Under the heading: this is the everyday menu, catering has its own.
+    subline: 'Everyday dishes for delivery, pickup or dine-in.',
+    cateringLink: 'Feeding a group? See the catering menu',
     empty: 'The grill is warming up.',
     // The blueprint's halal explainer and short statement (section 5).
     halalTitle: '100% *halal*',
@@ -64,6 +67,11 @@ export const copy = {
     cateringNote:
       'Mezze trays, sandwich boxes, lunch boxes and buffets for the office or the party.',
     count: (n: number) => (n === 1 ? '1 dish' : `${n} dishes`),
+    // A sandwich's two prices: alone, and as a combo.
+    combo: 'Combo',
+    comboPrice: (price: string) => `Combo ${price}`,
+    comboNote: 'Combo: with small fries and a 20 oz fountain drink.',
+    sandwich: 'Sandwich',
     viewItem: (item: string) => `View ${item}`,
   },
   item: {
@@ -71,6 +79,7 @@ export const copy = {
     tags: {
       spicy: 'Spicy',
       vegetarian: 'Vegetarian',
+      vegan: 'Vegan',
       popular: 'Popular',
       new: 'New',
       signature: 'Signature',
@@ -128,7 +137,15 @@ export const copy = {
     hoursSoon: 'Opening hours are on their way. Hungry now? Order online.',
   },
   catering: {
+    // Above the heading, so the page never reads as the everyday menu.
+    eyebrow: 'Catering menu · order by phone',
     heading: '*Catering* for the whole crew',
+    sectionsLabel: 'Catering sections',
+    menuLink: 'Ordering for yourself? See the everyday menu',
+    // The phone bar on the catering page, in place of Delivery and Pickup.
+    barKicker: 'Catering orders',
+    barCta: 'Call to order',
+    barCtaLabel: (phone: string) => `Call ${phone} to order catering`,
     call: (phone: string) => `Call ${phone} to order`,
     email: (address: string) => `Email ${address}`,
     leadTime: 'Order 24–48 hours ahead; longer for 50+ meals.',

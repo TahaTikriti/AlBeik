@@ -14,7 +14,8 @@ export type Placement =
   | 'order-page'
 
 /** Where a directions or call link was used. */
-export type ContactPlacement = 'home-visit' | 'visit' | 'footer' | 'menu' | 'catering'
+export type ContactPlacement =
+  'home-visit' | 'visit' | 'footer' | 'menu' | 'catering' | 'catering-bar'
 
 /**
  * Every custom event the site sends. `item` is the menu item slug, or

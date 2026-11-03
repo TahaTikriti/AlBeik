@@ -11,6 +11,7 @@ import { sortOrderField } from '../fields/sortOrder'
 export const MENU_TAGS = [
   { label: 'Spicy', value: 'spicy' },
   { label: 'Vegetarian', value: 'vegetarian' },
+  { label: 'Vegan', value: 'vegan' },
   { label: 'Popular', value: 'popular' },
   { label: 'New', value: 'new' },
   { label: 'Signature', value: 'signature' },
@@ -71,6 +72,22 @@ export const MenuItems: CollectionConfig = {
             description: 'USD. Only shown if "Show prices" is on in Site settings.',
           },
         },
+        {
+          name: 'comboPrice',
+          label: 'Combo price',
+          type: 'number',
+          min: 0,
+          admin: {
+            step: 0.01,
+            description:
+              'USD, for sandwiches sold as a combo (with small fries and a fountain drink). Leave empty if there is no combo.',
+          },
+        },
+      ],
+    },
+    {
+      type: 'row',
+      fields: [
         {
           name: 'tags',
           type: 'select',
