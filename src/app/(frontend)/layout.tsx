@@ -32,7 +32,10 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function FrontendLayout({ children }: { children: ReactNode }) {
   const [site, { isEnabled: isDraft }] = await Promise.all([getSite(), draftMode()])
   return (
-    <html lang="en" dir="ltr" className={fontClassName || undefined}>
+    // data-scroll-behavior: smooth scrolling (globals.css) is for the menu's
+    // section chips. This tells Next.js to switch it off while changing
+    // pages, so a new page opens at its top instead of gliding there.
+    <html lang="en" dir="ltr" data-scroll-behavior="smooth" className={fontClassName || undefined}>
       <body>
         {isDraft ? (
           <>

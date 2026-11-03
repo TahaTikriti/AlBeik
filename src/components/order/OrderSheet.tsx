@@ -105,9 +105,20 @@ export function OrderSheet({ ref, links, mode, onModeChange, item, onChoose }: P
                 </button>
               ))}
             </div>
-            <p aria-live="polite" className="text-small text-ink-muted">
-              {copy.order.modes[mode].line}
-            </p>
+            {/* Both modes' lines share one cell, sized by the longer: the
+                sheet keeps its height when the mode changes instead of
+                jumping (it's anchored at the bottom, so everything above the
+                line would move). Only the current one is shown and read out. */}
+            <div className="grid text-small text-ink-muted">
+              <p aria-live="polite" className="[grid-area:1/1]">
+                {copy.order.modes[mode].line}
+              </p>
+              {MODES.map((m) => (
+                <p key={m} aria-hidden className="invisible [grid-area:1/1]">
+                  {copy.order.modes[m].line}
+                </p>
+              ))}
+            </div>
           </div>
           <ul className="grid gap-3">
             {links.map((link) => (
