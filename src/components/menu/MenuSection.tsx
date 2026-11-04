@@ -29,8 +29,9 @@ export function MenuSection({
         ) : null}
       </div>
       {withPhotos ? (
-        // Equal rows: every card in the list is the same size.
-        <ul className="grid auto-rows-fr gap-3 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
+        // Equal rows in the grid (sm up): every card in it is the same size. A phone
+        // list is one column, so each card keeps its own height there.
+        <ul className="grid gap-3 sm:auto-rows-fr sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
           {category.items.map((item, i) => (
             <li key={item.id} className="min-w-0">
               <MenuItemCard item={item} placement="menu" preloadImage={preloadFirst && i === 0} />

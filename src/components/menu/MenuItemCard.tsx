@@ -39,7 +39,7 @@ export function MenuItemCard({
   return (
     <article
       {...dishPreloadAttrs(item.image)}
-      className="group relative isolate grid h-full grid-cols-[clamp(5.25rem,25vw,6.75rem)_1fr] items-center gap-x-3.5 overflow-clip rounded-card bg-charcoal p-3 pe-4 transition-[scale] duration-(--duration-fast) active:scale-[0.985] sm:grid-cols-1 sm:grid-rows-[auto_1fr_auto] sm:items-stretch sm:gap-y-4 sm:p-0 sm:pb-5"
+      className="group relative isolate grid h-full grid-cols-[clamp(4.75rem,23vw,6rem)_1fr] items-center gap-x-3.5 overflow-clip rounded-card bg-charcoal p-3 pe-4 transition-[scale] duration-(--duration-fast) active:scale-[0.985] sm:grid-cols-1 sm:grid-rows-[auto_1fr_auto] sm:items-stretch sm:gap-y-4 sm:p-0 sm:pb-5"
     >
       {/* Photo and name morph into the dish page (see ItemView). */}
       <ViewTransition name={`dish-${item.slug}`} share="dish-photo" default="none">
@@ -65,11 +65,11 @@ export function MenuItemCard({
         </div>
       </ViewTransition>
       {/* Phones: text on top, button pinned below. From sm up the card's own rows take over. */}
-      <div className="grid h-full grid-rows-[1fr_auto] gap-3 py-1 sm:contents">
-        <div className="grid content-start gap-1.5 sm:px-5">
-          {/* Never clamped: a menu must show the whole name. Scales down on narrow phones. */}
+      <div className="grid h-full grid-rows-[1fr_auto] gap-2.5 sm:contents">
+        <div className="grid content-start gap-1 sm:gap-1.5 sm:px-5">
+          {/* Never clamped: a menu must show the whole name. Phones get the delivery-app size. */}
           <ViewTransition name={`dish-name-${item.slug}`} share="dish-name" default="none">
-            <Heading className="text-[clamp(1.35rem,0.6rem+3.8vw,1.65rem)] leading-[1.05] normal-case sm:text-[1.85rem]">
+            <Heading className="text-[1.2rem] leading-[1.1] normal-case sm:text-[1.65rem] sm:leading-[1.05]">
               <Link
                 href={item.href}
                 className="after:absolute after:inset-0 after:rounded-card group-hover:text-red-text"
@@ -79,15 +79,17 @@ export function MenuItemCard({
             </Heading>
           </ViewTransition>
           {item.description ? (
-            <p className="line-clamp-2 text-small text-ink-muted">{item.description}</p>
+            <p className="line-clamp-2 text-[0.875rem] leading-[1.4] text-ink-muted sm:text-small">
+              {item.description}
+            </p>
           ) : null}
         </div>
         <div className="flex items-center justify-end gap-3 sm:justify-start sm:px-5">
           {item.price !== null ? (
-            <span className="me-auto grid font-display text-2xl leading-none">
+            <span className="me-auto grid font-display text-[1.2rem] leading-none sm:text-2xl">
               {formatPrice(item.price)}
               {item.comboPrice !== null ? (
-                <span className="mt-1 text-[0.8rem] tracking-[0.06em] text-ink-muted uppercase">
+                <span className="mt-1 text-[0.7rem] tracking-[0.06em] text-ink-muted uppercase sm:text-[0.8rem]">
                   {copy.menu.comboPrice(formatPrice(item.comboPrice))}
                 </span>
               ) : null}
@@ -97,7 +99,7 @@ export function MenuItemCard({
             links={item.orderLinks}
             item={item}
             placement={placement}
-            className="btn btn-red relative z-10 min-h-11 px-6 text-[1.15rem] shadow-none"
+            className="btn btn-red relative z-10 min-h-11 px-4 text-[1rem] shadow-none sm:px-6 sm:text-[1.15rem]"
           />
         </div>
       </div>

@@ -125,7 +125,7 @@ export function OrderSheet({ ref, links, mode, onModeChange, item, onChoose }: P
               <li key={link.platform}>
                 <PlatformLink
                   link={link}
-                  notes={linkNotes(link, item)}
+                  notes={linkNotes(link, item, { steady: true })}
                   onClick={(event) => {
                     onChoose(link)
                     event.currentTarget.closest('dialog')?.close()

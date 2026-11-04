@@ -45,7 +45,7 @@ export const copy = {
       },
     },
     modeLabel: 'Delivery or pickup',
-    pickupInApp: (platform: string) => `Choose Pickup on ${platform}’s page`,
+    pickupInApp: (platform: string) => `Choose Pickup in ${platform}`,
     // Each journey's own page (/order/delivery, /order/pickup).
     page: {
       delivery: 'Order *delivery*',
