@@ -45,3 +45,29 @@ export function Emphasis(props: EmphasisProps) {
     </>
   )
 }
+
+/**
+ * Splits a display line after its first sentence ("Lebanese flavor. *Kansas
+ * City* welcome."), for headlines set a line per sentence.
+ */
+export function splitFirstSentence(line: RichLine): [RichLine, RichLine | null] {
+  const first: RichLine['segments'] = []
+  for (const [i, segment] of line.segments.entries()) {
+    const stop = segment.emphasis ? -1 : segment.text.indexOf('.')
+    if (stop === -1) {
+      first.push(segment)
+      continue
+    }
+    first.push({ text: segment.text.slice(0, stop + 1), emphasis: false })
+    const rest = [
+      { text: segment.text.slice(stop + 1).trimStart(), emphasis: false },
+      ...line.segments.slice(i + 1),
+    ].filter((s) => s.text)
+    const text = (segs: RichLine['segments']) => segs.map((s) => s.text).join('')
+    return [
+      { segments: first, text: text(first) },
+      rest.length ? { segments: rest, text: text(rest) } : null,
+    ]
+  }
+  return [line, null]
+}

@@ -6,14 +6,15 @@ import { emphasisSegments, type EmphasisProps } from './Emphasis'
  * A display headline, one word at a time: plain words punch up out of a mask
  * in turn, then the red word settles in a beat later (see .punch / .stamp in
  * brand.css). Reads as normal text to assistive tech; static with reduced
- * motion. `start` continues the sequence from an earlier line.
+ * motion. `start` continues the sequence from an earlier line. A red phrase of
+ * several words ("Kansas City") stays on one line.
  */
 export function PunchLine(props: EmphasisProps & { start?: number }) {
   let index = props.start ?? 0
   return (
     <>
-      {emphasisSegments(props).map((segment, s) =>
-        segment.text.split(/(\s+)/).map((part, w) => {
+      {emphasisSegments(props).map((segment, s) => {
+        const words = segment.text.split(/(\s+)/).map((part, w) => {
           if (!part) return null
           if (/^\s+$/.test(part)) return part
           const style = { '--i': index++ } as CSSProperties
@@ -26,8 +27,16 @@ export function PunchLine(props: EmphasisProps & { start?: number }) {
               <span style={style}>{part}</span>
             </span>
           )
-        }),
-      )}
+        })
+        const phrase = segment.emphasis && segment.text.trim().includes(' ')
+        return phrase ? (
+          <span key={s} className="whitespace-nowrap">
+            {words}
+          </span>
+        ) : (
+          words
+        )
+      })}
     </>
   )
 }

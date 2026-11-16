@@ -75,7 +75,7 @@ export async function seed(
   // Categories
   const categoryIds = new Map<string, number>()
   for (const category of content.categories) {
-    const slug = slugify(category.name)
+    const slug = content.categorySlug(category)
     const { docs } = await payload.find({
       collection: 'categories',
       where: { slug: { equals: slug } },

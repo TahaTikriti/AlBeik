@@ -58,7 +58,7 @@ export const copy = {
     categoriesLabel: 'Menu categories',
     // Under the heading: this is the everyday menu, catering has its own.
     subline: 'Everyday dishes for delivery, pickup or dine-in.',
-    cateringLink: 'Feeding a group? See the catering menu',
+    cateringLink: 'Your gang coming over? See the catering menu',
     empty: 'The grill is warming up.',
     // The blueprint's halal explainer and short statement (section 5).
     halalTitle: '100% *halal*',
@@ -66,7 +66,7 @@ export const copy = {
       'If you have a question about a dish or an ingredient, please contact our team before ordering.',
     cateringNote:
       'Mezze trays, sandwich boxes, lunch boxes and buffets for the office or the party.',
-    count: (n: number) => (n === 1 ? '1 dish' : `${n} dishes`),
+    count: (n: number) => (n === 1 ? '1 option' : `${n} options`),
     // A sandwich's two prices: alone, and as a combo.
     combo: 'Combo',
     comboPrice: (price: string) => `Combo ${price}`,
@@ -87,7 +87,7 @@ export const copy = {
   },
   home: {
     // The blueprint's eyebrow (section 2).
-    heroKicker: 'Lebanese favorites in Kansas City',
+    heroKicker: 'Lebanese favorites in the heart of Kansas City',
     // The blueprint asks for a compact halal label by the order buttons.
     halalChip: '100% halal',
     featuredTitle: 'The *signatures*',
@@ -97,11 +97,12 @@ export const copy = {
     // The blueprint's halal callout (section 2), without "certified" until
     // the client names the certifier.
     halal: {
-      title: 'Good food. Clear choices.',
+      title: 'Good food. Better choices.',
       body: 'Everything we serve is 100% halal, with the Lebanese flavors you came for. Questions about a dish or an ingredient? Ask us before you order.',
     },
-    categoriesTitle: 'The whole *menu*',
+    categoriesTitle: 'The whole foodie *saga*',
     testimonialsTitle: 'Word on the *street*',
+    testimonialsSubtitle: 'Spreading like wildfire',
     visitTitle: 'Find *us*',
     visitBody: 'Pull up to State Line, or let it come to you.',
     // The blueprint's entry cards (section 1).
@@ -120,7 +121,7 @@ export const copy = {
     // The blueprint's Visit page headline and intro (section 7).
     heading: 'Find us on *State Line* Road.',
     intro:
-      'Stop by AlBeik for Lebanese favorites, a quick pickup, or a meal worth sharing. Check today’s hours before you head over.',
+      'Quick pickup or a meal worth sharing? Stop by AlBeik for your absolute Lebanese favorites. Check today’s hours before heading over. We are waiting for you.',
     address: 'Address',
     hours: 'Hours',
     phone: 'Phone',
@@ -139,7 +140,9 @@ export const copy = {
   catering: {
     // Above the heading, so the page never reads as the everyday menu.
     eyebrow: 'Catering menu · order by phone',
-    heading: '*Catering* for the whole crew',
+    // The client's wordplay (2026-11-15). Only here: the nav, the eyebrow
+    // and the page title keep "catering", which is what people search for.
+    heading: '*Caring* for the whole crew',
     sectionsLabel: 'Catering sections',
     menuLink: 'Ordering for yourself? See the everyday menu',
     // The phone bar on the catering page, in place of Delivery and Pickup.

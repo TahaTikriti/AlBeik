@@ -7,6 +7,7 @@
  */
 import type { MenuTag } from '@/lib/data/types'
 import type { HoursRow } from '@/lib/hours'
+import { slugify } from '@/lib/text'
 
 const S3 = 'https://s3.eu-central-1.amazonaws.com/storage.albeik.us'
 
@@ -53,7 +54,17 @@ export const heroLoop: { file: string; mimeType: string; poster: string } | null
   poster: 'hero-loop-poster.webp',
 }
 
-export type SeedCategory = { name: string; description: string; sortOrder: number }
+export type SeedCategory = {
+  name: string
+  /** Only when the slug must outlive a rename; otherwise it's the name, slugified. */
+  slug?: string
+  description: string
+  sortOrder: number
+}
+
+export function categorySlug(category: SeedCategory): string {
+  return category.slug ?? slugify(category.name)
+}
 
 /**
  * The client's updated menu (AL_BEIK_UPDATED_MENU.docx, 2026-11-03), in its
@@ -120,8 +131,11 @@ export const categories: SeedCategory[] = [
     sortOrder: 8,
   },
   {
-    // Fountain drinks in 20 oz cups ("120oz" in the menu is a typo).
-    name: 'Drinks',
+    // Fountain drinks in 20 oz cups ("120oz" in the menu is a typo). Named by
+    // the client (2026-11-15); the slug stays "drinks" so links and the CMS
+    // category it seeds don't change.
+    name: 'Something to Drown It All With',
+    slug: 'drinks',
     description: 'Cool sips, familiar favorites, and something to balance the spice.',
     sortOrder: 9,
   },
@@ -490,22 +504,22 @@ export const menuItems: SeedItem[] = [
   { name: 'Extra Protein', category: 'Add-ons', price: 5.99 },
   { name: 'Extra Sauce', category: 'Add-ons', price: 0.75 },
 
-  // ── Drinks (20 oz cups). The menu has no descriptions; these are the old site's.
+  // ── Something to Drown It All With (Drinks, 20 oz cups). The menu has no descriptions; these are the old site's.
   {
     name: 'Fountain Drink', // "FOUNTAIN MACHINE DRINK"
-    category: 'Drinks',
+    category: 'Something to Drown It All With',
     description: 'A 20 oz cup, your pick.',
     price: 2.99,
   },
   {
     name: 'Ayran', // "AYRAN (YOGURT)"
-    category: 'Drinks',
+    category: 'Something to Drown It All With',
     description: 'Yogurt drink with a pinch of salt',
     price: 5.35,
   },
   {
     name: 'Lemonade',
-    category: 'Drinks',
+    category: 'Something to Drown It All With',
     description: 'Freshly squeezed homemade lemonade, the Lebanese way',
     price: 5.35,
   },
@@ -542,16 +556,16 @@ export const testimonials = [
 
 export const homepage = {
   hero: {
-    // The client's slogan (2026-11-02), with LEBANESE highlighted as in their
-    // earlier "The recipe is Lebanese" line, which now runs in the home strip.
-    headline: 'Come hungry. Leave a little *Lebanese*.',
-    // The blueprint's hero headline and promise (section 2), as the follow-up.
-    subline:
-      'Discover the Lebanese in you. Big flavor and generous comfort, right on State Line Road.',
+    // The blueprint's hero headline, back on top in the client's amendments
+    // (2026-11-15). The slogan stays on the Story page, the footer and og.png.
+    headline: 'Discover the *Lebanese* in you.',
+    subline: 'Big flavor. Generous comfort. Right on State Line Road.',
   },
   // The blueprint's introduction (section 2), in the hero's voice.
   promise: {
-    headline: 'A little *Lebanese*. A lot to love.',
+    // The client's "Lush Lebanese spread meant to fall in love with"
+    // (2026-11-15), in two lines like the headline it replaces.
+    headline: 'A lush *Lebanese* spread. Made to fall in love with.',
     body: 'Come for the charcoal-grilled favorites. Stay for the spreads, the salads, the sandwiches and the dishes everyone reaches across the table to try. Quick lunch, easy dinner, or one more plate for the middle: AlBeik brings Lebanese flavor to Kansas City, with a little extra attitude.',
   },
   // The blueprint's signature set (section 3), named as on the updated menu
@@ -582,11 +596,13 @@ export const homepage = {
 // this once the client shares it; nothing here is invented.
 export const about = {
   headline: 'Lebanese flavor. *Kansas City* welcome.',
-  markdown: `AlBeik brings the flavors we love to a table close to home. Think charcoal-grilled favorites, comforting sandwiches, bright salads and Lebanese dishes made for sharing. Know exactly what you came for, or ready to try something new? There's a place for you here.
+  markdown: `AlBeik brings the flavors we love to a table that feels closer to home. Think charcoal-grilled favorites, comforting sandwiches, bright salads and Lebanese dishes made for sharing. Know exactly what you came for, or ready to try something new?
+
+There's always a place for you here.
 
 ## Come hungry. Leave a little Lebanese.
 
-Some meals are quick. Some turn into a table full of dishes and “just one more bite.” We make room for both. Find your usual order, bring someone along, and let the menu do the rest.`,
+Some meals are quick. Some turn into a table full of dishes and “just one more bite.” Out here, there's room for both. Find your usual order, bring someone along, and let the menu do the rest.`,
 }
 
 export const siteSettings = {

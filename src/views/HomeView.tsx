@@ -5,7 +5,7 @@ import { preload } from 'react-dom'
 import { dishPreloadAttrs } from '@/components/menu/dishImage'
 import { OrderButton } from '@/components/order/OrderButton'
 import { Countdown } from '@/components/ui/Countdown'
-import { Emphasis } from '@/components/ui/Emphasis'
+import { Emphasis, splitFirstSentence } from '@/components/ui/Emphasis'
 import { HeroLoop } from '@/components/ui/HeroLoop'
 import { Img } from '@/components/ui/Img'
 import { Marquee } from '@/components/ui/Marquee'
@@ -20,32 +20,6 @@ import { Embers, Mustache, Smoke } from '@/theme/motifs'
 type CategoryLink = { slug: string; name: string; count: number }
 
 type Props = HomePageData & { site: SiteVM; categories: CategoryLink[] }
-
-/**
- * Splits the slogan, "Come hungry. Leave a little *Lebanese*.", into its two
- * lines.
- */
-function splitFirstSentence(line: RichLine): [RichLine, RichLine | null] {
-  const first: RichLine['segments'] = []
-  for (const [i, segment] of line.segments.entries()) {
-    const stop = segment.emphasis ? -1 : segment.text.indexOf('.')
-    if (stop === -1) {
-      first.push(segment)
-      continue
-    }
-    first.push({ text: segment.text.slice(0, stop + 1), emphasis: false })
-    const rest = [
-      { text: segment.text.slice(stop + 1).trimStart(), emphasis: false },
-      ...line.segments.slice(i + 1),
-    ].filter((s) => s.text)
-    const text = (segs: RichLine['segments']) => segs.map((s) => s.text).join('')
-    return [
-      { segments: first, text: text(first) },
-      rest.length ? { segments: rest, text: text(rest) } : null,
-    ]
-  }
-  return [line, null]
-}
 
 /**
  * The blueprint's homepage order (section 2): food and the two order paths,
@@ -98,7 +72,7 @@ export function HomeView({
         >
           <div className="grid gap-3">
             <p className="label text-red-text">{copy.home.heroKicker}</p>
-            {/* Sized so "Come hungry." and "Leave a little" (about 5.5em) each hold a line. */}
+            {/* Sized so "Discover the" (about 5.5em) holds a line. */}
             <h1 className="text-display-1 max-[23rem]:text-[calc(18vw-0.5rem)] lg:text-[min(8.9vw,6.5rem)]">
               <span className="block">
                 <PunchLine line={shout} />
@@ -119,14 +93,16 @@ export function HomeView({
               links={site.storeOrderLinks}
               placement="home-hero"
               mode="delivery"
-              label={copy.order.modes.delivery.cta}
+              label={copy.order.modes.delivery.short}
+              ariaLabel={copy.order.modes.delivery.cta}
               className="btn btn-red min-h-14 px-3 text-[1.3rem] sm:px-8 sm:text-[1.5rem]"
             />
             <OrderButton
               links={site.storeOrderLinks}
               placement="home-hero"
               mode="pickup"
-              label={copy.order.modes.pickup.cta}
+              label={copy.order.modes.pickup.short}
+              ariaLabel={copy.order.modes.pickup.cta}
               className="btn btn-white min-h-14 px-3 text-[1.3rem] sm:px-8 sm:text-[1.5rem]"
             />
           </div>
@@ -200,7 +176,7 @@ export function HomeView({
           >
             <div className="grid gap-6">
               {promise.headline.text ? (
-                // Sized to its column, like the hero: "A lot to love." holds a line.
+                // Sized to its column, like the hero: a line per sentence, wrapping where it must.
                 <h2 className="text-display-1 text-black max-[23rem]:text-[calc(18vw-0.5rem)] md:text-[min(8vw,6.25rem)] [&_em]:text-white">
                   <PromiseHeadline line={promise.headline} />
                 </h2>
@@ -287,9 +263,14 @@ export function HomeView({
           className="overflow-clip"
         >
           <div className={`${ui.container} ${ui.section} grid gap-10`}>
-            <h2 id="testimonials-heading" className="kinetic text-display-1">
-              <Emphasis text={copy.home.testimonialsTitle} />
-            </h2>
+            <div className="grid gap-3">
+              <h2 id="testimonials-heading" className="kinetic text-display-1">
+                <Emphasis text={copy.home.testimonialsTitle} />
+              </h2>
+              <p className="font-display text-display-3 text-ink-muted uppercase">
+                {copy.home.testimonialsSubtitle}
+              </p>
+            </div>
             <ul className="-mx-gutter flex snap-x snap-mandatory gap-4 overflow-x-auto px-gutter pb-4 [scrollbar-width:none] md:grid md:auto-rows-fr md:grid-cols-2 md:overflow-visible">
               {testimonials.map((t) => (
                 <li key={t.id} className="w-[86%] shrink-0 snap-start md:w-auto">
@@ -393,7 +374,8 @@ export function HomeView({
               links={site.storeOrderLinks}
               placement="home-final"
               mode="delivery"
-              label={copy.order.modes.delivery.cta}
+              label={copy.order.modes.delivery.short}
+              ariaLabel={copy.order.modes.delivery.cta}
               className="btn btn-ink min-h-14 justify-self-start px-8 text-[1.4rem]"
             />
           </article>
@@ -409,7 +391,8 @@ export function HomeView({
               links={site.storeOrderLinks}
               placement="home-final"
               mode="pickup"
-              label={copy.order.modes.pickup.cta}
+              label={copy.order.modes.pickup.short}
+              ariaLabel={copy.order.modes.pickup.cta}
               className="btn btn-red min-h-14 justify-self-start px-8 text-[1.4rem]"
             />
           </article>
@@ -419,7 +402,7 @@ export function HomeView({
   )
 }
 
-/** "A little *Lebanese*. A lot to love." → a line for each sentence. */
+/** "A lush *Lebanese* spread. Made to fall in love with." → a line for each sentence. */
 function PromiseHeadline({ line }: { line: RichLine }) {
   const [first, second] = splitFirstSentence(line)
   return (

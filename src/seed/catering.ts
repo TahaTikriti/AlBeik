@@ -15,7 +15,7 @@ export type SeedCateringItem = {
 export type SeedCateringSection = { title: string; note?: string; items: SeedCateringItem[] }
 
 export const cateringIntro =
-  'Fresh Lebanese catering for meetings, office lunches, celebrations, and large group orders.'
+  'Meetings, office lunches, celebrations, or game nights. We have it all covered for you.'
 
 /**
  * Catering's own phone and email, separate from the ordering line (client,

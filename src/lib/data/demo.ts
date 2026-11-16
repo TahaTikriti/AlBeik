@@ -41,6 +41,8 @@ function image(file: { file: string; width: number; height: number }, alt: strin
 
 const storeLinks = resolveOrderLinks(null, content.storeLinks)
 
+const categorySlugs = new Map(content.categories.map((c) => [c.name, content.categorySlug(c)]))
+
 const items: MenuItemVM[] = content.menuItems.map((item, i) => {
   const slug = slugify(item.name)
   return {
@@ -53,7 +55,7 @@ const items: MenuItemVM[] = content.menuItems.map((item, i) => {
     price: item.price ?? null,
     comboPrice: item.comboPrice ?? null,
     tags: item.tags ?? [],
-    category: { slug: slugify(item.category), name: item.category },
+    category: { slug: categorySlugs.get(item.category) ?? slugify(item.category), name: item.category },
     orderLinks: storeLinks,
   }
 })
@@ -76,7 +78,7 @@ export function demoSite(url: string): SiteVM {
 export function demoMenu(): MenuPageData {
   const categories: CategoryVM[] = content.categories.map((category, i) => ({
     id: i + 1,
-    slug: slugify(category.name),
+    slug: content.categorySlug(category),
     name: category.name,
     description: category.description,
     image: null,

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 
 import { Img } from '@/components/ui/Img'
+import { splitFirstSentence } from '@/components/ui/Emphasis'
 import { PunchLine } from '@/components/ui/PunchLine'
 import { RichText } from '@/components/ui/RichText'
 import { ui } from '@/components/ui/classes'
@@ -10,14 +11,30 @@ import { Divider, Mustache, Smoke } from '@/theme/motifs'
 
 export function AboutView({ headline, body, images }: AboutPageData) {
   const [lead, ...more] = images
+  // A line per sentence, as in the client's mock: "Lebanese flavor." /
+  // "Kansas City welcome." (Kansas City never splits, see PunchLine).
+  const [first, second] = splitFirstSentence(headline)
   return (
     <article>
       <header className="grain relative overflow-hidden">
         <Smoke />
         <div className={`${ui.container} grid gap-5 pt-12 pb-14 md:pt-20`}>
           <p className="label text-red-text">{copy.about.title}</p>
-          <h1 className="text-display-1 max-w-[14ch]">
-            {headline.text ? <PunchLine line={headline} /> : copy.about.title}
+          <h1 className="text-display-1">
+            {headline.text ? (
+              <>
+                <span className="block">
+                  <PunchLine line={first} />
+                </span>
+                {second ? (
+                  <span className="block">
+                    <PunchLine line={second} start={first.text.split(' ').length} />
+                  </span>
+                ) : null}
+              </>
+            ) : (
+              copy.about.title
+            )}
           </h1>
         </div>
       </header>

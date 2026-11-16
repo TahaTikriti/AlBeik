@@ -107,14 +107,16 @@ export function LocationView({
                           links={orderLinks}
                           placement="visit"
                           mode="pickup"
-                          label={copy.order.modes.pickup.cta}
+                          label={copy.order.modes.pickup.short}
+                          ariaLabel={copy.order.modes.pickup.cta}
                           className="btn btn-white"
                         />
                         <OrderButton
                           links={orderLinks}
                           placement="visit"
                           mode="delivery"
-                          label={copy.order.modes.delivery.cta}
+                          label={copy.order.modes.delivery.short}
+                          ariaLabel={copy.order.modes.delivery.cta}
                           className="btn btn-ghost"
                         />
                       </div>
