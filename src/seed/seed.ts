@@ -11,8 +11,11 @@ import * as content from './content'
 
 const IMAGES_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../public/seed')
 
-// Seeding runs outside Next.js, so skip on-demand revalidation.
-const context = { disableRevalidate: true }
+// Seeding runs outside Next.js, so skip on-demand revalidation. A fresh object
+// per call: Payload uses it as req.context, and the Blob storage plugin writes
+// its own flags onto it after an upload; one shared object made every upload
+// after the first skip storage.
+const context = () => ({ disableRevalidate: true })
 
 type Options = {
   admin?: { email: string; password: string }
@@ -63,7 +66,7 @@ export async function seed(
           collection: 'media',
           data: { alt },
           filePath: path.join(IMAGES_DIR, file),
-          context,
+          context: context(),
         })
       ).id
       bump('media')
@@ -91,7 +94,7 @@ export async function seed(
           description: category.description,
           sortOrder: category.sortOrder,
         },
-        context,
+        context: context(),
       })
       bump('categories updated')
     }
@@ -106,7 +109,7 @@ export async function seed(
           description: category.description,
           sortOrder: category.sortOrder,
         },
-        context,
+        context: context(),
       }))
     categoryIds.set(category.name, doc.id)
   }
@@ -149,7 +152,7 @@ export async function seed(
               : {}),
             _status: 'published',
           },
-          context,
+          context: context(),
         })
         bump('menu-items updated')
       }
@@ -172,7 +175,7 @@ export async function seed(
         sortOrder,
         _status: 'published',
       },
-      context,
+      context: context(),
     })
     bump('menu-items')
     itemIds.set(item.name, doc.id)
@@ -197,7 +200,7 @@ export async function seed(
         collection: 'menu-items',
         id: doc.id,
         data: { available: false, _status: 'published' },
-        context,
+        context: context(),
       })
       bump('menu-items hidden')
     }
@@ -213,7 +216,7 @@ export async function seed(
     await payload.create({
       collection: 'testimonials',
       data: { name: t.name, quote: t.quote, featured: true, sortOrder },
-      context,
+      context: context(),
     })
     bump('testimonials')
   }
@@ -233,7 +236,7 @@ export async function seed(
         featuredItems: featured.map((name) => itemIds.get(name)!),
         _status: 'published',
       },
-      context,
+      context: context(),
     })
     bump('homepage')
   } else if (syncMenu) {
@@ -243,7 +246,7 @@ export async function seed(
         featuredItems: content.homepage.featured.map((name) => itemIds.get(name)!),
         _status: 'published',
       },
-      context,
+      context: context(),
     })
     bump('homepage signatures updated')
   }
@@ -261,7 +264,7 @@ export async function seed(
         body: convertMarkdownToLexical({ editorConfig, markdown: content.about.markdown }),
         images: [{ image: await upload(content.images.dining.file, content.images.dining.alt) }],
       },
-      context,
+      context: context(),
     })
     bump('about')
   }
@@ -269,7 +272,11 @@ export async function seed(
   const settings = await payload.findGlobal({ slug: 'site-settings', depth: 0 })
   if (syncMenu && settings.locations?.length && !settings.showPrices) {
     // The client's menu has in-store prices (since 2026-11-03).
-    await payload.updateGlobal({ slug: 'site-settings', data: { showPrices: true }, context })
+    await payload.updateGlobal({
+      slug: 'site-settings',
+      data: { showPrices: true },
+      context: context(),
+    })
     bump('site-settings: prices shown')
   }
   if (!settings.locations?.length) {
@@ -285,7 +292,7 @@ export async function seed(
         seo: { defaultDescription: content.siteSettings.defaultDescription },
         banner: content.banner,
       },
-      context,
+      context: context(),
     })
     bump('site-settings')
   }
@@ -299,7 +306,7 @@ export async function seed(
       await payload.create({
         collection: 'users',
         data: { email: admin.email, password: admin.password, name: 'Admin' },
-        context,
+        context: context(),
       })
       bump('users')
     }
