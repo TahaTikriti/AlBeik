@@ -527,19 +527,6 @@ export interface Homepage {
    * Shown on the home page in this order.
    */
   featuredItems?: (number | MenuItem)[] | null;
-  promo?: {
-    enabled?: boolean | null;
-    /**
-     * Wrap words in *asterisks* to highlight them, e.g. The recipe is *Lebanese*.
-     */
-    text?: string | null;
-    linkLabel?: string | null;
-    linkUrl?: string | null;
-    /**
-     * Optional. Shows a countdown to this moment.
-     */
-    countdownTo?: string | null;
-  };
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -602,6 +589,33 @@ export interface SiteSetting {
    * The restaurant page on Uber Eats. Used when an item has no link of its own.
    */
   uberEatsStoreUrl?: string | null;
+  banner?: {
+    enabled?: boolean | null;
+    /**
+     * Wrap words in *asterisks* to highlight them, e.g. The recipe is *Lebanese*.
+     */
+    text?: string | null;
+    /**
+     * e.g. See the menu
+     */
+    linkLabel?: string | null;
+    /**
+     * e.g. /menu or /catering
+     */
+    linkUrl?: string | null;
+    /**
+     * Optional. Leave empty to show it as soon as it is saved.
+     */
+    startsAt?: string | null;
+    /**
+     * Optional. It hides itself at this moment.
+     */
+    endsAt?: string | null;
+    /**
+     * Optional. Shows a flip-clock countdown to this moment.
+     */
+    countdownTo?: string | null;
+  };
   locations?:
     | {
         name: string;
@@ -669,15 +683,6 @@ export interface HomepageSelect<T extends boolean = true> {
         media?: T;
       };
   featuredItems?: T;
-  promo?:
-    | T
-    | {
-        enabled?: T;
-        text?: T;
-        linkLabel?: T;
-        linkUrl?: T;
-        countdownTo?: T;
-      };
   _status?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -711,6 +716,17 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   timezone?: T;
   doordashStoreUrl?: T;
   uberEatsStoreUrl?: T;
+  banner?:
+    | T
+    | {
+        enabled?: T;
+        text?: T;
+        linkLabel?: T;
+        linkUrl?: T;
+        startsAt?: T;
+        endsAt?: T;
+        countdownTo?: T;
+      };
   locations?:
     | T
     | {

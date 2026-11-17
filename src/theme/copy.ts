@@ -173,6 +173,11 @@ export const copy = {
     notice: 'Preview: you are seeing unpublished changes.',
     exit: 'Exit preview',
   },
+  banner: {
+    label: 'Special offer',
+    /** When the editor gave a link but no label. */
+    more: 'Find out more',
+  },
   promo: {
     /** Flip-clock countdown, like the "02 DAYS TO TASTEBUD TANTALIZATION" posts. */
     left: (n: number, unit: 'day' | 'hour') => `${unit}${n === 1 ? '' : 's'} to go`,

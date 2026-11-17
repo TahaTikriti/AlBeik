@@ -54,8 +54,8 @@ Open question for the client: are they on Uber's direct storefront (order.store)
 
 **Globals**
 
-- `site-settings`: logo, DoorDash store URL, Uber Eats store URL, address, map link, phone, hours, socials
-- `homepage`: hero (headline, subline, media), featured items (relation), promo banner (text, link, on/off)
+- `site-settings`: logo, DoorDash store URL, Uber Eats store URL, address, map link, phone, hours, socials, and the offer banner (a site-wide strip above the header for special offers and occasions: text, link, on/off, optional start and end dates, optional countdown)
+- `homepage`: hero (headline, subline, media), featured items (relation)
 - `about`: rich text plus images
 
 Enable drafts and live preview for `homepage` and `menu-items` if it doesn't slow down the foundation phase; otherwise note it as a follow-up.

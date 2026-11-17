@@ -121,13 +121,19 @@ export type SiteVM = {
   locations: LocationVM[]
   socials: SocialVM[]
   seo: { description: string | null; ogImage: ImageVM | null }
+  /** Null when switched off, empty or already over. */
+  banner: BannerVM | null
 }
 
-export type PromoVM = {
+/** The site-wide offer / occasion banner. */
+export type BannerVM = {
   text: RichLine
   linkLabel: string | null
   linkUrl: string | null
-  /** ISO timestamp, for countdown / flip-clock promos. */
+  /** ISO timestamps. Pages are static, so the browser decides whether it's live. */
+  startsAt: string | null
+  endsAt: string | null
+  /** ISO timestamp, for a flip-clock countdown. */
   countdownTo: string | null
 }
 
@@ -141,7 +147,6 @@ export type HomePageData = {
   }
   promise: { headline: RichLine; body: string | null; media: MediaVM | null } | null
   featured: MenuItemVM[]
-  promo: PromoVM | null
   testimonials: TestimonialVM[]
 }
 

@@ -583,13 +583,20 @@ export const homepage = {
     'Charbroiled Half Chicken',
     'Ayran',
   ],
-  promo: {
-    // Off by default; copy from the Instagram countdown posts.
-    enabled: false,
-    text: '*Clock is ticking.* Spice bomb is waiting.',
-    linkLabel: 'See the menu',
-    linkUrl: '/menu',
-  },
+}
+
+// The site-wide offer / occasion banner (Site settings → Offer banner).
+// Sample copy so the client can see it: Thanksgiving catering, which hides
+// itself after Thanksgiving Day (midnight in Kansas City). Swap it for the
+// client's own offer or switch it off in the admin.
+export const banner = {
+  enabled: true,
+  text: '*Thanksgiving* for the whole table: order your catering trays ahead.',
+  linkLabel: 'See catering',
+  linkUrl: '/catering',
+  startsAt: null,
+  endsAt: '2026-11-27T06:00:00.000Z',
+  countdownTo: null,
 }
 
 // The blueprint's Story page (section 6). The founders' own story replaces

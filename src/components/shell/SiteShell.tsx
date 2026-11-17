@@ -6,6 +6,7 @@ import { copy } from '@/theme/copy'
 import { Footer } from './Footer'
 import { DishPreload } from './DishPreload'
 import { Header } from './Header'
+import { OfferBanner } from './OfferBanner'
 import { StickyOrderBar, StickyOrderBarSpacer } from './StickyOrderBar'
 
 export function SiteShell({ site, children }: { site: SiteVM; children: ReactNode }) {
@@ -15,6 +16,7 @@ export function SiteShell({ site, children }: { site: SiteVM; children: ReactNod
       <a href="#main" className="skip-link">
         {copy.skipToContent}
       </a>
+      {site.banner ? <OfferBanner banner={site.banner} /> : null}
       <Header site={site} />
       {/* overflow-x: clip keeps anything mid-animation (a title sliding in from
           the side) from widening the page: on phones that makes the whole page

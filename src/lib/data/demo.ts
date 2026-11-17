@@ -11,7 +11,7 @@ import { slugify } from '@/lib/text'
 import * as catering from '@/seed/catering'
 import * as content from '@/seed/content'
 
-import { toLocation, toRichLine, toSocial, toTelHref } from './mappers'
+import { toBanner, toLocation, toRichLine, toSocial, toTelHref } from './mappers'
 import type {
   AboutPageData,
   CateringPageData,
@@ -55,7 +55,10 @@ const items: MenuItemVM[] = content.menuItems.map((item, i) => {
     price: item.price ?? null,
     comboPrice: item.comboPrice ?? null,
     tags: item.tags ?? [],
-    category: { slug: categorySlugs.get(item.category) ?? slugify(item.category), name: item.category },
+    category: {
+      slug: categorySlugs.get(item.category) ?? slugify(item.category),
+      name: item.category,
+    },
     orderLinks: storeLinks,
   }
 })
@@ -72,6 +75,7 @@ export function demoSite(url: string): SiteVM {
     locations: [toLocation(content.siteSettings.location)],
     socials: content.socials.map(toSocial),
     seo: { description: content.siteSettings.defaultDescription, ogImage: null },
+    banner: toBanner(content.banner),
   }
 }
 
@@ -120,7 +124,6 @@ export function demoHome(): HomePageData {
       media: image(images.spread, images.spread.alt),
     },
     featured: featured.flatMap((name) => items.find((i) => i.name === name) ?? []),
-    promo: null,
     testimonials: content.testimonials.map((t, i) => ({
       id: i + 1,
       name: t.name,

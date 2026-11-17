@@ -4,6 +4,7 @@ import { parseEmphasis, plainText } from '@/lib/text'
 import type { Category, Homepage, Media, MenuItem, SiteSetting, Testimonial } from '@/payload-types'
 
 import type {
+  BannerVM,
   CategoryVM,
   HomePageData,
   ImageVM,
@@ -186,6 +187,34 @@ export function toSite(settings: SiteSetting, url: string): SiteVM {
       description: orNull(settings.seo?.defaultDescription),
       ogImage: toImage(settings.seo?.ogImage),
     },
+    banner: toBanner(settings.banner),
+  }
+}
+
+type BannerFields = {
+  enabled?: boolean | null
+  text?: string | null
+  linkLabel?: string | null
+  linkUrl?: string | null
+  startsAt?: string | null
+  endsAt?: string | null
+  countdownTo?: string | null
+}
+
+/** The offer banner, or null when it's off, has no message or has already ended. */
+export function toBanner(
+  banner: BannerFields | null | undefined,
+  now = Date.now(),
+): BannerVM | null {
+  if (!banner?.enabled || !orNull(banner.text)) return null
+  if (banner.endsAt && Date.parse(banner.endsAt) <= now) return null
+  return {
+    text: toRichLine(banner.text),
+    linkLabel: orNull(banner.linkLabel),
+    linkUrl: orNull(banner.linkUrl),
+    startsAt: banner.startsAt ?? null,
+    endsAt: banner.endsAt ?? null,
+    countdownTo: banner.countdownTo ?? null,
   }
 }
 
@@ -195,7 +224,6 @@ export function toHomePage(
   testimonials: TestimonialVM[],
 ): HomePageData {
   const promise = home.promise
-  const promo = home.promo
 
   return {
     // Globals that were never saved come back without their groups.
@@ -215,15 +243,6 @@ export function toHomePage(
           }
         : null,
     featured,
-    promo:
-      promo?.enabled && orNull(promo.text)
-        ? {
-            text: toRichLine(promo.text),
-            linkLabel: orNull(promo.linkLabel),
-            linkUrl: orNull(promo.linkUrl),
-            countdownTo: promo.countdownTo ?? null,
-          }
-        : null,
     testimonials,
   }
 }

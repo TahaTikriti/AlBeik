@@ -4,10 +4,23 @@ import { DAYS, isValidTime } from '@/lib/hours'
 
 import { anyone, authenticated } from '../access'
 import { revalidateSite } from '../hooks/revalidateSite'
+import { emphasisTextField } from '../fields/emphasisText'
 import { validateHref } from '../fields/link'
 import { orderUrlField } from '../fields/orderUrl'
 
 const DAY_OPTIONS = DAYS.map((d) => ({ label: d[0]!.toUpperCase() + d.slice(1), value: d }))
+
+const dateTime = { date: { pickerAppearance: 'dayAndTime' as const } }
+
+/** The banner must end after it starts. */
+const validateEnd = (
+  value: Date | string | null | undefined,
+  { siblingData }: { siblingData: { startsAt?: Date | string | null } },
+) =>
+  !value ||
+  !siblingData?.startsAt ||
+  Date.parse(String(value)) > Date.parse(String(siblingData.startsAt)) ||
+  'The banner has to end after it starts.'
 
 const validateTime = (value: string | null | undefined) =>
   !value || isValidTime(value) || 'Use 24-hour time, e.g. 11:00 or 22:30.'
@@ -67,6 +80,83 @@ export const SiteSettings: GlobalConfig = {
               description:
                 'The restaurant page on Uber Eats. Used when an item has no link of its own.',
             }),
+          ],
+        },
+        {
+          label: 'Offer banner',
+          description:
+            'A strip above the header on every page, for special offers and occasions (Ramadan, Eid, holidays, a weekend deal).',
+          fields: [
+            {
+              name: 'banner',
+              label: false,
+              type: 'group',
+              fields: [
+                {
+                  name: 'enabled',
+                  label: 'Show the banner',
+                  type: 'checkbox',
+                  defaultValue: false,
+                },
+                {
+                  type: 'collapsible',
+                  label: 'Banner content',
+                  admin: { condition: (_, siblingData) => Boolean(siblingData?.enabled) },
+                  fields: [
+                    emphasisTextField({ name: 'text', label: 'Message' }),
+                    {
+                      type: 'row',
+                      fields: [
+                        {
+                          name: 'linkLabel',
+                          type: 'text',
+                          admin: { description: 'e.g. See the menu' },
+                        },
+                        {
+                          name: 'linkUrl',
+                          type: 'text',
+                          validate: validateHref,
+                          admin: { description: 'e.g. /menu or /catering' },
+                        },
+                      ],
+                    },
+                    {
+                      type: 'row',
+                      fields: [
+                        {
+                          name: 'startsAt',
+                          label: 'Starts',
+                          type: 'date',
+                          admin: {
+                            ...dateTime,
+                            description: 'Optional. Leave empty to show it as soon as it is saved.',
+                          },
+                        },
+                        {
+                          name: 'endsAt',
+                          label: 'Ends',
+                          type: 'date',
+                          validate: validateEnd,
+                          admin: {
+                            ...dateTime,
+                            description: 'Optional. It hides itself at this moment.',
+                          },
+                        },
+                      ],
+                    },
+                    {
+                      name: 'countdownTo',
+                      label: 'Count down to',
+                      type: 'date',
+                      admin: {
+                        ...dateTime,
+                        description: 'Optional. Shows a flip-clock countdown to this moment.',
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
           ],
         },
         {

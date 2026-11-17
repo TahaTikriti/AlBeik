@@ -217,7 +217,7 @@ export async function seed(
   // Globals: filled only while still empty
   const home = await payload.findGlobal({ slug: 'homepage', depth: 0, draft: true })
   if (!home.hero?.headline) {
-    const { hero, promise, promo, featured } = content.homepage
+    const { hero, promise, featured } = content.homepage
     await payload.updateGlobal({
       slug: 'homepage',
       data: {
@@ -227,7 +227,6 @@ export async function seed(
           media: await upload(content.images.spread.file, content.images.spread.alt),
         },
         featuredItems: featured.map((name) => itemIds.get(name)!),
-        promo,
         _status: 'published',
       },
       context,
@@ -280,6 +279,7 @@ export async function seed(
         locations: [content.siteSettings.location],
         socials: content.socials.map((s) => ({ ...s })),
         seo: { defaultDescription: content.siteSettings.defaultDescription },
+        banner: content.banner,
       },
       context,
     })

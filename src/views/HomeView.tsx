@@ -4,7 +4,6 @@ import { preload } from 'react-dom'
 
 import { dishPreloadAttrs } from '@/components/menu/dishImage'
 import { OrderButton } from '@/components/order/OrderButton'
-import { Countdown } from '@/components/ui/Countdown'
 import { Emphasis, splitFirstSentence } from '@/components/ui/Emphasis'
 import { HeroLoop } from '@/components/ui/HeroLoop'
 import { Img } from '@/components/ui/Img'
@@ -26,15 +25,7 @@ type Props = HomePageData & { site: SiteVM; categories: CategoryLink[] }
  * the signatures, the introduction, the halal callout, the menu categories,
  * reviews, the visit details and a last order prompt.
  */
-export function HomeView({
-  hero,
-  promise,
-  featured,
-  promo,
-  testimonials,
-  site,
-  categories,
-}: Props) {
+export function HomeView({ hero, promise, featured, testimonials, site, categories }: Props) {
   const [shout, followUp] = splitFirstSentence(hero.headline)
   // The loop's poster is the hero's largest paint: fetch it first.
   if (hero.loop?.poster) preload(hero.loop.poster, { as: 'image', fetchPriority: 'high' })
@@ -42,24 +33,6 @@ export function HomeView({
 
   return (
     <>
-      {promo ? (
-        <aside className="bg-white text-black">
-          <p
-            className={`${ui.container} flex min-h-11 flex-wrap items-center justify-center gap-x-3 py-2 text-center font-display text-lg uppercase`}
-          >
-            {promo.countdownTo ? <Countdown to={promo.countdownTo} /> : null}
-            <span>
-              <Emphasis line={promo.text} />
-            </span>
-            {promo.linkUrl ? (
-              <Link href={promo.linkUrl} className="label underline underline-offset-4">
-                {promo.linkLabel ?? copy.home.seeMenu}
-              </Link>
-            ) : null}
-          </p>
-        </aside>
-      ) : null}
-
       {/* HERO: the brand's reels on a page. On phones and tablets the dish fills
           the whole first screen behind the copy (dimmed under the words, full
           strength below); from lg it sits beside the copy. The page's one
