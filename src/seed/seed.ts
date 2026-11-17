@@ -251,6 +251,28 @@ export async function seed(
     bump('homepage signatures updated')
   }
 
+  // The hero video (added 2026-11-17): filled while the hero has none.
+  const loop = content.heroLoop
+  if (loop) {
+    const current = await payload.findGlobal({ slug: 'homepage', depth: 0, draft: true })
+    if (current.hero?.headline && !current.hero.video) {
+      const alt = content.images.hero.alt
+      await payload.updateGlobal({
+        slug: 'homepage',
+        data: {
+          hero: {
+            ...current.hero,
+            video: await upload(loop.file, alt),
+            videoCover: await upload(loop.poster, alt),
+          },
+          _status: 'published',
+        },
+        context: context(),
+      })
+      bump('homepage hero video')
+    }
+  }
+
   const about = await payload.findGlobal({ slug: 'about', depth: 0 })
   if (!about.body) {
     const editorConfig = await editorConfigFactory.fromEditor({

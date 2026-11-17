@@ -5,6 +5,7 @@ import * as migration_20261103_082923_menu_combo_price_vegan from './20261103_08
 import * as migration_20261117_114946_offer_banner from './20261117_114946_offer_banner';
 import * as migration_20261117_161521_menu_sizes_deal_price from './20261117_161521_menu_sizes_deal_price';
 import * as migration_20261117_181637_media_blob_storage from './20261117_181637_media_blob_storage';
+import * as migration_20261117_191039_homepage_hero_video from './20261117_191039_homepage_hero_video';
 
 export const migrations = [
   {
@@ -40,6 +41,11 @@ export const migrations = [
   {
     up: migration_20261117_181637_media_blob_storage.up,
     down: migration_20261117_181637_media_blob_storage.down,
-    name: '20261117_181637_media_blob_storage'
+    name: '20261117_181637_media_blob_storage',
+  },
+  {
+    up: migration_20261117_191039_homepage_hero_video.up,
+    down: migration_20261117_191039_homepage_hero_video.down,
+    name: '20261117_191039_homepage_hero_video'
   },
 ];

@@ -15,6 +15,7 @@ import type {
   SiteVM,
   SocialVM,
   TestimonialVM,
+  VideoVM,
 } from './types'
 
 type Ref<T> = number | T | null | undefined
@@ -44,6 +45,13 @@ export function toMedia(media: Ref<Media>): MediaVM | null {
     return { kind: 'video', url: media.url, alt: media.alt, mimeType: media.mimeType, poster: null }
   }
   return toImage(media)
+}
+
+/** The hero's video, with its cover (first frame) as the poster. */
+function toHeroLoop(video: Ref<Media>, cover: Ref<Media>): VideoVM | null {
+  const loop = toMedia(video)
+  if (loop?.kind !== 'video') return null
+  return { ...loop, poster: toImage(cover)?.url ?? null }
 }
 
 export function toRichLine(text: string | null | undefined): RichLine {
@@ -243,8 +251,7 @@ export function toHomePage(
       headline: toRichLine(home.hero?.headline),
       subline: orNull(home.hero?.subline),
       media: toMedia(home.hero?.media),
-      // TODO(cms): a Homepage field for the hero loop; demo content sets it today.
-      loop: null,
+      loop: toHeroLoop(home.hero?.video, home.hero?.videoCover),
     },
     promise:
       promise && (orNull(promise.headline) || orNull(promise.body) || toMedia(promise.media))

@@ -29,7 +29,40 @@ export const Homepage: GlobalConfig = {
       fields: [
         emphasisTextField({ name: 'headline', required: true }),
         { name: 'subline', type: 'textarea' },
-        { name: 'media', type: 'upload', relationTo: 'media' },
+        {
+          name: 'media',
+          label: 'Photo',
+          type: 'upload',
+          relationTo: 'media',
+          admin: { description: 'Shown when there is no video.' },
+        },
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'video',
+              label: 'Video (optional)',
+              type: 'upload',
+              relationTo: 'media',
+              filterOptions: { mimeType: { contains: 'video' } },
+              admin: {
+                description:
+                  'A short silent loop (MP4, under 10 seconds and 3 MB). Plays instead of the photo.',
+              },
+            },
+            {
+              name: 'videoCover',
+              label: 'Video cover',
+              type: 'upload',
+              relationTo: 'media',
+              filterOptions: { mimeType: { contains: 'image' } },
+              admin: {
+                description:
+                  "A still of the video's first frame, shown while it loads and for visitors who save data.",
+              },
+            },
+          ],
+        },
       ],
     },
     {

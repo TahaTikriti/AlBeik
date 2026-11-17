@@ -553,7 +553,18 @@ export interface Homepage {
      */
     headline: string;
     subline?: string | null;
+    /**
+     * Shown when there is no video.
+     */
     media?: (number | null) | Media;
+    /**
+     * A short silent loop (MP4, under 10 seconds and 3 MB). Plays instead of the photo.
+     */
+    video?: (number | null) | Media;
+    /**
+     * A still of the video's first frame, shown while it loads and for visitors who save data.
+     */
+    videoCover?: (number | null) | Media;
   };
   promise?: {
     /**
@@ -716,6 +727,8 @@ export interface HomepageSelect<T extends boolean = true> {
         headline?: T;
         subline?: T;
         media?: T;
+        video?: T;
+        videoCover?: T;
       };
   promise?:
     | T
