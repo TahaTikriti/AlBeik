@@ -101,8 +101,8 @@ export function ItemView({ item }: ItemPageData) {
                       </dd>
                     </div>
                   ) : null}
-                  {item.sizes.map((size) => (
-                    <div key={size.label} className="grid">
+                  {item.sizes.map((size, i) => (
+                    <div key={i} className="grid">
                       <dt className="label text-ink-muted">{size.label}</dt>
                       <dd className="font-display text-display-2">{formatPrice(size.price)}</dd>
                     </div>

@@ -47,11 +47,15 @@ export function toMedia(media: Ref<Media>): MediaVM | null {
   return toImage(media)
 }
 
-/** The hero's video, with its cover (first frame) as the poster. */
-function toHeroLoop(video: Ref<Media>, cover: Ref<Media>): VideoVM | null {
+/**
+ * The hero's video, with its cover (first frame) as the poster, or the hero
+ * photo when no cover was added: the poster is all that shows until the page
+ * has loaded, and all that ever shows with reduced motion or data saving.
+ */
+function toHeroLoop(video: Ref<Media>, cover: Ref<Media>, photo: Ref<Media>): VideoVM | null {
   const loop = toMedia(video)
   if (loop?.kind !== 'video') return null
-  return { ...loop, poster: toImage(cover)?.url ?? null }
+  return { ...loop, poster: toImage(cover)?.url ?? toImage(photo)?.url ?? null }
 }
 
 export function toRichLine(text: string | null | undefined): RichLine {
@@ -251,7 +255,7 @@ export function toHomePage(
       headline: toRichLine(home.hero?.headline),
       subline: orNull(home.hero?.subline),
       media: toMedia(home.hero?.media),
-      loop: toHeroLoop(home.hero?.video, home.hero?.videoCover),
+      loop: toHeroLoop(home.hero?.video, home.hero?.videoCover, home.hero?.media),
     },
     promise:
       promise && (orNull(promise.headline) || orNull(promise.body) || toMedia(promise.media))

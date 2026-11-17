@@ -189,7 +189,7 @@ export function HomeView({ hero, promise, featured, testimonials, site, categori
             {location?.phone && location.phoneHref ? (
               <a
                 href={location.phoneHref}
-                className={`${ui.link} justify-self-start text-lg`}
+                className={`${ui.link} inline-flex min-h-11 items-center justify-self-start text-lg`}
                 {...trackOnClick('call_click', { placement: 'home-visit' })}
               >
                 {copy.location.call(location.phone)}

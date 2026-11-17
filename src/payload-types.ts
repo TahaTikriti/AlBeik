@@ -285,13 +285,16 @@ export interface Testimonial {
   createdAt: string;
 }
 /**
- * People who can sign in here. Add one per person; each sets their own password.
+ * People who can sign in here and change the website. To add someone, press Create new, type their email and a starting password, and send them both; they can change the password under Account once signed in.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
   id: number;
+  /**
+   * Shown in the admin, e.g. Sara.
+   */
   name?: string | null;
   updatedAt: string;
   createdAt: string;

@@ -8,7 +8,7 @@ Design direction 1 (the one chosen), taken from AlBeik's Instagram rebrand and h
 
 **Motion** (`src/theme/brand.css`, all off with reduced motion): the hero headline punches in word by word, LEBANESE settles in after it and a few embers rise off the grill, and every page title punches in the same way; a fuse burns along the header as you scroll; big section titles slide in from both sides, the red section opens out, photos drift and menu photos settle into their cards, category rules draw across (CSS scroll timelines, still elsewhere); the slogan strip tilts into place and speeds up or reverses with the scroll (`MarqueeTrack`), and comes round again lower on the home page, the other way; a red pill glides between menu categories; pages lift out and in while the header and order bar hold still, the nav underline slides to its link, and a card's photo and name morph into the dish page (React `<ViewTransition>`: `app/(frontend)/template.tsx`, `MenuItemCard`, `ItemView`, `ScrollTopOnArrival`); red buttons shimmer and outlined ones fill on hover, a glow follows the pointer on dish cards (`Spotlight`), and order buttons give off a small puff of sparks (`emberBurst`).
 
-**Hero video.** Set `heroLoop` in `src/seed/content.ts` to an MP4 in `public/seed` (silent, 6-10 s) plus a poster (the loop's first frame) and it replaces the hero photo and its CSS embers: the poster shows first, the video is loaded only after the page, pauses off-screen, and never plays for reduced motion or data saving (`HeroLoop`). The current clip is Pexels video 14554564 (free licence), cropped to the food and crossfaded end-to-start so it loops without a seam (10.5 s, 720x944, 2.3 MB).
+**Hero video.** In the admin: Homepage → Hero → Video and Video cover (the loop's first frame). In demo mode, `heroLoop` in `src/seed/content.ts` names an MP4 in `public/seed` (silent, 6-10 s) and its poster; the seed uploads the same pair. Either way it replaces the hero photo and its CSS embers: the poster shows first, the video is loaded only after the page, pauses off-screen, and never plays for reduced motion or data saving (`HeroLoop`). The current clip is Pexels video 14554564 (free licence), cropped to the food and crossfaded end-to-start so it loops without a seam (10.5 s, 720x944, 2.3 MB).
 
 What changed versus `main` is presentation only: `src/theme` (tokens, fonts, motifs, copy, `brand.css`), `src/components`, `src/views` and one import in `src/styles/globals.css`. Data and logic are identical.
 
@@ -44,7 +44,7 @@ To start over with a clean database: `pnpm db:reset && pnpm seed`.
 
 **Menu updates.** The menu in `src/seed/content.ts` is the client's final in-store menu boards with prices (2026-11-17, transcribed in `docs/content/albeik-menu-boards-2026-11-17.md`). A database seeded before then still has an older menu: run `pnpm migrate && pnpm seed:menu`. It updates names, descriptions, prices, sizes, tags and order, hides dishes no longer on the menu (nothing is deleted: tick "On the menu" in the admin to bring one back), refreshes the home page's signatures and turns on Site settings → Show prices.
 
-**The admin, for the restaurant.** Built for people who aren't technical: the sidebar has three groups (Menu, Website, Admin), the dashboard opens with four how-to cards (change a price, put a dish on offer, hide a sold-out dish, announce an offer), and the dish list reads in menu order with prices in dollars. Per dish: Price, Combo price, Other sizes (half portion, 12 pieces…) and Deal price (the site shows the old price crossed out and a "Deal" sticker; empty it to end the offer). Site-wide offers go in Site settings → Offer banner.
+**The admin, for the restaurant.** Built for people who aren't technical: the sidebar has three groups (Menu, Website, Admin), the dashboard opens with how-to cards (change a price, put a dish on offer, hide a sold-out dish, announce an offer, add another admin), and the dish list reads in menu order with prices in dollars. Per dish: Price, Combo price, Other sizes (half portion, 12 pieces…) and Deal price (the site shows the old price crossed out and a "Deal" sticker; empty it to end the offer). Site-wide offers go in Site settings → Offer banner.
 
 | Script                                       | What it does                                                                 |
 | -------------------------------------------- | ---------------------------------------------------------------------------- |
@@ -108,12 +108,12 @@ Clicks are tracked as Umami custom events (`order_sheet_open`, `order_click` wit
 
 **Demo:** import the repo in Vercel and deploy. No settings or environment variables needed.
 
-**With the CMS:** Vercel + a hosted Postgres, both from the Vercel dashboard:
+**With the CMS** (how `albeik-us` runs since 2026-11-17; `albeik-usa`, built from the same repo, stays in demo mode):
 
-- **Database.** Storage → Create → Neon (free), connected to the project. It sets `DATABASE_URL` (use the non-pooled URL if offered both).
-- **Photo storage.** Storage → Create → Blob, connected to the project. It sets `BLOB_READ_WRITE_TOKEN`, and the admin's uploads then go to Vercel Blob (without it they'd go to the local `media/` folder, which Vercel doesn't keep).
-- **Build command:** `pnpm migrate && pnpm build`.
+- **Database.** Storage → Create → Neon (free), connected to the project. It sets `DATABASE_URL` (pooled, used by the site) and `DATABASE_URL_UNPOOLED` (used for migrations).
+- **Photo storage.** Storage → Create → Blob, connected to the project. It sets `BLOB_READ_WRITE_TOKEN`, and uploads go to Vercel Blob (without it they'd go to the local `media/` folder, which Vercel doesn't keep).
+- **Secrets.** `PAYLOAD_SECRET` and `PREVIEW_SECRET` (random, see `.env.example`), and `NEXT_PUBLIC_SERVER_URL` set to the real domain.
+- **Build command**, in the project's settings rather than a `vercel.json`, so the demo project isn't affected: `DATABASE_URL="$DATABASE_URL_UNPOOLED" pnpm migrate && pnpm build`.
+- **Content.** Once, from your machine with the project's variables (`vercel env pull`): `pnpm migrate && pnpm seed`. It fills the empty database and uploads the photos and hero video to Blob.
 
-Set the same environment variables as in `.env.example`, with `NEXT_PUBLIC_SERVER_URL` set to the real domain.
-
-**Create the admin account before sharing the URL** (run `pnpm seed` with `SEED_ADMIN_*` set, or sign up at `/admin` yourself). Until an admin exists, anyone who opens `/admin` can create the first account.
+**Create the admin account before sharing the URL** (sign up at `/admin` yourself, or run the seed with `SEED_ADMIN_*` set). Until an admin exists, anyone who opens `/admin` can create the first account. After that, admins add each other under Admin → Admins; there is no email sending yet, so a new admin gets a starting password from whoever adds them, and a forgotten password is reset by another admin.

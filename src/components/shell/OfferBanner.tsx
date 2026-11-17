@@ -44,7 +44,7 @@ export function OfferBanner({ banner }: { banner: BannerVM }) {
                 {' '}
                 <Link
                   href={banner.linkUrl}
-                  className="label ms-1 whitespace-nowrap underline decoration-2 underline-offset-4 hover:decoration-black"
+                  className="label relative ms-1 whitespace-nowrap underline decoration-2 underline-offset-4 after:absolute after:-inset-x-2 after:-inset-y-3 hover:decoration-black"
                 >
                   {banner.linkLabel ?? copy.banner.more}
                 </Link>

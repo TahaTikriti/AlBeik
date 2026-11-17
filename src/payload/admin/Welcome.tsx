@@ -1,5 +1,5 @@
 /**
- * The admin's home page opens with the four things the restaurant does most,
+ * The admin's home page opens with the things the restaurant does most,
  * in plain words, above Payload's list of sections.
  */
 const tasks: { title: string; steps: string; href: string }[] = [
@@ -22,6 +22,12 @@ const tasks: { title: string; steps: string; href: string }[] = [
     title: 'Announce an offer',
     steps: 'Site settings → Offer banner: a red strip on every page, with start and end dates.',
     href: '/admin/globals/site-settings',
+  },
+  {
+    title: 'Add another admin',
+    steps:
+      'Type their email and a starting password, then send them both. They can change it later.',
+    href: '/admin/collections/users/create',
   },
 ]
 

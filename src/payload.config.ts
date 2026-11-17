@@ -71,7 +71,10 @@ export default buildConfig({
     vercelBlobStorage({
       enabled: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
       token: process.env.BLOB_READ_WRITE_TOKEN,
-      collections: { media: true },
+      // Photos and the hero video are public, so links point straight at the
+      // Blob CDN (cached at the edge) instead of streaming every request
+      // through a server function.
+      collections: { media: { disablePayloadAccessControl: true } },
       clientUploads: true,
       // Same database columns with or without Blob, so one set of migrations.
       alwaysInsertFields: true,

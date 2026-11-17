@@ -25,7 +25,8 @@ type Options = {
    * (`pnpm seed:menu`): categories and dishes get its names, descriptions,
    * prices, tags and order; dishes no longer on it are hidden (unticked
    * "available", not deleted); the home page's signatures follow; prices are
-   * switched on. This does overwrite menu edits made in the admin.
+   * switched on. This does overwrite menu edits made in the admin, except
+   * deal prices, which are left as they are.
    */
   syncMenu?: boolean
 }
@@ -56,9 +57,11 @@ export async function seed(
     if (!id) {
       // No media document owns a file with this name, so one on disk was left
       // by a dropped database. Remove it, or Payload would store the upload as
-      // "file-1.ext" and the next run wouldn't find it by name.
-      const staticDir = payload.collections.media.config.upload.staticDir
-      const stale = staticDir ? path.join(staticDir, file) : null
+      // "file-1.ext" and the next run wouldn't find it by name. Only when files
+      // go to disk: with Blob storage the local folder belongs to another
+      // (local) database.
+      const { staticDir, disableLocalStorage } = payload.collections.media.config.upload
+      const stale = staticDir && !disableLocalStorage ? path.join(staticDir, file) : null
       if (stale && fs.existsSync(stale)) fs.rmSync(stale)
 
       id = (
@@ -142,7 +145,7 @@ export async function seed(
             price: item.price ?? null,
             comboPrice: item.comboPrice ?? null,
             sizes: item.sizes ?? [],
-            dealPrice: item.dealPrice ?? null,
+            // Deals are run from the admin: a menu sync leaves them as they are.
             tags: item.tags ?? [],
             available: true,
             sortOrder,
@@ -228,7 +231,17 @@ export async function seed(
     await payload.updateGlobal({
       slug: 'homepage',
       data: {
-        hero: { ...hero, media: await upload(content.images.hero.file, content.images.hero.alt) },
+        hero: {
+          ...hero,
+          media: await upload(content.images.hero.file, content.images.hero.alt),
+          // The silent loop over the hero and its first frame (demo's heroLoop).
+          ...(content.heroLoop
+            ? {
+                video: await upload(content.heroLoop.file, content.images.hero.alt),
+                videoCover: await upload(content.heroLoop.poster, content.images.hero.alt),
+              }
+            : {}),
+        },
         promise: {
           ...promise,
           media: await upload(content.images.spread.file, content.images.spread.alt),
@@ -249,28 +262,6 @@ export async function seed(
       context: context(),
     })
     bump('homepage signatures updated')
-  }
-
-  // The hero video (added 2026-11-17): filled while the hero has none.
-  const loop = content.heroLoop
-  if (loop) {
-    const current = await payload.findGlobal({ slug: 'homepage', depth: 0, draft: true })
-    if (current.hero?.headline && !current.hero.video) {
-      const alt = content.images.hero.alt
-      await payload.updateGlobal({
-        slug: 'homepage',
-        data: {
-          hero: {
-            ...current.hero,
-            video: await upload(loop.file, alt),
-            videoCover: await upload(loop.poster, alt),
-          },
-          _status: 'published',
-        },
-        context: context(),
-      })
-      bump('homepage hero video')
-    }
   }
 
   const about = await payload.findGlobal({ slug: 'about', depth: 0 })

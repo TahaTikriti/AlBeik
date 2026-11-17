@@ -19,6 +19,8 @@ const nextConfig: NextConfig = {
     // query string; a pattern without `search` allows any query.
     // /seed/** holds the demo photos used when no database is configured.
     localPatterns: [{ pathname: '/api/media/file/**' }, { pathname: '/seed/**' }],
+    // Uploads on Vercel Blob (the admin's photos when the site runs with a database).
+    remotePatterns: [{ protocol: 'https', hostname: '*.public.blob.vercel-storage.com' }],
   },
   webpack: (webpackConfig) => {
     webpackConfig.resolve.extensionAlias = {

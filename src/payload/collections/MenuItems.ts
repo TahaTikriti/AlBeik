@@ -24,13 +24,15 @@ export const MenuItems: CollectionConfig = {
     useAsTitle: 'name',
     group: 'Menu',
     description: 'Every dish on the site. Open one to change its price, description or photo.',
-    defaultColumns: ['name', 'category', 'price', 'comboPrice', 'dealPrice', 'available'],
+    // Prices next to the name: on a phone only the first columns fit.
+    defaultColumns: ['name', 'price', 'comboPrice', 'dealPrice', 'available', 'category'],
     pagination: { defaultLimit: 100 },
     listSearchableFields: ['name', 'shortDescription'],
     livePreview: { url: ({ data }) => previewUrl(`/menu/${data?.slug ?? ''}`) },
     preview: (data) => previewUrl(`/menu/${data?.slug ?? ''}`),
   },
-  // By menu section, then position in it: the order dishes appear on the site.
+  // By menu section, then position in it. Sections sort by when they were
+  // created (the seed creates them in menu order), not by their own position.
   defaultSort: ['category', 'sortOrder'],
   access: {
     read: publishedOrAuthenticated,
@@ -111,11 +113,16 @@ export const MenuItems: CollectionConfig = {
       validate: (
         value: number | null | undefined,
         { siblingData }: { siblingData: { price?: number | null } },
-      ) =>
-        value == null ||
-        typeof siblingData?.price !== 'number' ||
-        value < siblingData.price ||
-        'The deal price has to be lower than the price.',
+      ) => {
+        // A custom validate replaces Payload's own number check, so `min` is
+        // enforced here too.
+        if (value == null) return true
+        if (value <= 0) return 'The deal price has to be more than $0.'
+        if (typeof siblingData?.price === 'number' && value >= siblingData.price) {
+          return 'The deal price has to be lower than the price.'
+        }
+        return true
+      },
       admin: {
         step: 0.01,
         description:

@@ -34,9 +34,9 @@ export function MenuPrice({ item, className = '' }: Props) {
   return (
     <span className={`grid font-display text-[1.2rem] leading-none sm:text-2xl ${className}`}>
       <Price price={item.price} dealPrice={item.dealPrice} />
-      {extras.map((line) => (
+      {extras.map((line, i) => (
         <span
-          key={line}
+          key={i}
           className="mt-1 text-[0.7rem] tracking-[0.06em] text-ink-muted uppercase sm:text-[0.8rem]"
         >
           {line}
