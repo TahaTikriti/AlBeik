@@ -33,6 +33,7 @@ export const aboutEditor = lexicalEditor({
 export const About: GlobalConfig = {
   slug: 'about',
   label: 'About page',
+  admin: { group: 'Website' },
   access: { read: anyone, update: authenticated },
   hooks: {
     afterChange: [revalidateSite.globalAfterChange],

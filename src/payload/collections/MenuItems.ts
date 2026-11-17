@@ -19,15 +19,19 @@ export const MENU_TAGS = [
 
 export const MenuItems: CollectionConfig = {
   slug: 'menu-items',
-  labels: { singular: 'Menu item', plural: 'Menu items' },
+  labels: { singular: 'Dish', plural: 'Dishes' },
   admin: {
     useAsTitle: 'name',
-    defaultColumns: ['name', 'category', 'available', 'sortOrder', '_status'],
+    group: 'Menu',
+    description: 'Every dish on the site. Open one to change its price, description or photo.',
+    defaultColumns: ['name', 'category', 'price', 'comboPrice', 'dealPrice', 'available'],
+    pagination: { defaultLimit: 100 },
     listSearchableFields: ['name', 'shortDescription'],
     livePreview: { url: ({ data }) => previewUrl(`/menu/${data?.slug ?? ''}`) },
     preview: (data) => previewUrl(`/menu/${data?.slug ?? ''}`),
   },
-  defaultSort: 'sortOrder',
+  // By menu section, then position in it: the order dishes appear on the site.
+  defaultSort: ['category', 'sortOrder'],
   access: {
     read: publishedOrAuthenticated,
     create: authenticated,
@@ -44,21 +48,15 @@ export const MenuItems: CollectionConfig = {
     afterDelete: [revalidateSite.afterDelete],
   },
   fields: [
-    { name: 'name', type: 'text', required: true },
+    { name: 'name', label: 'Dish name', type: 'text', required: true },
     slugField('name'),
-    { name: 'shortDescription', type: 'textarea' },
+    { name: 'shortDescription', label: 'Description', type: 'textarea' },
     {
       name: 'category',
       type: 'relationship',
       relationTo: 'categories',
       required: true,
-      admin: { position: 'sidebar' },
-    },
-    {
-      name: 'image',
-      type: 'upload',
-      relationTo: 'media',
-      filterOptions: { mimeType: { contains: 'image' } },
+      admin: { position: 'sidebar', description: 'The menu section this dish appears in.' },
     },
     {
       type: 'row',
@@ -69,7 +67,8 @@ export const MenuItems: CollectionConfig = {
           min: 0,
           admin: {
             step: 0.01,
-            description: 'USD. Only shown if "Show prices" is on in Site settings.',
+            description: 'In dollars, e.g. 11.65. For sandwiches, the sandwich alone.',
+            components: { Cell: '/payload/admin/cells#PriceCell' },
           },
         },
         {
@@ -79,30 +78,86 @@ export const MenuItems: CollectionConfig = {
           min: 0,
           admin: {
             step: 0.01,
-            description:
-              'USD, for sandwiches sold as a combo (with small fries and a fountain drink). Leave empty if there is no combo.',
+            description: 'Only for sandwiches sold as a combo (with fries and a drink).',
+            components: { Cell: '/payload/admin/cells#PriceCell' },
           },
         },
       ],
     },
     {
-      type: 'row',
+      name: 'sizes',
+      label: 'Other sizes',
+      type: 'array',
+      maxRows: 3,
+      labels: { singular: 'Size', plural: 'Sizes' },
+      admin: {
+        description: 'Optional, e.g. "Half portion" 5.10 or "12 pieces" 21.41.',
+      },
       fields: [
         {
-          name: 'tags',
-          type: 'select',
-          hasMany: true,
-          options: [...MENU_TAGS],
-          admin: { description: 'Halal is site-wide, no tag needed.' },
+          type: 'row',
+          fields: [
+            { name: 'label', type: 'text', required: true, admin: { placeholder: 'Half portion' } },
+            { name: 'price', type: 'number', required: true, min: 0, admin: { step: 0.01 } },
+          ],
         },
       ],
     },
     {
-      type: 'collapsible',
-      label: 'Order links',
+      name: 'dealPrice',
+      label: 'Deal price',
+      type: 'number',
+      min: 0,
+      validate: (
+        value: number | null | undefined,
+        { siblingData }: { siblingData: { price?: number | null } },
+      ) =>
+        value == null ||
+        typeof siblingData?.price !== 'number' ||
+        value < siblingData.price ||
+        'The deal price has to be lower than the price.',
       admin: {
+        step: 0.01,
         description:
-          'Optional links straight to this dish. Without one, the order button falls back to the store page set in Site settings.',
+          'To put this dish on offer: the site shows the deal price and crosses out the normal price. Empty it to end the offer.',
+        components: { Cell: '/payload/admin/cells#PriceCell' },
+      },
+    },
+    {
+      name: 'image',
+      label: 'Photo',
+      type: 'upload',
+      relationTo: 'media',
+      filterOptions: { mimeType: { contains: 'image' } },
+      admin: { description: 'Square photos look best. Without one, the dish shows as text.' },
+    },
+    {
+      name: 'tags',
+      label: 'Labels',
+      type: 'select',
+      hasMany: true,
+      options: [...MENU_TAGS],
+      admin: { description: 'Optional. Halal is said site-wide, no label needed.' },
+    },
+    {
+      name: 'available',
+      label: 'On the menu',
+      type: 'checkbox',
+      defaultValue: true,
+      admin: {
+        position: 'sidebar',
+        description:
+          'Untick to hide this dish from the site (sold out, seasonal). Nothing is lost.',
+        components: { Cell: '/payload/admin/cells#AvailableCell' },
+      },
+    },
+    {
+      type: 'collapsible',
+      label: 'Order links (optional)',
+      admin: {
+        initCollapsed: true,
+        description:
+          'Links straight to this dish in the apps. Without one, the order button opens the restaurant page set in Site settings.',
       },
       fields: [
         orderUrlField({
@@ -118,15 +173,6 @@ export const MenuItems: CollectionConfig = {
           description: 'In the Uber Eats app, open the dish and use Share.',
         }),
       ],
-    },
-    {
-      name: 'available',
-      type: 'checkbox',
-      defaultValue: true,
-      admin: {
-        position: 'sidebar',
-        description: 'Untick to hide this item from the site.',
-      },
     },
     sortOrderField,
   ],

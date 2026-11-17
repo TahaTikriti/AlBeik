@@ -57,12 +57,18 @@ export default {
         ['fries', 'small-fries'],
         ['lebanese-lemonade', 'lemonade'],
         ['laban-ayran', 'ayran'],
+        // The menu boards (2026-11-17).
+        ['kabab-sandwich', 'kabab-or-kabab-orfali-sandwich'],
+        ['kabab-orfali-sandwich', 'kabab-or-kabab-orfali-sandwich'],
+        ['lebanese-rice-pudding', 'rice-pudding'],
       ].map(([from, to]) => ({
         source: `/menu/${from}`,
         destination: `/menu/${to}`,
         permanent: false,
       })),
-      ...['kafta-sandwich', 'hummus-and-falafel'].map((from) => ({
+      // Off the menu. (Kafta Sandwich and Hummus and Falafel, dropped on
+      // 2026-11-03, are back on the boards, so they no longer redirect.)
+      ...['albeik-shawarma-loaded-potato', 'build-your-own-bowl', 'pistachio-cake'].map((from) => ({
         source: `/menu/${from}`,
         destination: '/menu',
         permanent: false,

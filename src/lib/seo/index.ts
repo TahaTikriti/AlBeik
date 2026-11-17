@@ -87,7 +87,11 @@ export function menuJsonLd(site: SiteVM, categories: CategoryVM[]) {
           ],
           offers:
             item.price !== null
-              ? { '@type': 'Offer', price: item.price.toFixed(2), priceCurrency: 'USD' }
+              ? {
+                  '@type': 'Offer',
+                  price: (item.dealPrice ?? item.price).toFixed(2),
+                  priceCurrency: 'USD',
+                }
               : undefined,
         }),
       ),

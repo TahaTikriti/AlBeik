@@ -1,5 +1,6 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 import path from 'path'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
@@ -24,6 +25,13 @@ export default buildConfig({
     },
     meta: {
       titleSuffix: ' · AlBeik admin',
+    },
+    components: {
+      graphics: {
+        Logo: '/payload/admin/Logo#Logo',
+        Icon: '/payload/admin/Icon#Icon',
+      },
+      beforeDashboard: ['/payload/admin/Welcome#Welcome'],
     },
     // Matches the sizes the site is checked at.
     livePreview: {
@@ -54,4 +62,19 @@ export default buildConfig({
     push: false,
   }),
   sharp,
+  plugins: [
+    // Photos go to Vercel Blob when the site runs on Vercel with a Blob store
+    // connected (it sets BLOB_READ_WRITE_TOKEN); without it they're saved to
+    // the local media/ folder, which Vercel would lose on every deploy.
+    // Uploads go straight from the browser, past Vercel's 4.5 MB request
+    // limit, so full-size phone photos work.
+    vercelBlobStorage({
+      enabled: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+      collections: { media: true },
+      clientUploads: true,
+      // Same database columns with or without Blob, so one set of migrations.
+      alwaysInsertFields: true,
+    }),
+  ],
 })

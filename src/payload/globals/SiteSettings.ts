@@ -28,6 +28,10 @@ const validateTime = (value: string | null | undefined) =>
 export const SiteSettings: GlobalConfig = {
   slug: 'site-settings',
   label: 'Site settings',
+  admin: {
+    group: 'Website',
+    description: 'Prices on or off, offer banner, order links, address and opening hours.',
+  },
   access: { read: anyone, update: authenticated },
   hooks: {
     afterChange: [revalidateSite.globalAfterChange],

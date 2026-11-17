@@ -54,6 +54,8 @@ const items: MenuItemVM[] = content.menuItems.map((item, i) => {
     image: item.image ? image(item.image, item.name) : null,
     price: item.price ?? null,
     comboPrice: item.comboPrice ?? null,
+    dealPrice: item.dealPrice ?? null,
+    sizes: item.sizes ?? [],
     tags: item.tags ?? [],
     category: {
       slug: categorySlugs.get(item.category) ?? slugify(item.category),

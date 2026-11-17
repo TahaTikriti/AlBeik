@@ -136,6 +136,8 @@ export interface UserAuthOperations {
   };
 }
 /**
+ * Every dish on the site. Open one to change its price, description or photo.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "menu-items".
  */
@@ -147,20 +149,44 @@ export interface MenuItem {
    */
   slug: string;
   shortDescription?: string | null;
-  category: number | Category;
-  image?: (number | null) | Media;
   /**
-   * USD. Only shown if "Show prices" is on in Site settings.
+   * The menu section this dish appears in.
+   */
+  category: number | Category;
+  /**
+   * In dollars, e.g. 11.65. For sandwiches, the sandwich alone.
    */
   price?: number | null;
   /**
-   * USD, for sandwiches sold as a combo (with small fries and a fountain drink). Leave empty if there is no combo.
+   * Only for sandwiches sold as a combo (with fries and a drink).
    */
   comboPrice?: number | null;
   /**
-   * Halal is site-wide, no tag needed.
+   * Optional, e.g. "Half portion" 5.10 or "12 pieces" 21.41.
+   */
+  sizes?:
+    | {
+        label: string;
+        price: number;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * To put this dish on offer: the site shows the deal price and crosses out the normal price. Empty it to end the offer.
+   */
+  dealPrice?: number | null;
+  /**
+   * Square photos look best. Without one, the dish shows as text.
+   */
+  image?: (number | null) | Media;
+  /**
+   * Optional. Halal is said site-wide, no label needed.
    */
   tags?: ('spicy' | 'vegetarian' | 'vegan' | 'popular' | 'new' | 'signature')[] | null;
+  /**
+   * Untick to hide this dish from the site (sold out, seasonal). Nothing is lost.
+   */
+  available?: boolean | null;
   /**
    * In the DoorDash app, open the dish and use Share.
    */
@@ -170,10 +196,6 @@ export interface MenuItem {
    */
   uberEatsUrl?: string | null;
   /**
-   * Untick to hide this item from the site.
-   */
-  available?: boolean | null;
-  /**
    * Lower numbers come first.
    */
   sortOrder?: number | null;
@@ -182,6 +204,8 @@ export interface MenuItem {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * The sections of the menu (Sandwiches, Platters…) and their order.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "categories".
  */
@@ -222,6 +246,8 @@ export interface Media {
    * Describe the photo for people who can’t see it.
    */
   alt: string;
+  prefix?: string | null;
+  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -235,6 +261,8 @@ export interface Media {
   focalY?: number | null;
 }
 /**
+ * Customer quotes for the home page.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "testimonials".
  */
@@ -257,6 +285,8 @@ export interface Testimonial {
   createdAt: string;
 }
 /**
+ * People who can sign in here. Add one per person; each sets their own password.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
@@ -378,13 +408,21 @@ export interface MenuItemsSelect<T extends boolean = true> {
   slug?: T;
   shortDescription?: T;
   category?: T;
-  image?: T;
   price?: T;
   comboPrice?: T;
+  sizes?:
+    | T
+    | {
+        label?: T;
+        price?: T;
+        id?: T;
+      };
+  dealPrice?: T;
+  image?: T;
   tags?: T;
+  available?: T;
   doordashUrl?: T;
   uberEatsUrl?: T;
-  available?: T;
   sortOrder?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -425,6 +463,8 @@ export interface TestimonialsSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  prefix?: T;
+  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -566,6 +606,8 @@ export interface About {
   createdAt?: string | null;
 }
 /**
+ * Prices on or off, offer banner, order links, address and opening hours.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings".
  */

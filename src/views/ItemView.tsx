@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { ViewTransition } from 'react'
 
 import { DISH_PAGE_IMAGE_SIZES } from '@/components/menu/dishImage'
+import { Price } from '@/components/menu/MenuPrice'
 import { ScrollTopOnArrival } from '@/components/menu/ScrollTopOnArrival'
 import { OrderButton } from '@/components/order/OrderButton'
 import { StickyOrderBar } from '@/components/shell/StickyOrderBar'
@@ -10,7 +11,7 @@ import { ui } from '@/components/ui/classes'
 import type { ItemPageData } from '@/lib/data/types'
 import { formatPrice } from '@/lib/text'
 import { copy } from '@/theme/copy'
-import { Smoke, Steam } from '@/theme/motifs'
+import { Leaf, Smoke, Steam } from '@/theme/motifs'
 
 /**
  * Like the brand's dish posts: the name, then the dish lit in the dark.
@@ -66,29 +67,55 @@ export function ItemView({ item }: ItemPageData) {
             ) : null}
             {item.tags.length ? (
               <ul className="flex flex-wrap gap-2">
-                {item.tags.map((tag) => (
-                  <li key={tag} className={`${ui.tag} text-red-text`}>
-                    {copy.item.tags[tag]}
-                  </li>
-                ))}
+                {item.tags.map((tag) => {
+                  // Vegan and Vegetarian are green with a leaf, as on the menu boards.
+                  const plant = tag === 'vegan' || tag === 'vegetarian'
+                  return (
+                    <li
+                      key={tag}
+                      className={`${ui.tag} ${plant ? 'gap-1.5 text-green' : 'text-red-text'}`}
+                    >
+                      {plant ? <Leaf className="size-[1.3em]" /> : null}
+                      {copy.item.tags[tag]}
+                    </li>
+                  )
+                })}
               </ul>
             ) : null}
-            {item.price !== null && item.comboPrice !== null ? (
+            {item.price !== null && (item.comboPrice !== null || item.sizes.length) ? (
               <div className="grid gap-2">
                 <dl className="flex flex-wrap gap-x-8 gap-y-2">
                   <div className="grid">
-                    <dt className="label text-ink-muted">{copy.menu.sandwich}</dt>
-                    <dd className="font-display text-display-2">{formatPrice(item.price)}</dd>
+                    <dt className="label text-ink-muted">
+                      {item.comboPrice !== null ? copy.menu.sandwich : copy.menu.regular}
+                    </dt>
+                    <dd className="font-display text-display-2">
+                      <Price price={item.price} dealPrice={item.dealPrice} />
+                    </dd>
                   </div>
-                  <div className="grid">
-                    <dt className="label text-ink-muted">{copy.menu.combo}</dt>
-                    <dd className="font-display text-display-2">{formatPrice(item.comboPrice)}</dd>
-                  </div>
+                  {item.comboPrice !== null ? (
+                    <div className="grid">
+                      <dt className="label text-ink-muted">{copy.menu.combo}</dt>
+                      <dd className="font-display text-display-2">
+                        {formatPrice(item.comboPrice)}
+                      </dd>
+                    </div>
+                  ) : null}
+                  {item.sizes.map((size) => (
+                    <div key={size.label} className="grid">
+                      <dt className="label text-ink-muted">{size.label}</dt>
+                      <dd className="font-display text-display-2">{formatPrice(size.price)}</dd>
+                    </div>
+                  ))}
                 </dl>
-                <p className="text-small text-ink-muted">{copy.menu.comboNote}</p>
+                {item.comboPrice !== null ? (
+                  <p className="text-small text-ink-muted">{copy.menu.comboNote}</p>
+                ) : null}
               </div>
             ) : item.price !== null ? (
-              <p className="font-display text-display-2">{formatPrice(item.price)}</p>
+              <p className="font-display text-display-2">
+                <Price price={item.price} dealPrice={item.dealPrice} />
+              </p>
             ) : null}
             <OrderButton
               links={item.orderLinks}

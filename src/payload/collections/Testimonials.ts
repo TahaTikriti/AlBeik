@@ -7,8 +7,11 @@ import { sortOrderField } from '../fields/sortOrder'
 
 export const Testimonials: CollectionConfig = {
   slug: 'testimonials',
+  labels: { singular: 'Review', plural: 'Reviews' },
   admin: {
     useAsTitle: 'name',
+    group: 'Website',
+    description: 'Customer quotes for the home page.',
     defaultColumns: ['name', 'source', 'featured', 'sortOrder'],
   },
   defaultSort: 'sortOrder',

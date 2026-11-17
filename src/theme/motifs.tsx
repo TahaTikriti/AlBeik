@@ -19,6 +19,15 @@ import wordmark from './brand/albeik-wordmark.png'
 
 type SvgProps = { className?: string }
 
+/** A leaf, as on the menu boards' Vegan and Vegetarian labels. Inherits the text color. */
+export function Leaf({ className = '' }: SvgProps) {
+  return (
+    <svg viewBox="0 0 16 16" className={className} aria-hidden fill="currentColor">
+      <path d="M14.5 1.5C7 1.5 2.5 5 2.5 10c0 1.2.3 2.2.8 3l-1.6 1.6.9.9 1.6-1.6c.8.5 1.8.8 3 .8 5 0 8.5-4.5 8.3-13.2Zm-2.3 2.8c-2.6 1.4-4.8 3.6-6.6 6.7l-.9-.5c1.9-3.3 4.2-5.6 7-7.1l.5.9Z" />
+    </svg>
+  )
+}
+
 /** The mustache from the AlBeik logo. Inherits the text color. */
 export function Mustache({ className }: SvgProps) {
   return (

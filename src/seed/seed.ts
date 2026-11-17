@@ -138,6 +138,8 @@ export async function seed(
             category: categoryIds.get(item.category)!,
             price: item.price ?? null,
             comboPrice: item.comboPrice ?? null,
+            sizes: item.sizes ?? [],
+            dealPrice: item.dealPrice ?? null,
             tags: item.tags ?? [],
             available: true,
             sortOrder,
@@ -163,6 +165,8 @@ export async function seed(
         image: item.image ? await upload(item.image.file, item.name) : undefined,
         price: item.price,
         comboPrice: item.comboPrice,
+        sizes: item.sizes ?? [],
+        dealPrice: item.dealPrice,
         tags: item.tags ?? [],
         available: true,
         sortOrder,
@@ -264,7 +268,7 @@ export async function seed(
 
   const settings = await payload.findGlobal({ slug: 'site-settings', depth: 0 })
   if (syncMenu && settings.locations?.length && !settings.showPrices) {
-    // The client's menu has in-store prices (2026-11-03).
+    // The client's menu has in-store prices (since 2026-11-03).
     await payload.updateGlobal({ slug: 'site-settings', data: { showPrices: true }, context })
     bump('site-settings: prices shown')
   }
@@ -273,7 +277,7 @@ export async function seed(
       slug: 'site-settings',
       data: {
         siteName: content.siteSettings.siteName,
-        // The client's menu has in-store prices (2026-11-03).
+        // The client's menu has in-store prices (since 2026-11-03).
         showPrices: true,
         ...content.storeLinks,
         locations: [content.siteSettings.location],

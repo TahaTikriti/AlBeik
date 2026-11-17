@@ -47,6 +47,8 @@ export type MediaVM = ImageVM | VideoVM
 
 export type CategoryRef = { slug: string; name: string }
 
+export type PriceOption = { label: string; price: number }
+
 export type MenuItemVM = {
   id: number
   slug: string
@@ -58,6 +60,10 @@ export type MenuItemVM = {
   price: number | null
   /** The combo (small fries and a fountain drink); null as for price, or when there's no combo. */
   comboPrice: number | null
+  /** On offer (Deal price in the admin): shown instead of `price`, which is crossed out. */
+  dealPrice: number | null
+  /** Other sizes ("Half portion", "12 pieces"); empty as for price. */
+  sizes: PriceOption[]
   tags: MenuTag[]
   category: CategoryRef
   /** Already resolved through the fallback chain; empty means "hide ordering". */

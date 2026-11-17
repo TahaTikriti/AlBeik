@@ -3,13 +3,13 @@ import { ViewTransition } from 'react'
 
 import type { Placement } from '@/lib/analytics'
 import type { MenuItemVM, MenuTag } from '@/lib/data/types'
-import { formatPrice } from '@/lib/text'
 import { copy } from '@/theme/copy'
-import { Mustache } from '@/theme/motifs'
+import { Leaf, Mustache } from '@/theme/motifs'
 
 import { OrderButton } from '../order/OrderButton'
 import { Img } from '../ui/Img'
 import { dishPreloadAttrs } from './dishImage'
+import { MenuPrice } from './MenuPrice'
 
 type Props = {
   item: MenuItemVM
@@ -35,7 +35,11 @@ export function MenuItemCard({
   headingLevel: Heading = 'h3',
   preloadImage = false,
 }: Props) {
-  const badge = BADGE_ORDER.find((tag) => item.tags.includes(tag))
+  const tag = BADGE_ORDER.find((t) => item.tags.includes(t))
+  const deal = item.dealPrice !== null
+  const badge = deal ? copy.menu.deal : tag ? copy.item.tags[tag] : null
+  // Vegan and Vegetarian are green with a leaf, as on the menu boards.
+  const plant = !deal && (tag === 'vegan' || tag === 'vegetarian')
   return (
     <article
       {...dishPreloadAttrs(item.image)}
@@ -58,8 +62,10 @@ export function MenuItemCard({
             </span>
           )}
           {badge ? (
-            <span className="label absolute bottom-1.5 left-1/2 -translate-x-1/2 rounded-full bg-white px-2 py-1 text-[0.6rem] whitespace-nowrap text-black shadow-raised sm:top-3 sm:bottom-auto sm:left-3 sm:translate-x-0">
-              ★ {copy.item.tags[badge]}
+            <span
+              className={`label absolute bottom-1.5 left-1/2 inline-flex -translate-x-1/2 items-center gap-1 rounded-full bg-white px-2 py-1 text-[0.6rem] whitespace-nowrap shadow-raised sm:top-3 sm:bottom-auto sm:left-3 sm:translate-x-0 ${plant ? 'text-green-deep' : 'text-black'}`}
+            >
+              {plant ? <Leaf className="size-[1.2em]" /> : '★'} {badge}
             </span>
           ) : null}
         </div>
@@ -85,16 +91,7 @@ export function MenuItemCard({
           ) : null}
         </div>
         <div className="flex items-center justify-end gap-3 sm:justify-start sm:px-5">
-          {item.price !== null ? (
-            <span className="me-auto grid font-display text-[1.2rem] leading-none sm:text-2xl">
-              {formatPrice(item.price)}
-              {item.comboPrice !== null ? (
-                <span className="mt-1 text-[0.7rem] tracking-[0.06em] text-ink-muted uppercase sm:text-[0.8rem]">
-                  {copy.menu.comboPrice(formatPrice(item.comboPrice))}
-                </span>
-              ) : null}
-            </span>
-          ) : null}
+          <MenuPrice item={item} className="me-auto" />
           <OrderButton
             links={item.orderLinks}
             item={item}

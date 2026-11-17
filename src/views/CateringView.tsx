@@ -8,7 +8,7 @@ import { trackOnClick } from '@/lib/analytics'
 import type { CateringPageData, LocationVM } from '@/lib/data/types'
 import { formatPrice } from '@/lib/text'
 import { copy } from '@/theme/copy'
-import { Smoke } from '@/theme/motifs'
+import { Leaf, Smoke } from '@/theme/motifs'
 
 type Props = CateringPageData & { location: LocationVM | null }
 
@@ -109,7 +109,8 @@ export function CateringView({ intro, sections, terms, contact, location }: Prop
                     </p>
                   </div>
                   {item.tag ? (
-                    <span className={`${ui.tag} justify-self-start text-red-text`}>
+                    <span className={`${ui.tag} gap-1.5 justify-self-start text-green`}>
+                      <Leaf className="size-[1.3em]" />
                       {copy.catering.tags[item.tag]}
                     </span>
                   ) : null}

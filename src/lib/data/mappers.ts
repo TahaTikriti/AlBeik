@@ -63,6 +63,18 @@ export function toMenuItem(doc: MenuItem, ctx: ItemContext): MenuItemVM | null {
     image: toImage(doc.image),
     price: ctx.showPrices && typeof doc.price === 'number' ? doc.price : null,
     comboPrice: ctx.showPrices && typeof doc.comboPrice === 'number' ? doc.comboPrice : null,
+    dealPrice:
+      ctx.showPrices &&
+      typeof doc.dealPrice === 'number' &&
+      typeof doc.price === 'number' &&
+      doc.dealPrice < doc.price
+        ? doc.dealPrice
+        : null,
+    sizes: ctx.showPrices
+      ? (doc.sizes ?? []).flatMap(({ label, price }) =>
+          label && typeof price === 'number' ? [{ label, price }] : [],
+        )
+      : [],
     tags: doc.tags ?? [],
     category: { slug: doc.category.slug, name: doc.category.name },
     orderLinks: resolveOrderLinks(doc, ctx.store),

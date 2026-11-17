@@ -70,8 +70,14 @@ export const copy = {
     // A sandwich's two prices: alone, and as a combo.
     combo: 'Combo',
     comboPrice: (price: string) => `Combo ${price}`,
-    comboNote: 'Combo: with small fries and a 20 oz fountain drink.',
+    comboNote: 'Combo: small fries and a 20 oz fountain drink with free refills. Large fries +$1.',
     sandwich: 'Sandwich',
+    // The first price when a dish also comes in other sizes.
+    regular: 'Regular',
+    // A dish on offer (Deal price in the admin): the old price is crossed out.
+    was: 'Was',
+    now: 'now',
+    deal: 'Deal',
     viewItem: (item: string) => `View ${item}`,
   },
   item: {

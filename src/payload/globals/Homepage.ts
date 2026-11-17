@@ -10,6 +10,7 @@ export const Homepage: GlobalConfig = {
   slug: 'homepage',
   label: 'Home page',
   admin: {
+    group: 'Website',
     livePreview: { url: () => previewUrl('/') },
     preview: () => previewUrl('/'),
   },

@@ -7,8 +7,11 @@ import { sortOrderField } from '../fields/sortOrder'
 
 export const Categories: CollectionConfig = {
   slug: 'categories',
+  labels: { singular: 'Menu section', plural: 'Menu sections' },
   admin: {
     useAsTitle: 'name',
+    group: 'Menu',
+    description: 'The sections of the menu (Sandwiches, Platters…) and their order.',
     defaultColumns: ['name', 'slug', 'sortOrder'],
   },
   defaultSort: 'sortOrder',

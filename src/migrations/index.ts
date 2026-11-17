@@ -3,6 +3,8 @@ import * as migration_20261013_170630_drafts_autosave from './20261013_170630_dr
 import * as migration_20261029_171215_category_description from './20261029_171215_category_description';
 import * as migration_20261103_082923_menu_combo_price_vegan from './20261103_082923_menu_combo_price_vegan';
 import * as migration_20261117_114946_offer_banner from './20261117_114946_offer_banner';
+import * as migration_20261117_161521_menu_sizes_deal_price from './20261117_161521_menu_sizes_deal_price';
+import * as migration_20261117_181637_media_blob_storage from './20261117_181637_media_blob_storage';
 
 export const migrations = [
   {
@@ -28,6 +30,16 @@ export const migrations = [
   {
     up: migration_20261117_114946_offer_banner.up,
     down: migration_20261117_114946_offer_banner.down,
-    name: '20261117_114946_offer_banner'
+    name: '20261117_114946_offer_banner',
+  },
+  {
+    up: migration_20261117_161521_menu_sizes_deal_price.up,
+    down: migration_20261117_161521_menu_sizes_deal_price.down,
+    name: '20261117_161521_menu_sizes_deal_price',
+  },
+  {
+    up: migration_20261117_181637_media_blob_storage.up,
+    down: migration_20261117_181637_media_blob_storage.down,
+    name: '20261117_181637_media_blob_storage'
   },
 ];

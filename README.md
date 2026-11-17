@@ -42,7 +42,9 @@ To start over with a clean database: `pnpm db:reset && pnpm seed`.
 
 **Offer banner.** Site settings → Offer banner puts a red strip above the header on every page, for special offers and occasions. Optional start and end dates switch it on and off by themselves: pages are static, so a small inline script checks the dates in the browser before the first paint. Demo mode shows a sample (Thanksgiving catering, until the end of Thanksgiving Day) from `banner` in `src/seed/content.ts`. A database seeded earlier has no banner yet: run `pnpm migrate`, then fill it in the admin.
 
-**Menu updates.** The menu in `src/seed/content.ts` is the client's updated menu with prices (2026-11-03, text in `docs/content/`). A database seeded before then still has the old menu: run `pnpm migrate && pnpm seed:menu`. It updates names, descriptions, prices, tags and order, hides dishes no longer on the menu (nothing is deleted: tick "Available" in the admin to bring one back), refreshes the home page's signatures and turns on Site settings → Show prices.
+**Menu updates.** The menu in `src/seed/content.ts` is the client's final in-store menu boards with prices (2026-11-17, transcribed in `docs/content/albeik-menu-boards-2026-11-17.md`). A database seeded before then still has an older menu: run `pnpm migrate && pnpm seed:menu`. It updates names, descriptions, prices, sizes, tags and order, hides dishes no longer on the menu (nothing is deleted: tick "On the menu" in the admin to bring one back), refreshes the home page's signatures and turns on Site settings → Show prices.
+
+**The admin, for the restaurant.** Built for people who aren't technical: the sidebar has three groups (Menu, Website, Admin), the dashboard opens with four how-to cards (change a price, put a dish on offer, hide a sold-out dish, announce an offer), and the dish list reads in menu order with prices in dollars. Per dish: Price, Combo price, Other sizes (half portion, 12 pieces…) and Deal price (the site shows the old price crossed out and a "Deal" sticker; empty it to end the offer). Site-wide offers go in Site settings → Offer banner.
 
 | Script                                       | What it does                                                                 |
 | -------------------------------------------- | ---------------------------------------------------------------------------- |
@@ -94,21 +96,22 @@ Clicks are tracked as Umami custom events (`order_sheet_open`, `order_click` wit
 
 ## Content still needed from the client
 
-- The Arayes Sujuk description (the updated menu repeats the Arayes Kafta one)
+- Charbroiled Wings: the board prints the Fries Sandwich description and labels its sizes "Sandwich"/"Combo" (read as 6 and 12 pieces)
+- Whether the icon next to Kabab or Kabab Orfali means spicy (tagged spicy for now)
 - Catering's own phone and email (the restaurant's phone stands in)
 - Item-level DoorDash / Uber Eats links, if they're willing to collect them (optional)
 - Phone and opening hours (the address and Google Maps listing are in; demo content in `src/seed/content.ts`)
 - The logo as vector (SVG) files; social links, testimonial sources
-- Spicy tags, if wanted (vegan and vegetarian come from the updated menu)
 - Real photography to replace the illustrative menu images when it exists (see [docs/menu-images.md](docs/menu-images.md))
 
 ## Deploying
 
 **Demo:** import the repo in Vercel and deploy. No settings or environment variables needed.
 
-**With the CMS:** Vercel + the same hosted Postgres. Two things to add first:
+**With the CMS:** Vercel + a hosted Postgres, both from the Vercel dashboard:
 
-- **Media storage.** Uploads go to the local `media/` folder, which Vercel doesn't keep. Add Payload's S3 or Vercel Blob storage adapter.
+- **Database.** Storage → Create → Neon (free), connected to the project. It sets `DATABASE_URL` (use the non-pooled URL if offered both).
+- **Photo storage.** Storage → Create → Blob, connected to the project. It sets `BLOB_READ_WRITE_TOKEN`, and the admin's uploads then go to Vercel Blob (without it they'd go to the local `media/` folder, which Vercel doesn't keep).
 - **Build command:** `pnpm migrate && pnpm build`.
 
 Set the same environment variables as in `.env.example`, with `NEXT_PUBLIC_SERVER_URL` set to the real domain.
