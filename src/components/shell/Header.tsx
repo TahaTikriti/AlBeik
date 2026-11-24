@@ -5,6 +5,7 @@ import { copy } from '@/theme/copy'
 import { Logo } from '@/theme/motifs'
 
 import { OrderMenu } from '../order/OrderMenu'
+import { Emphasis } from '../ui/Emphasis'
 import { ui } from '../ui/classes'
 import { NavLinks } from './NavLinks'
 
@@ -25,6 +26,15 @@ export function Header({ site }: { site: SiteVM }) {
         >
           <Logo />
         </Link>
+        {/* The client's slogan beside the logo, where there's room for it (the
+            footer carries it on phones). */}
+        <p className="hidden border-s border-line ps-3 font-display text-[0.95rem] leading-[1.05] tracking-[0.04em] uppercase lg:block">
+          {copy.footer.tagline.split(/(?<=\.)\s+/).map((sentence) => (
+            <span key={sentence} className="block">
+              <Emphasis text={sentence} />
+            </span>
+          ))}
+        </p>
         <nav aria-label={copy.nav.label} className="ms-auto">
           <NavLinks />
         </nav>

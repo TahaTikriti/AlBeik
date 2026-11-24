@@ -141,8 +141,18 @@ type DemoLocationFields = {
   geo?: { latitude: number; longitude: number } | null
 }
 
-// TODO(cms): fields for the map embed and pin; the demo content sets them today.
-export function toLocation(row: LocationRow & DemoLocationFields): LocationVM {
+/**
+ * A keyless Google map searched by name and address, so the CMS (which has no
+ * embed field) still shows the map, and it follows the address the admin edits.
+ */
+export function mapEmbedFor(placeName: string, addressLines: string[]): string | null {
+  if (!addressLines.length) return null
+  const q = [placeName, ...addressLines].filter(Boolean).join(', ')
+  return `https://www.google.com/maps?q=${encodeURIComponent(q)}&z=16&output=embed`
+}
+
+// TODO(cms): a field for the pin; the demo content sets it today.
+export function toLocation(row: LocationRow & DemoLocationFields, placeName = ''): LocationVM {
   const streetAddress = orNull(row.streetAddress)
   const city = orNull(row.city)
   const region = orNull(row.region)
@@ -150,10 +160,11 @@ export function toLocation(row: LocationRow & DemoLocationFields): LocationVM {
   const phone = orNull(row.phone)
 
   const locality = [city, [region, postalCode].filter(Boolean).join(' ')].filter(Boolean).join(', ')
+  const addressLines = [streetAddress, locality].filter((l): l is string => !!l)
 
   return {
     name: row.name,
-    addressLines: [streetAddress, locality].filter((l): l is string => !!l),
+    addressLines,
     streetAddress,
     city,
     region,
@@ -161,7 +172,7 @@ export function toLocation(row: LocationRow & DemoLocationFields): LocationVM {
     phone,
     phoneHref: phone ? toTelHref(phone) : null,
     mapUrl: orNull(row.mapUrl),
-    mapEmbedUrl: orNull(row.mapEmbedUrl),
+    mapEmbedUrl: orNull(row.mapEmbedUrl) ?? mapEmbedFor(placeName, addressLines),
     geo: row.geo ?? null,
     hours: formatHours(row.hours),
     openingHours: completeHours(row.hours),
@@ -205,7 +216,7 @@ export function toSite(settings: SiteSetting, url: string): SiteVM {
     showPrices: settings.showPrices ?? false,
     timezone: settings.timezone || 'America/Chicago',
     storeOrderLinks: resolveOrderLinks(null, settings),
-    locations: (settings.locations ?? []).map(toLocation),
+    locations: (settings.locations ?? []).map((row) => toLocation(row, settings.siteName)),
     socials: (settings.socials ?? []).map(toSocial),
     seo: {
       description: orNull(settings.seo?.defaultDescription),

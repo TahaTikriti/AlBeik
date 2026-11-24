@@ -56,9 +56,11 @@
   .btn:active {
     transform: scale(0.96);
   }
-  /* Red buttons: a band of heat sweeps across on hover or keyboard focus. */
-  .btn-red {
-    background-color: var(--p-red);
+  /* Red and black buttons: a band of heat sweeps across on hover or keyboard
+     focus. */
+  .btn-red,
+  .btn-charcoal,
+  .btn-ink {
     background-image: linear-gradient(
       110deg,
       transparent 38%,
@@ -69,37 +71,48 @@
     background-position: 130% 0;
     background-repeat: no-repeat;
     color: var(--p-white);
-    box-shadow: var(--shadow-ember);
     transition:
       transform var(--duration-fast) var(--ease-out),
       background-color var(--duration-fast),
       background-position 0ms;
   }
   .btn-red:hover,
-  .btn-red:focus-visible {
-    background-color: var(--p-red-text);
+  .btn-red:focus-visible,
+  .btn-charcoal:hover,
+  .btn-charcoal:focus-visible,
+  .btn-ink:hover,
+  .btn-ink:focus-visible {
     background-position: -30% 0;
     transition:
       transform var(--duration-fast) var(--ease-out),
       background-color var(--duration-fast),
       background-position 750ms var(--ease-out);
   }
+  .btn-red {
+    background-color: var(--p-red);
+    box-shadow: var(--shadow-ember);
+  }
+  .btn-red:hover,
+  .btn-red:focus-visible {
+    background-color: var(--p-red-text);
+  }
   .btn-ink {
-    background: var(--color-accent);
+    background-color: var(--color-accent);
     color: var(--color-accent-ink);
   }
   /* The second of a pair beside a red button (delivery | pickup): charcoal on
      white surfaces, white on dark ones. */
   .btn-charcoal {
-    background: var(--p-charcoal);
-    color: var(--p-white);
+    background-color: var(--p-charcoal);
   }
   .btn-white {
     background: var(--p-white);
     color: var(--p-black);
   }
   .btn-charcoal:hover,
-  .btn-charcoal:focus-visible,
+  .btn-charcoal:focus-visible {
+    background-color: var(--p-red);
+  }
   .btn-white:hover,
   .btn-white:focus-visible {
     background: var(--p-red);
