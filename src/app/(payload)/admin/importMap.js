@@ -14,7 +14,7 @@ import { HeadingFeatureClient as HeadingFeatureClient_e70f5e05f09f93e00b997edb1e
 import { ParagraphFeatureClient as ParagraphFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { Icon as Icon_8b6b60c766c5071addaf46f9ffe18536 } from '../../../payload/admin/Icon'
 import { Logo as Logo_3cd692343be5ea03e13bd9af21cbda1d } from '../../../payload/admin/Logo'
-import { Welcome as Welcome_268602be27013f47d0feddbadd09d462 } from '../../../payload/admin/Welcome'
+import { Dashboard as Dashboard_fc7b3c28f7af7a7ce2ddde1f00b6dd10 } from '../../../payload/admin/Dashboard'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e } from '@payloadcms/storage-vercel-blob/client'
 
@@ -36,7 +36,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#ParagraphFeatureClient": ParagraphFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "/payload/admin/Icon#Icon": Icon_8b6b60c766c5071addaf46f9ffe18536,
   "/payload/admin/Logo#Logo": Logo_3cd692343be5ea03e13bd9af21cbda1d,
-  "/payload/admin/Welcome#Welcome": Welcome_268602be27013f47d0feddbadd09d462,
+  "/payload/admin/Dashboard#Dashboard": Dashboard_fc7b3c28f7af7a7ce2ddde1f00b6dd10,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1,
   "@payloadcms/storage-vercel-blob/client#VercelBlobClientUploadHandler": VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e
 }

@@ -1,0 +1,302 @@
+// The admin home page (Dashboard.tsx). Payload's theme variables keep it right
+// in the admin's light and dark modes; AlBeik red is the only accent.
+
+.ab-dash {
+  --ab-red: #d8262f;
+  --ab-line: var(--theme-elevation-150);
+  --ab-card: var(--theme-elevation-50);
+  --ab-muted: var(--theme-elevation-600);
+
+  display: grid;
+  gap: calc(var(--base) * 1.75);
+  padding-top: calc(var(--base) * 0.5);
+  padding-bottom: calc(var(--base) * 3);
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  a:focus-visible {
+    outline: 2px solid var(--ab-red);
+    outline-offset: 2px;
+  }
+}
+
+.ab-dash__icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: none;
+}
+
+// Header
+.ab-dash__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--base);
+}
+
+.ab-dash__title {
+  margin: 0;
+  font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.2rem);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.ab-dash__lede {
+  margin: 0.4rem 0 0;
+  color: var(--ab-muted);
+  max-width: 52ch;
+}
+
+.ab-dash__site {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0 1.1rem;
+  border-radius: 999px;
+  background: var(--ab-red);
+  color: #fff !important;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: filter 0.15s;
+
+  &:hover {
+    filter: brightness(1.08);
+  }
+
+  .ab-dash__icon {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+.ab-dash__alert {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: 0.9rem 1rem;
+  border-radius: var(--style-radius-m);
+  border: 1px solid color-mix(in srgb, var(--ab-red) 45%, transparent);
+  background: color-mix(in srgb, var(--ab-red) 10%, transparent);
+
+  .ab-dash__icon {
+    color: var(--ab-red);
+    margin-top: 0.1rem;
+  }
+}
+
+.ab-dash__h2 {
+  margin: 0 0 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ab-muted);
+}
+
+// Right now
+.ab-dash__stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+
+  @media (min-width: 900px) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.ab-dash__stat {
+  display: grid;
+  gap: 0.15rem;
+  height: 100%;
+  padding: 1rem 1.1rem 1.05rem;
+  border-radius: var(--style-radius-m);
+  border: 1px solid var(--ab-line);
+  background: var(--ab-card);
+  transition:
+    border-color 0.15s,
+    transform 0.15s;
+
+  &:hover {
+    border-color: var(--theme-elevation-400);
+    transform: translateY(-1px);
+  }
+
+  &.is-accent {
+    border-color: color-mix(in srgb, var(--ab-red) 55%, transparent);
+    box-shadow: inset 3px 0 0 var(--ab-red);
+
+    .ab-dash__stat-value {
+      color: var(--ab-red);
+    }
+  }
+
+  &.is-muted .ab-dash__stat-value {
+    color: var(--ab-muted);
+  }
+}
+
+.ab-dash__stat-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.ab-dash__stat-value {
+  font-size: clamp(1.6rem, 1.3rem + 1vw, 2.1rem);
+  font-weight: 700;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.ab-dash__stat-note {
+  font-size: 0.8rem;
+  color: var(--ab-muted);
+  line-height: 1.35;
+  // Deal names can run long: two lines at most.
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// Quick actions
+.ab-dash__actions {
+  display: grid;
+  gap: 0.6rem;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (min-width: 1100px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.ab-dash__action {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+  height: 100%;
+  padding: 0.9rem 1rem;
+  border-radius: var(--style-radius-m);
+  border: 1px solid var(--ab-line);
+  background: var(--ab-card);
+  transition: border-color 0.15s;
+
+  &:hover {
+    border-color: var(--ab-red);
+
+    .ab-dash__action-icon {
+      background: var(--ab-red);
+      color: #fff;
+    }
+  }
+}
+
+.ab-dash__action-icon {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: none;
+  border-radius: 0.6rem;
+  background: color-mix(in srgb, var(--ab-red) 12%, transparent);
+  color: var(--ab-red);
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.ab-dash__action-title {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.15rem;
+}
+
+.ab-dash__action-hint {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--ab-muted);
+  line-height: 1.4;
+}
+
+// Everything else
+.ab-dash__groups {
+  display: grid;
+  gap: 0.75rem;
+
+  @media (min-width: 900px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+
+.ab-dash__group {
+  border-radius: var(--style-radius-m);
+  border: 1px solid var(--ab-line);
+  background: var(--ab-card);
+  overflow: hidden;
+}
+
+.ab-dash__group-title {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  border-bottom: 1px solid var(--ab-line);
+}
+
+.ab-dash__item {
+  display: flex;
+  align-items: stretch;
+
+  & + & {
+    border-top: 1px solid var(--ab-line);
+  }
+}
+
+.ab-dash__item-link {
+  flex: 1;
+  display: grid;
+  gap: 0.1rem;
+  min-height: 3.25rem;
+  align-content: center;
+  padding: 0.6rem 1rem;
+
+  &:hover {
+    background: var(--theme-elevation-100);
+  }
+}
+
+.ab-dash__item-title {
+  font-weight: 600;
+}
+
+.ab-dash__item-text {
+  font-size: 0.82rem;
+  color: var(--ab-muted);
+}
+
+.ab-dash__item-add {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  flex: none;
+  color: var(--ab-muted);
+  border-left: 1px solid var(--ab-line);
+
+  &:hover {
+    color: var(--ab-red);
+    background: var(--theme-elevation-100);
+  }
+}

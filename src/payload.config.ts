@@ -31,7 +31,8 @@ export default buildConfig({
         Logo: '/payload/admin/Logo#Logo',
         Icon: '/payload/admin/Icon#Icon',
       },
-      beforeDashboard: ['/payload/admin/Welcome#Welcome'],
+      // The admin's home page: what's live, quick actions, every section.
+      views: { dashboard: { Component: '/payload/admin/Dashboard#Dashboard' } },
     },
     // Matches the sizes the site is checked at.
     livePreview: {
