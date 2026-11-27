@@ -1,6 +1,7 @@
 import type { GlobalConfig } from 'payload'
 
 import { DAYS, isValidTime } from '@/lib/hours'
+import { normalizeCloverPickupUrl } from '@/lib/order/clover'
 
 import { anyone, authenticated } from '../access'
 import { revalidateSite } from '../hooks/revalidateSite'
@@ -70,6 +71,19 @@ export const SiteSettings: GlobalConfig = {
         {
           label: 'Ordering',
           fields: [
+            {
+              name: 'cloverPickupUrl',
+              label: 'Clover pickup link',
+              type: 'text',
+              admin: {
+                description:
+                  'Paste the public ordering link from Clover Online Ordering. Leave blank to use the other pickup options.',
+              },
+              validate: (value: string | null | undefined) =>
+                !value?.trim() ||
+                Boolean(normalizeCloverPickupUrl(value)) ||
+                'Paste the public HTTPS ordering link from Clover Online Ordering.',
+            },
             orderUrlField({
               name: 'doordashStoreUrl',
               label: 'DoorDash store link',

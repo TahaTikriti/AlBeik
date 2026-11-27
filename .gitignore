@@ -16,6 +16,7 @@ next-env.d.ts
 
 # testing
 /coverage
+/.pickup-card-spike/
 
 # misc
 .DS_Store

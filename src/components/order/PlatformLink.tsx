@@ -1,7 +1,6 @@
 import type { ComponentProps } from 'react'
 
 import type { ModeLink } from '@/lib/data/types'
-import { getPlatform } from '@/lib/order/platforms'
 import { copy } from '@/theme/copy'
 
 /** A line under the app's name. A hidden one still takes its room (see linkNotes). */
@@ -18,20 +17,21 @@ export function linkNotes(
   item: { slug: string; name: string } | null,
   { steady = false } = {},
 ): LinkNote[] {
+  if (link.platform === 'clover') {
+    return item ? [{ text: copy.order.cloverFullMenu, shown: true }] : []
+  }
+
   const notes: (LinkNote | null)[] = [
     item && link.level === 'store' ? { text: copy.order.storeLevelNote, shown: true } : null,
     link.preset ? null : { text: copy.order.pickupInApp(link.label), shown: true },
   ]
-  if (steady && link.preset && !getPlatform(link.platform).modeParam) {
+  if (steady && link.preset && link.platform === 'doordash') {
     notes.push({ text: copy.order.pickupInApp(link.label), shown: false })
   }
   return notes.filter((note): note is LinkNote => !!note)
 }
 
-type Props = { link: ModeLink; notes: LinkNote[] } & Omit<
-  ComponentProps<'a'>,
-  'href' | 'children'
->
+type Props = { link: ModeLink; notes: LinkNote[] } & Omit<ComponentProps<'a'>, 'href' | 'children'>
 
 /** One app in the order choice (sheet or /order page): name, notes, arrow. */
 export function PlatformLink({ link, notes, ...rest }: Props) {

@@ -638,6 +638,10 @@ export interface SiteSetting {
    */
   timezone?: string | null;
   /**
+   * Paste the public ordering link from Clover Online Ordering. Leave blank to use the other pickup options.
+   */
+  cloverPickupUrl?: string | null;
+  /**
    * The restaurant page on DoorDash. Used when an item has no link of its own.
    */
   doordashStoreUrl?: string | null;
@@ -772,6 +776,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   logo?: T;
   showPrices?: T;
   timezone?: T;
+  cloverPickupUrl?: T;
   doordashStoreUrl?: T;
   uberEatsStoreUrl?: T;
   banner?:

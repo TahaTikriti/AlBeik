@@ -10,7 +10,7 @@ import { linkNotes, PlatformLink } from './PlatformLink'
 
 type Props = {
   ref: Ref<HTMLDialogElement>
-  /** Already set to `mode` (see linkForMode). */
+  /** Already set to `mode` (see linksForMode). */
   links: ModeLink[]
   mode: OrderMode
   onModeChange: (mode: OrderMode) => void
@@ -84,7 +84,9 @@ export function OrderSheet({ ref, links, mode, onModeChange, item, onChoose }: P
               {copy.order.sheetTitle}
             </h2>
             <p className="text-ink-muted">
-              {item ? copy.order.sheetIntroFor(item.name) : copy.order.sheetIntro}
+              {item && links[0]?.platform !== 'clover'
+                ? copy.order.sheetIntroFor(item.name)
+                : copy.order.sheetIntro}
             </p>
           </div>
           <div className="grid gap-2">

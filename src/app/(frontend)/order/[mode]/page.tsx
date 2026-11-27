@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 
 import { getSite } from '@/lib/data'
 import type { OrderMode } from '@/lib/data/types'
-import { linkForMode } from '@/lib/order'
+import { linksForMode } from '@/lib/order'
 import { pageMetadata } from '@/lib/seo/metadata'
 import { copy } from '@/theme/copy'
 import { OrderView } from '@/views/OrderView'
@@ -34,7 +34,5 @@ export default async function OrderPage({ params }: Props) {
   const { mode } = await params
   if (!isMode(mode)) notFound()
   const site = await getSite()
-  return (
-    <OrderView mode={mode} links={site.storeOrderLinks.map((link) => linkForMode(link, mode))} />
-  )
+  return <OrderView mode={mode} links={linksForMode(site.storeOrderLinks, mode)} />
 }

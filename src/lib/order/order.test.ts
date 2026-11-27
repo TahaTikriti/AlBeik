@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest'
 
-import { isAllowedOrderUrl, linkForMode, resolveOrderLinks, toOrderAction } from '.'
+import { isAllowedOrderUrl, linkForMode, linksForMode, resolveOrderLinks, toOrderAction } from '.'
 
 const DD_ITEM = 'https://www.doordash.com/store/albeik-kansas-city-123/?itemId=456'
 const DD_STORE = 'https://www.doordash.com/store/albeik-kansas-city-123/'
 const UE_ITEM = 'https://www.ubereats.com/store/albeik/abc?mod=quickView&modctx=item-789'
 const UE_STORE = 'https://www.ubereats.com/store/albeik/abc'
+const CLOVER = 'https://demo-store.cloveronline.com/'
 
 describe('isAllowedOrderUrl', () => {
   it('accepts https DoorDash URLs on the apex and www hosts', () => {
@@ -120,6 +121,57 @@ describe('toOrderAction', () => {
 
   it('offers a choice when several platforms are available', () => {
     expect(toOrderAction([dd, ue])).toEqual({ kind: 'choose', links: [dd, ue] })
+  })
+})
+
+describe('Clover pickup', () => {
+  it('sends pickup to the full Clover menu and keeps marketplace item links for delivery', () => {
+    const links = resolveOrderLinks(
+      { uberEatsUrl: UE_ITEM },
+      { cloverPickupUrl: CLOVER, doordashStoreUrl: DD_STORE },
+    )
+
+    expect(linksForMode(links, 'pickup')).toEqual([
+      {
+        platform: 'clover',
+        label: 'Clover',
+        href: CLOVER,
+        level: 'store',
+        mode: 'pickup',
+        preset: true,
+      },
+    ])
+    expect(linksForMode(links, 'delivery').map((link) => link.href)).toEqual([
+      DD_STORE,
+      `${UE_ITEM}&diningMode=DELIVERY`,
+    ])
+  })
+
+  it.each([
+    undefined,
+    '',
+    'https://clover.com.example.com/online-ordering/demo',
+    'https://demo-store.cloveronline.com.example.com/',
+    'https://www.clover.com/dashboard',
+  ])(
+    'keeps marketplace pickup when the Clover URL is missing or invalid (%s)',
+    (cloverPickupUrl) => {
+      const links = resolveOrderLinks(null, { cloverPickupUrl, uberEatsStoreUrl: UE_STORE })
+
+      expect(linksForMode(links, 'pickup')).toEqual([
+        expect.objectContaining({ platform: 'ubereats', href: `${UE_STORE}?diningMode=PICKUP` }),
+      ])
+    },
+  )
+
+  it.each([
+    'https://www.clover.com/online-ordering/demo-store',
+    'https://customers.clover.com/online-ordering/?cloverMerchantId=DEMO123',
+  ])('supports a Clover-only store without exposing a delivery link (%s)', (url) => {
+    const links = resolveOrderLinks(null, { cloverPickupUrl: ` ${url} ` })
+
+    expect(linksForMode(links, 'pickup')).toEqual([expect.objectContaining({ href: url })])
+    expect(linksForMode(links, 'delivery')).toEqual([])
   })
 })
 

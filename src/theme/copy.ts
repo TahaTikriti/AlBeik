@@ -28,6 +28,7 @@ export const copy = {
     sheetIntro: 'Spice bomb is waiting.',
     sheetIntroFor: (item: string) => `${item}. Coming right up.`,
     storeLevelNote: 'Opens AlBeik’s page',
+    cloverFullMenu: 'Open full menu on Clover',
     close: 'Not yet',
     stickyKicker: 'Spice bomb is waiting',
     // The blueprint's two journeys (section 1); the header's "Order now"

@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, useState, type MouseEvent } from 'react'
 
 import type { OrderLink, OrderMode } from '@/lib/data/types'
-import { toOrderAction } from '@/lib/order'
+import { linksForMode, toOrderAction } from '@/lib/order'
 import { copy } from '@/theme/copy'
 
 import { OrderButton, useOrderSheet } from './OrderButton'
@@ -27,10 +27,7 @@ export function OrderMenu({ links }: { links: OrderLink[] }) {
   const panelId = useId()
   const [open, setOpen] = useState(false)
   const action = toOrderAction(links)
-  const sheet = useOrderSheet({
-    links: action.kind === 'choose' ? action.links : [],
-    placement: 'header',
-  })
+  const sheet = useOrderSheet({ links, placement: 'header' })
 
   useEffect(() => {
     if (!open) return
@@ -94,18 +91,30 @@ export function OrderMenu({ links }: { links: OrderLink[] }) {
         data-open={open || undefined}
         className="order-menu absolute end-0 top-[calc(100%+0.75rem)] w-44 gap-2 rounded-card border border-line bg-surface p-2 shadow-raised"
       >
-        {OPTIONS.map(({ mode, className }) => (
-          <button
-            key={mode}
-            type="button"
-            aria-haspopup="dialog"
-            aria-label={copy.order.modes[mode].cta}
-            onClick={(event) => choose(mode, event)}
-            className={`${BUTTON} ${className}`}
-          >
-            {copy.order.modes[mode].short}
-          </button>
-        ))}
+        {OPTIONS.map(({ mode, className }) =>
+          linksForMode(links, mode).length <= 1 ? (
+            <OrderButton
+              key={mode}
+              links={links}
+              mode={mode}
+              placement="header"
+              label={copy.order.modes[mode].short}
+              ariaLabel={copy.order.modes[mode].cta}
+              className={`${BUTTON} ${className}`}
+            />
+          ) : (
+            <button
+              key={mode}
+              type="button"
+              aria-haspopup="dialog"
+              aria-label={copy.order.modes[mode].cta}
+              onClick={(event) => choose(mode, event)}
+              className={`${BUTTON} ${className}`}
+            >
+              {copy.order.modes[mode].short}
+            </button>
+          ),
+        )}
       </div>
       {sheet.sheet}
     </div>

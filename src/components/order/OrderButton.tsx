@@ -4,7 +4,7 @@ import { useRef, useState, type MouseEvent } from 'react'
 
 import { track, type Placement } from '@/lib/analytics'
 import type { ModeLink, OrderLink, OrderMode } from '@/lib/data/types'
-import { linkForMode, toOrderAction } from '@/lib/order'
+import { linksForMode } from '@/lib/order'
 import { copy } from '@/theme/copy'
 
 import { ui } from '../ui/classes'
@@ -69,7 +69,7 @@ export function useOrderSheet({
   const sheet = (
     <OrderSheet
       ref={dialog}
-      links={links.map((link) => linkForMode(link, mode))}
+      links={linksForMode(links, mode)}
       mode={mode}
       onModeChange={setMode}
       item={item}
@@ -89,33 +89,40 @@ export function OrderButton({
   links,
   item = null,
   placement,
-  mode: startMode = 'delivery',
+  mode,
   label,
   ariaLabel,
   className = ui.buttonPrimary,
 }: Props) {
-  const action = toOrderAction(links)
-  const { open, sheet, onChoose } = useOrderSheet({
-    links: action.kind === 'choose' ? action.links : [],
-    item,
-    placement,
-  })
+  const startMode = mode ?? (linksForMode(links, 'delivery').length ? 'delivery' : 'pickup')
+  const modeLinks = linksForMode(links, startMode)
+  const canChoose = (mode ? modeLinks : links).length > 1
+  const { open, sheet, onChoose } = useOrderSheet({ links, item, placement })
 
-  if (action.kind === 'none') return null
+  const [link] = modeLinks
+  if (!link) return null
 
-  if (action.kind === 'direct') {
-    const link = linkForMode(action.link, startMode)
+  if (!canChoose) {
+    const opensFullMenu = item && link.platform === 'clover'
+    const directLabel = opensFullMenu
+      ? copy.order.cloverFullMenu
+      : (label ?? copy.order.on(link.label))
+    const directAriaLabel = item
+      ? opensFullMenu
+        ? directLabel
+        : copy.order.ctaForOn(item.name, link.label)
+      : undefined
     return (
       <a
         href={link.href}
         className={className}
-        aria-label={ariaLabel ?? (item ? copy.order.ctaForOn(item.name, link.label) : undefined)}
+        aria-label={ariaLabel ?? directAriaLabel}
         onClick={(event) => {
           emberBurst(event.currentTarget, event.clientX, event.clientY)
           onChoose(link)
         }}
       >
-        {label ?? copy.order.on(link.label)}
+        {directLabel}
       </a>
     )
   }

@@ -1,6 +1,7 @@
 import type { TextField } from 'payload'
 
-import { isAllowedOrderUrl, PLATFORMS, type PlatformId } from '@/lib/order'
+import { isAllowedOrderUrl, PLATFORMS } from '@/lib/order'
+import type { PlatformId } from '@/lib/order/platforms'
 
 /** An optional DoorDash / Uber Eats link, validated by the same rule the site renders with. */
 export function orderUrlField(args: {

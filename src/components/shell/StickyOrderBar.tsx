@@ -44,7 +44,7 @@ export function StickyOrderBar({ links, item = null }: Props) {
             />
           </>
         ) : (
-          <div className="grid flex-1 grid-cols-2 gap-2">
+          <div className="grid flex-1 auto-cols-fr grid-flow-col gap-2">
             <OrderButton
               links={links}
               placement="sticky"

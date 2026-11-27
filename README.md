@@ -80,9 +80,19 @@ git diff main --stat -- src/payload src/lib src/seed src/migrations
 
 **Highlighted words.** In headline fields, editors wrap words in `*asterisks*` (`The recipe is *Lebanese*.`). The site renders those words as `<em>`, and the theme decides how they look.
 
-## Ordering (DoorDash / Uber Eats)
+## Ordering (Clover / DoorDash / Uber Eats)
 
-Neither platform can pre-fill a cart from a link, so each order button falls back through:
+To enable direct pickup, run `pnpm migrate` and enter the public Clover Online Ordering URL in **Site settings → Ordering → Clover pickup link**. Pickup opens the restaurant’s full Clover menu, where guests choose their food and pay. Confirm pickup is enabled on that Clover storefront and verify a paid order reaches the POS and kitchen before publishing the link. Clearing the field restores the marketplace pickup options. For a local demo without Postgres, provide the public link via `CLOVER_PICKUP_URL` before starting the site.
+
+### Embedded pickup spike
+
+Start with `PICKUP_CARD_SPIKE_MODE=preview pnpm dev` and open `/order/pickup-card-spike`. Add a Chicken Tawouk combo with extra sauce to see the AlBeik checkout and complete a simulated payment with sample prices and tax. Checkout opens a waiting page that checks the same payment attempt and resumes after refreshing the tab.
+
+For a connected test, open the US test merchant in Clover's developer sandbox. Add a fixed-price item, assign an optional modifier group, and enable a pickup order type. In that test merchant's Settings, generate a **Hosted iFrame + API/SDK** Ecommerce token pair and a REST token with inventory read and order read/write permissions. Set the sandbox values described in `.env.example` in `.env.local` and select `PICKUP_CARD_SPIKE_MODE=sandbox`. The menu mapping pairs published AlBeik slugs with test merchant inventory and modifier IDs. The page uses AlBeik photos and descriptions and reads prices, stock, and taxes from the test merchant.
+
+Pay with a [Clover sandbox test card](https://docs.clover.com/dev/docs/test-card-numbers), then verify the same pickup order ID, item, modifier, total, and payment in Clover Sales activity. Check kitchen output on a configured Clover device. The spike stores attempt IDs and results in `.pickup-card-spike/` on a single machine, requires a persistent filesystem, and uses sandbox endpoints exclusively.
+
+The DoorDash and Uber Eats buttons use this fallback chain:
 
 1. the item's own link (Menu item → Order links), then
 2. the store link (Site settings → Ordering), then
@@ -90,7 +100,7 @@ Neither platform can pre-fill a cart from a link, so each order button falls bac
 
 With one platform available the button links straight to it; with both it opens a small sheet. Links open in the same tab so the phone's app can take over.
 
-The seed fills in AlBeik's store links (Site settings → Ordering); clear them there and every order button hides.
+The seed fills in AlBeik's marketplace store links (Site settings → Ordering). Clover is opt-in.
 
 Clicks are tracked as Umami custom events (`order_sheet_open`, `order_click` with item, platform, link level and placement) once `NEXT_PUBLIC_UMAMI_WEBSITE_ID` is set.
 

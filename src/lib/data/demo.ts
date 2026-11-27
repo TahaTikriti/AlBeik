@@ -39,7 +39,10 @@ function image(file: { file: string; width: number; height: number }, alt: strin
   }
 }
 
-const storeLinks = resolveOrderLinks(null, content.storeLinks)
+const storeLinks = resolveOrderLinks(null, {
+  ...content.storeLinks,
+  cloverPickupUrl: process.env.CLOVER_PICKUP_URL,
+})
 
 const categorySlugs = new Map(content.categories.map((c) => [c.name, content.categorySlug(c)]))
 
