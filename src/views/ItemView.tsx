@@ -4,7 +4,7 @@ import { ViewTransition } from 'react'
 import { DISH_PAGE_IMAGE_SIZES } from '@/components/menu/dishImage'
 import { Price } from '@/components/menu/MenuPrice'
 import { ScrollTopOnArrival } from '@/components/menu/ScrollTopOnArrival'
-import { OrderButton } from '@/components/order/OrderButton'
+import { DishOrderButton } from '@/components/order/DishOrderButton'
 import { StickyOrderBar } from '@/components/shell/StickyOrderBar'
 import { Img } from '@/components/ui/Img'
 import { ui } from '@/components/ui/classes'
@@ -117,18 +117,17 @@ export function ItemView({ item }: ItemPageData) {
                 <Price price={item.price} dealPrice={item.dealPrice} />
               </p>
             ) : null}
-            <OrderButton
-              links={item.orderLinks}
+            <DishOrderButton
               item={item}
               placement="item"
-              label={copy.order.now}
+              label={item.pickup ? copy.bag.add : copy.order.now}
               className="btn btn-red min-h-16 w-full text-[1.6rem] md:w-auto md:justify-self-start md:px-10"
             />
           </div>
         </div>
       </article>
       {/* Outside the article: .grain isolates stacking, which would let the footer paint over it. */}
-      {item.orderLinks.length ? <StickyOrderBar links={item.orderLinks} item={item} /> : null}
+      {item.orderLinks.length || item.pickup ? <StickyOrderBar links={item.orderLinks} item={item} /> : null}
     </>
   )
 }

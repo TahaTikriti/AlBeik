@@ -889,3 +889,9 @@ body:has([data-order-bar='item'], [data-order-bar='catering'], [data-page='picku
   [data-order-bar='site'] {
   display: none;
 }
+/* Once the pickup bag has something in it, its bar wins over a dish's bar
+   (the dish page keeps its own Add button); catering keeps its call bar. */
+body:has([data-order-bar='bag']) [data-order-bar='item'],
+body:has([data-order-bar='catering']) [data-order-bar='bag'] {
+  display: none;
+}

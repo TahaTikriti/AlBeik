@@ -4,6 +4,7 @@ import type { SiteVM } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
 import { Logo } from '@/theme/motifs'
 
+import { BagLink } from '../order/bag/BagBar'
 import { OrderMenu } from '../order/OrderMenu'
 import { Emphasis } from '../ui/Emphasis'
 import { ui } from '../ui/classes'
@@ -39,7 +40,8 @@ export function Header({ site }: { site: SiteVM }) {
           <NavLinks />
         </nav>
         {/* "Order now" unfolds both journeys (phones have them in the bottom bar). */}
-        <div className="hidden md:block">
+        <div className="hidden items-center gap-2 md:flex">
+          <BagLink />
           <OrderMenu links={site.storeOrderLinks} />
         </div>
       </div>

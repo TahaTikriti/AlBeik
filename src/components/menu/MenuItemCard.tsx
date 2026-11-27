@@ -6,7 +6,7 @@ import type { MenuItemVM, MenuTag } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
 import { Leaf, Mustache } from '@/theme/motifs'
 
-import { OrderButton } from '../order/OrderButton'
+import { DishOrderButton } from '../order/DishOrderButton'
 import { Img } from '../ui/Img'
 import { dishPreloadAttrs } from './dishImage'
 import { MenuPrice } from './MenuPrice'
@@ -92,8 +92,7 @@ export function MenuItemCard({
         </div>
         <div className="flex items-center justify-end gap-3 sm:justify-start sm:px-5">
           <MenuPrice item={item} className="me-auto" />
-          <OrderButton
-            links={item.orderLinks}
+          <DishOrderButton
             item={item}
             placement={placement}
             className="btn btn-red relative z-10 min-h-11 px-4 text-[1rem] shadow-none sm:px-6 sm:text-[1.15rem]"

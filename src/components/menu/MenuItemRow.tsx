@@ -6,7 +6,7 @@ import type { MenuItemVM } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
 import { Leaf } from '@/theme/motifs'
 
-import { OrderButton } from '../order/OrderButton'
+import { DishOrderButton } from '../order/DishOrderButton'
 import { MenuPrice } from './MenuPrice'
 
 type Props = { item: MenuItemVM; placement: Placement }
@@ -53,8 +53,7 @@ export function MenuItemRow({ item, placement }: Props) {
       </div>
       <div className="flex items-center gap-3">
         <MenuPrice item={item} className="justify-items-end text-end" />
-        <OrderButton
-          links={item.orderLinks}
+        <DishOrderButton
           item={item}
           placement={placement}
           className="btn btn-ghost relative z-10 min-h-11 px-4 text-[1rem] sm:px-5 sm:text-[1.1rem]"

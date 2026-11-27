@@ -1,11 +1,11 @@
 import { createHash } from 'node:crypto'
 
 import type { MenuItemVM } from '@/lib/data/types'
-import { MAX_ITEM_QUANTITY } from '@/lib/pickup-spike/basket'
 
 import { type CardConfig, type CloverConfig, cloverUrls } from './config'
 import {
   CardError,
+  MAX_ITEM_QUANTITY,
   type CardModifierGroup,
   type CardOption,
   type CardProduct,

@@ -63,3 +63,6 @@ export class CardError extends Error {
     super(message)
   }
 }
+
+/** Most units of one dish in a bag (Clover takes up to 50 line items per order). */
+export const MAX_ITEM_QUANTITY = 20

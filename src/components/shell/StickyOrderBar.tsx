@@ -1,14 +1,15 @@
 import { trackOnClick } from '@/lib/analytics'
-import type { OrderLink } from '@/lib/data/types'
+import type { MenuItemVM, OrderLink } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
 import { Mustache } from '@/theme/motifs'
 
+import { DishOrderButton } from '../order/DishOrderButton'
 import { OrderButton } from '../order/OrderButton'
 
 type Props = {
   links: OrderLink[]
   /** On an item page: the dish. Its bar replaces the site-wide one (see brand.css). */
-  item?: { slug: string; name: string } | null
+  item?: (Pick<MenuItemVM, 'slug' | 'name'> & Partial<Pick<MenuItemVM, 'pickup'>>) | null
 }
 
 /**
@@ -35,11 +36,10 @@ export function StickyOrderBar({ links, item = null }: Props) {
               </span>
               <span className="truncate font-display text-lg leading-tight">{item.name}</span>
             </span>
-            <OrderButton
-              links={links}
-              item={item}
+            <DishOrderButton
+              item={{ ...item, orderLinks: links, pickup: item.pickup ?? null }}
               placement="sticky"
-              label={copy.order.cta}
+              label={item.pickup ? copy.bag.add : copy.order.cta}
               className="btn btn-red ms-auto min-h-12 shrink-0 px-6"
             />
           </>

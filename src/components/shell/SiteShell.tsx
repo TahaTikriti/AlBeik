@@ -7,12 +7,15 @@ import { Footer } from './Footer'
 import { DishPreload } from './DishPreload'
 import { Header } from './Header'
 import { OfferBanner } from './OfferBanner'
+import { BagBarSwitch } from '../order/bag/BagBar'
+import { BagProvider } from '../order/bag/BagProvider'
 import { StickyOrderBar, StickyOrderBarSpacer } from './StickyOrderBar'
 
 export function SiteShell({ site, children }: { site: SiteVM; children: ReactNode }) {
-  const canOrder = site.storeOrderLinks.length > 0
+  const canOrder = site.storeOrderLinks.length > 0 || site.pickup.enabled
+  const location = site.locations[0]
   return (
-    <>
+    <BagProvider contact={{ phone: location?.phone ?? null, phoneHref: location?.phoneHref ?? null }}>
       <a href="#main" className="skip-link">
         {copy.skipToContent}
       </a>
@@ -30,9 +33,11 @@ export function SiteShell({ site, children }: { site: SiteVM; children: ReactNod
       {canOrder ? (
         <>
           <StickyOrderBarSpacer />
-          <StickyOrderBar links={site.storeOrderLinks} />
+          <BagBarSwitch>
+            {site.storeOrderLinks.length ? <StickyOrderBar links={site.storeOrderLinks} /> : null}
+          </BagBarSwitch>
         </>
       ) : null}
-    </>
+    </BagProvider>
   )
 }
