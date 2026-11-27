@@ -192,6 +192,16 @@ export interface MenuItem {
    */
   available?: boolean | null;
   /**
+   * One row per way it is sold, e.g. "Sandwich" and "Combo", each with its Clover item ID. Sides and extras come from Clover automatically.
+   */
+  pickupOptions?:
+    | {
+        label: string;
+        cloverItemId: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
    * In the DoorDash app, open the dish and use Share.
    */
   doordashUrl?: string | null;
@@ -487,6 +497,13 @@ export interface MenuItemsSelect<T extends boolean = true> {
   image?: T;
   tags?: T;
   available?: T;
+  pickupOptions?:
+    | T
+    | {
+        label?: T;
+        cloverItemId?: T;
+        id?: T;
+      };
   doordashUrl?: T;
   uberEatsUrl?: T;
   sortOrder?: T;
@@ -732,6 +749,18 @@ export interface SiteSetting {
    */
   timezone?: string | null;
   /**
+   * Customers add dishes to a bag and pay on the website; the order goes straight to Clover. Untick to pause it (pickup buttons go back to the apps).
+   */
+  onlinePickup?: boolean | null;
+  /**
+   * Shown as the ready time. Online orders stop this many minutes before closing.
+   */
+  prepMinutes?: number | null;
+  /**
+   * Optional. Sends an email for every paid web order.
+   */
+  orderAlertEmail?: string | null;
+  /**
    * Paste the public ordering link from Clover Online Ordering. Leave blank to use the other pickup options.
    */
   cloverPickupUrl?: string | null;
@@ -870,6 +899,9 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   logo?: T;
   showPrices?: T;
   timezone?: T;
+  onlinePickup?: T;
+  prepMinutes?: T;
+  orderAlertEmail?: T;
   cloverPickupUrl?: T;
   doordashStoreUrl?: T;
   uberEatsStoreUrl?: T;

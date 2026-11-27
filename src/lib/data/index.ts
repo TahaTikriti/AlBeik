@@ -86,7 +86,11 @@ async function findItems(where: Where | null, { draft }: LoadOptions): Promise<M
     draft,
     overrideAccess: draft,
   })
-  const ctx = { store: settings, showPrices: settings.showPrices ?? false }
+  const ctx = {
+    store: settings,
+    showPrices: settings.showPrices ?? false,
+    pickup: Boolean(settings.onlinePickup) && Boolean(process.env.PICKUP_MODE),
+  }
   return docs.flatMap((doc) => toMenuItem(doc, ctx) ?? [])
 }
 

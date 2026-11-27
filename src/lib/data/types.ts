@@ -131,6 +131,8 @@ export type SiteVM = {
   seo: { description: string | null; ogImage: ImageVM | null }
   /** Null when switched off, empty or already over. */
   banner: BannerVM | null
+  /** Online pickup on the website (admin switch and server config both on). */
+  pickup: { enabled: boolean; prepMinutes: number }
 }
 
 /** The site-wide offer / occasion banner. */

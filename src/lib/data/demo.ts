@@ -46,6 +46,29 @@ const storeLinks = resolveOrderLinks(null, {
 
 const categorySlugs = new Map(content.categories.map((c) => [c.name, content.categorySlug(c)]))
 
+/** Demo mode sells online only in the preview (PICKUP_MODE=preview): three dishes, made-up Clover IDs. */
+const demoPickup = Boolean(process.env.PICKUP_MODE)
+const PREVIEW_PICKUP: Record<string, MenuItemVM['pickup']> = {
+  'chicken-tawouk-sandwich': {
+    options: [
+      { label: 'Sandwich', cloverItemId: 'DEMOTAWOUK001' },
+      { label: 'Combo', cloverItemId: 'DEMOTAWOUK002' },
+    ],
+  },
+  'albeik-smashed-burger': {
+    options: [
+      { label: 'Burger', cloverItemId: 'DEMOBURGER001' },
+      { label: 'Combo', cloverItemId: 'DEMOBURGER002' },
+    ],
+  },
+  'falafel-sandwich': {
+    options: [
+      { label: 'Sandwich', cloverItemId: 'DEMOFALAFEL01' },
+      { label: 'Combo', cloverItemId: 'DEMOFALAFEL02' },
+    ],
+  },
+}
+
 const items: MenuItemVM[] = content.menuItems.map((item, i) => {
   const slug = slugify(item.name)
   return {
@@ -65,7 +88,7 @@ const items: MenuItemVM[] = content.menuItems.map((item, i) => {
       name: item.category,
     },
     orderLinks: storeLinks,
-    pickup: null,
+    pickup: (demoPickup && PREVIEW_PICKUP[slug]) || null,
   }
 })
 
@@ -82,6 +105,7 @@ export function demoSite(url: string): SiteVM {
     socials: content.socials.map(toSocial),
     seo: { description: content.siteSettings.defaultDescription, ogImage: null },
     banner: toBanner(content.banner),
+    pickup: { enabled: demoPickup, prepMinutes: 20 },
   }
 }
 

@@ -8,6 +8,7 @@ import * as migration_20261117_181637_media_blob_storage from './20261117_181637
 import * as migration_20261117_191039_homepage_hero_video from './20261117_191039_homepage_hero_video';
 import * as migration_20261124_124050_clover_pickup_url from './20261124_124050_clover_pickup_url';
 import * as migration_20261127_160829_web_orders from './20261127_160829_web_orders';
+import * as migration_20261127_161302_online_pickup from './20261127_161302_online_pickup';
 
 export const migrations = [
   {
@@ -58,6 +59,11 @@ export const migrations = [
   {
     up: migration_20261127_160829_web_orders.up,
     down: migration_20261127_160829_web_orders.down,
-    name: '20261127_160829_web_orders'
+    name: '20261127_160829_web_orders',
+  },
+  {
+    up: migration_20261127_161302_online_pickup.up,
+    down: migration_20261127_161302_online_pickup.down,
+    name: '20261127_161302_online_pickup'
   },
 ];

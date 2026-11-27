@@ -62,10 +62,26 @@ export function toRichLine(text: string | null | undefined): RichLine {
   return { segments: parseEmphasis(text), text: plainText(text) }
 }
 
-export type ItemContext = { store: StoreOrderUrls; showPrices: boolean }
+export type ItemContext = {
+  store: StoreOrderUrls
+  showPrices: boolean
+  /** Online pickup is on: linked dishes get their Clover options. */
+  pickup: boolean
+}
+
+function pickupOptions(doc: MenuItem, ctx: ItemContext): MenuItemVM['pickup'] {
+  if (!ctx.pickup) return null
+  const options = (doc.pickupOptions ?? []).flatMap(({ label, cloverItemId }) =>
+    label?.trim() && cloverItemId ? [{ label: label.trim(), cloverItemId }] : [],
+  )
+  return options.length ? { options } : null
+}
 
 export function toMenuItem(doc: MenuItem, ctx: ItemContext): MenuItemVM | null {
   if (!isPopulated(doc.category)) return null
+  const pickup = pickupOptions(doc, ctx)
+  // Linked dishes are sold at Clover's price: always shown, and deals are set in Clover.
+  const showPrices = ctx.showPrices || pickup !== null
   return {
     id: doc.id,
     slug: doc.slug,
@@ -73,16 +89,17 @@ export function toMenuItem(doc: MenuItem, ctx: ItemContext): MenuItemVM | null {
     href: `/menu/${doc.slug}`,
     description: orNull(doc.shortDescription),
     image: toImage(doc.image),
-    price: ctx.showPrices && typeof doc.price === 'number' ? doc.price : null,
-    comboPrice: ctx.showPrices && typeof doc.comboPrice === 'number' ? doc.comboPrice : null,
+    price: showPrices && typeof doc.price === 'number' ? doc.price : null,
+    comboPrice: showPrices && typeof doc.comboPrice === 'number' ? doc.comboPrice : null,
     dealPrice:
       ctx.showPrices &&
+      pickup === null &&
       typeof doc.dealPrice === 'number' &&
       typeof doc.price === 'number' &&
       doc.dealPrice < doc.price
         ? doc.dealPrice
         : null,
-    sizes: ctx.showPrices
+    sizes: showPrices
       ? (doc.sizes ?? []).flatMap(({ label, price }) =>
           label && typeof price === 'number' ? [{ label, price }] : [],
         )
@@ -90,7 +107,7 @@ export function toMenuItem(doc: MenuItem, ctx: ItemContext): MenuItemVM | null {
     tags: doc.tags ?? [],
     category: { slug: doc.category.slug, name: doc.category.name },
     orderLinks: resolveOrderLinks(doc, ctx.store),
-    pickup: null,
+    pickup,
   }
 }
 
@@ -207,7 +224,15 @@ export function toSocial(social: { platform: SocialPlatform; url: string }): Soc
   return { platform: social.platform, label: SOCIAL_LABELS[social.platform], url: social.url }
 }
 
-export function toSite(settings: SiteSetting, url: string): SiteVM {
+/**
+ * `pickupConfigured`: the server has PICKUP_MODE set. Both it and the admin
+ * switch must be on before the site sells online.
+ */
+export function toSite(
+  settings: SiteSetting,
+  url: string,
+  pickupConfigured = Boolean(process.env.PICKUP_MODE),
+): SiteVM {
   return {
     name: settings.siteName,
     // TODO(cms): a Site settings field; the demo content sets it today.
@@ -224,6 +249,10 @@ export function toSite(settings: SiteSetting, url: string): SiteVM {
       ogImage: toImage(settings.seo?.ogImage),
     },
     banner: toBanner(settings.banner),
+    pickup: {
+      enabled: Boolean(settings.onlinePickup) && pickupConfigured,
+      prepMinutes: settings.prepMinutes ?? 20,
+    },
   }
 }
 

@@ -91,3 +91,74 @@ export function completeHours(rows: HoursRow[] | null | undefined): OpeningHours
       : [],
   )
 }
+
+/** Wall-clock parts of an instant in a time zone. */
+function zonedParts(at: Date, timeZone: string) {
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      hourCycle: 'h23',
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+    })
+      .formatToParts(at)
+      .map((p) => [p.type, Number(p.value)]),
+  ) as Record<'year' | 'month' | 'day' | 'hour' | 'minute' | 'second', number>
+  return parts
+}
+
+/** The instant a wall-clock time happens in a time zone (DST-safe for whole minutes). */
+function zonedInstant(year: number, month: number, day: number, hhmm: string, timeZone: string) {
+  const [hh, mm] = hhmm.split(':').map(Number) as [number, number]
+  const guess = Date.UTC(year, month - 1, day, hh, mm)
+  const offset = (at: number) => {
+    const p = zonedParts(new Date(at), timeZone)
+    return Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute, p.second) - at
+  }
+  const first = guess - offset(guess)
+  return new Date(guess - offset(first))
+}
+
+export type PickupWindow = { open: true; lastOrderAt: Date } | { open: false; opensAt: Date | null }
+
+/**
+ * Whether the restaurant takes a pickup order now: from opening until
+ * closing minus the prep time. A closing time at or before opening (2:00 AM)
+ * belongs to the day the shift started.
+ */
+export function pickupWindow(
+  hours: OpeningHours[],
+  timeZone: string,
+  prepMinutes: number,
+  now: Date,
+): PickupWindow {
+  const today = zonedParts(now, timeZone)
+  const base = Date.UTC(today.year, today.month - 1, today.day)
+  let opensAt: Date | null = null
+  // Yesterday (for after-midnight closings) through a week ahead.
+  for (let offset = -1; offset <= 7; offset++) {
+    const date = new Date(base + offset * 86_400_000)
+    const [y, m, d] = [date.getUTCFullYear(), date.getUTCMonth() + 1, date.getUTCDate()]
+    const day = DAYS[(date.getUTCDay() + 6) % 7]!
+    for (const row of hours) {
+      if (!row.days.includes(day)) continue
+      const openAt = zonedInstant(y, m, d, row.opens, timeZone)
+      const nextDay = row.closes <= row.opens ? new Date(Date.UTC(y, m - 1, d + 1)) : date
+      const closeAt = zonedInstant(
+        nextDay.getUTCFullYear(),
+        nextDay.getUTCMonth() + 1,
+        nextDay.getUTCDate(),
+        row.closes,
+        timeZone,
+      )
+      const lastOrderAt = new Date(closeAt.getTime() - prepMinutes * 60_000)
+      if (now >= openAt && now <= lastOrderAt) return { open: true, lastOrderAt }
+      if (openAt > now && (!opensAt || openAt < opensAt)) opensAt = openAt
+    }
+  }
+  return { open: false, opensAt }
+}

@@ -72,6 +72,41 @@ export const SiteSettings: GlobalConfig = {
           label: 'Ordering',
           fields: [
             {
+              name: 'onlinePickup',
+              label: 'Online pickup on the website',
+              type: 'checkbox',
+              defaultValue: false,
+              admin: {
+                description:
+                  'Customers add dishes to a bag and pay on the website; the order goes straight to Clover. Untick to pause it (pickup buttons go back to the apps).',
+              },
+            },
+            {
+              type: 'row',
+              fields: [
+                {
+                  name: 'prepMinutes',
+                  label: 'Prep time (minutes)',
+                  type: 'number',
+                  defaultValue: 20,
+                  min: 5,
+                  max: 90,
+                  admin: {
+                    description:
+                      'Shown as the ready time. Online orders stop this many minutes before closing.',
+                  },
+                },
+                {
+                  name: 'orderAlertEmail',
+                  label: 'Email new orders to',
+                  type: 'email',
+                  admin: {
+                    description: 'Optional. Sends an email for every paid web order.',
+                  },
+                },
+              ],
+            },
+            {
               name: 'cloverPickupUrl',
               label: 'Clover pickup link',
               type: 'text',

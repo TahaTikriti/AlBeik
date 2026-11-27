@@ -160,6 +160,50 @@ export const MenuItems: CollectionConfig = {
     },
     {
       type: 'collapsible',
+      label: 'Online ordering (Clover)',
+      admin: {
+        initCollapsed: true,
+        description:
+          'Links this dish to its Clover item(s) so customers can add it to their bag on the website. Use "Link dishes to Clover" in Site settings → Ordering to fill these in automatically.',
+      },
+      fields: [
+        {
+          name: 'pickupOptions',
+          label: 'Clover options',
+          type: 'array',
+          maxRows: 6,
+          labels: { singular: 'Option', plural: 'Options' },
+          admin: {
+            description:
+              'One row per way it is sold, e.g. "Sandwich" and "Combo", each with its Clover item ID. Sides and extras come from Clover automatically.',
+          },
+          fields: [
+            {
+              type: 'row',
+              fields: [
+                {
+                  name: 'label',
+                  type: 'text',
+                  required: true,
+                  admin: { placeholder: 'Sandwich' },
+                },
+                {
+                  name: 'cloverItemId',
+                  label: 'Clover item ID',
+                  type: 'text',
+                  required: true,
+                  validate: (value: string | null | undefined) =>
+                    /^[A-Z0-9]{13}$/.test(value ?? '') ||
+                    'A Clover item ID is 13 capital letters and digits.',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      type: 'collapsible',
       label: 'Order links (optional)',
       admin: {
         initCollapsed: true,
