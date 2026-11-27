@@ -1,10 +1,9 @@
-import type { CardConfig } from './config'
+import { type CloverConfig, cloverUrls } from './config'
 
-type Sandbox = Extract<CardConfig, { mode: 'sandbox' }>
+type Sandbox = CloverConfig
 type JObject = Record<string, unknown>
 
-const ecomm = 'https://scl-sandbox.dev.clover.com/v1/orders/'
-const userAgent = 'AlBeikPickupSpike/1.0'
+const userAgent = 'AlBeikPickup/1.0'
 export class CloverHttpError extends Error {
   constructor(
     readonly status: number,
@@ -57,7 +56,7 @@ async function request(url: string, key: string, body?: JObject, headers?: Recor
 }
 
 function platform(config: Sandbox) {
-  return 'https://apisandbox.dev.clover.com/v3/merchants/' + encodeURIComponent(config.merchantId)
+  return cloverUrls(config.env).platform + encodeURIComponent(config.merchantId)
 }
 
 export async function createOrder(config: Sandbox, cart: JObject, name: string, attemptId: string) {
@@ -114,7 +113,7 @@ export async function payOrder(
   clientIp: string,
 ) {
   return request(
-    ecomm + encodeURIComponent(orderId) + '/pay',
+    cloverUrls(config.env).ecommerce + encodeURIComponent(orderId) + '/pay',
     config.privateKey,
     { source, amount, currency: 'usd', ecomind: 'ecom', email: 'pickup-test@example.com' },
     { 'X-Forwarded-For': clientIp, 'Idempotency-Key': attemptId },
@@ -134,7 +133,7 @@ export function confirmedCharge(data: JObject, orderId: string, amount: number):
 }
 
 export async function readPayment(config: Sandbox, orderId: string, amount: number) {
-  const order = await request(ecomm + encodeURIComponent(orderId), config.privateKey)
+  const order = await request(cloverUrls(config.env).ecommerce + encodeURIComponent(orderId), config.privateKey)
   return confirmedCharge(order, orderId, amount)
 }
 

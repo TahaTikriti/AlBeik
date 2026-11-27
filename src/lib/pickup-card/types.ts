@@ -32,7 +32,7 @@ export type CardReceipt = {
 }
 
 export type CardClient =
-  { mode: 'preview' } | { mode: 'sandbox'; merchantId: string; publicKey: string }
+  { mode: 'preview' } | { mode: 'clover'; merchantId: string; publicKey: string; sdkUrl: string }
 
 export class CardError extends Error {
   constructor(

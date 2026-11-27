@@ -116,7 +116,7 @@ export function PickupWaiting({
   return (
     <div data-page="pickup-spike" className={ui.container + ' grid gap-6 pt-8 pb-section sm:pt-14'}>
       <p className="label text-red-text">
-        {preview ? 'Local preview' : 'Clover sandbox'} · State Line Rd
+        {preview ? 'Local preview' : 'Clover'} · State Line Rd
       </p>
       <section
         aria-labelledby="pickup-status-title"

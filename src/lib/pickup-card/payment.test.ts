@@ -8,13 +8,13 @@ import { lookupCardPayment, reconcileCardPayment, submitCardPayment } from './pa
 import { paymentDirectory } from './payment-store'
 
 const config: CardConfig = {
-  mode: 'sandbox',
+  mode: 'clover',
+  env: 'sandbox',
   merchantId: 'M1',
   publicKey: 'pk',
   privateKey: 'ek',
   restToken: 'rest',
   orderTypeId: 'PICKUP',
-  mapping: '{}',
 }
 const orderCart = {
   orderType: { id: 'PICKUP' },

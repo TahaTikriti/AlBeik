@@ -45,7 +45,7 @@ async function receipt(
     ])
   if (stopped) throw new CardError(stopped.message, stopped.status, 'not_submitted')
   let verified = Boolean(paid)
-  if (!verified && !declined && payStarted && orderId && config.mode === 'sandbox') {
+  if (!verified && !declined && payStarted && orderId && config.mode === 'clover') {
     // Recover an ambiguous charge via a read, including after a server restart.
     const charge = await readPayment(config, orderId, attempt.totalCents).catch(() => null)
     verified = Boolean(charge)
@@ -118,7 +118,7 @@ export async function submitCardPayment(
     config.mode === 'preview'
       ? input.source === 'preview'
       : /^clv_[A-Za-z0-9_-]{1,256}$/.test(input.source)
-  if (!validSource || (config.mode === 'sandbox' && !isIP(input.clientIp))) {
+  if (!validSource || (config.mode === 'clover' && !isIP(input.clientIp))) {
     throw new CardError(
       'The payment details are incomplete. Please review checkout.',
       400,

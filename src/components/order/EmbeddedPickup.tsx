@@ -208,7 +208,7 @@ export function EmbeddedPickup({ products, client }: Props) {
     >
       <header className="grid gap-2">
         <p className="label text-red-text">
-          {preview ? 'Local preview' : 'Clover sandbox'} · State Line Rd
+          {preview ? 'Local preview' : 'Clover'} · State Line Rd
         </p>
         <h1 ref={heading} tabIndex={-1} className="text-display-1 outline-none">
           {quote ? 'Pickup checkout' : 'Order pickup'}

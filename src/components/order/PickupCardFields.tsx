@@ -75,13 +75,13 @@ export function PickupCardFields({
   const [errors, setErrors] = useState<Partial<Record<FieldId, string>>>({})
 
   useEffect(() => {
-    if (client.mode !== 'sandbox' || loaded || loadError) return
+    if (client.mode !== 'clover' || loaded || loadError) return
     const timeout = setTimeout(() => setLoadError(true), 12000)
     return () => clearTimeout(timeout)
   }, [client.mode, loaded, loadError])
 
   function mountFields() {
-    if (client.mode !== 'sandbox' || mounted.current) return
+    if (client.mode !== 'clover' || mounted.current) return
     const Clover = (
       window as Window & {
         Clover?: new (publicKey: string, options: { merchantId: string }) => CloverSdk
@@ -121,14 +121,14 @@ export function PickupCardFields({
           ? 'Sample card for this preview. No card details needed.'
           : 'Use a Clover test card.'}
       </p>
-      {client.mode === 'sandbox' && (
+      {client.mode === 'clover' && (
         <Script
-          src="https://checkout.sandbox.dev.clover.com/sdk.js"
+          src={client.sdkUrl}
           onReady={mountFields}
           onError={() => setLoadError(true)}
         />
       )}
-      {client.mode === 'sandbox' && !loaded && !loadError && (
+      {client.mode === 'clover' && !loaded && !loadError && (
         <div className="col-span-6 text-ink-muted">
           <PickupProgress label="Loading secure card fields…" />
         </div>

@@ -11,6 +11,8 @@ export async function currentProducts(config: CardConfig) {
   return loadCardProducts(
     config,
     menu.categories.flatMap((category) => category.items),
+    // Temporary until dishes carry their Clover links (plan Task 3/4).
+    process.env.CLOVER_PICKUP_MAPPING,
   )
 }
 
@@ -118,7 +120,7 @@ export function readPayment(body: Record<string, unknown>, config: CardConfig, r
   const host = new URL(request.url).hostname
   const clientIp = forwarded && isIP(forwarded) ? forwarded : '127.0.0.1'
   if (
-    config.mode === 'sandbox' &&
+    config.mode === 'clover' &&
     !['localhost', '127.0.0.1', '[::1]'].includes(host) &&
     !isIP(forwarded ?? '')
   ) {

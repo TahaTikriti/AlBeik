@@ -3,10 +3,10 @@ import { createHash } from 'node:crypto'
 import type { MenuItemVM } from '@/lib/data/types'
 import { MAX_ITEM_QUANTITY } from '@/lib/pickup-spike/basket'
 
-import type { CardConfig } from './config'
+import { type CardConfig, type CloverConfig, cloverUrls } from './config'
 import { CardError, type CardProduct, type CardQuote } from './types'
 
-type Sandbox = Extract<CardConfig, { mode: 'sandbox' }>
+type Sandbox = CloverConfig
 type Option = CardProduct['options'][number]
 type Mapping = { slug: string; itemId: string; extras: { groupId: string; modifierId: string }[] }
 
@@ -29,7 +29,7 @@ function isId(value: unknown): value is string {
 }
 
 function parseMapping(json: string): Mapping[] {
-  const badMapping = new CardError('Check the Clover sandbox menu mapping.', 503)
+  const badMapping = new CardError('Check the Clover menu mapping.', 503)
   let entries: unknown
   try {
     entries = JSON.parse(json)
@@ -69,7 +69,7 @@ async function cloverRead(
   body?: unknown,
 ): Promise<Record<string, unknown> | null> {
   const url =
-    'https://apisandbox.dev.clover.com/v3/merchants/' +
+    cloverUrls(config.env).platform +
     encodeURIComponent(config.merchantId) +
     '/' +
     path
@@ -83,7 +83,7 @@ async function cloverRead(
       headers: {
         authorization: 'Bearer ' + config.restToken,
         'content-type': 'application/json',
-        'user-agent': 'AlBeik-Pickup-Spike/1.0',
+        'user-agent': 'AlBeikPickup/1.0',
       },
       body: body === undefined ? undefined : JSON.stringify(body),
       cache: 'no-store',
@@ -195,12 +195,13 @@ async function loadMappedOptions(config: Sandbox, mapping: Mapping[]) {
 export async function loadCardProducts(
   config: CardConfig,
   items: MenuItemVM[],
+  mapping = '[]',
 ): Promise<CardProduct[]> {
   const catalog =
-    config.mode === 'sandbox'
+    config.mode === 'clover'
       ? await loadMappedOptions(
           config,
-          parseMapping(config.mapping).filter((entry) =>
+          parseMapping(mapping).filter((entry) =>
             items.some((item) => item.slug === entry.slug),
           ),
         )
@@ -296,13 +297,13 @@ export async function quoteCardBasket(config: CardConfig, products: CardProduct[
   }
   if (lineItems.length > 50) throw invalid
   const orderCart = {
-    orderType: { id: config.mode === 'sandbox' ? config.orderTypeId : 'demo-pickup' },
+    orderType: { id: config.mode === 'clover' ? config.orderTypeId : 'demo-pickup' },
     lineItems,
   }
   const subtotalCents = lines.reduce((sum, line) => sum + line.unitCents * line.quantity, 0)
   // Deterministic demo tax. A connected checkout takes its tax only from Clover.
   let taxCents = Math.round(subtotalCents * 0.08)
-  if (config.mode === 'sandbox') {
+  if (config.mode === 'clover') {
     const totals = await cloverRead(config, 'atomic_order/checkouts', { orderCart })
     if (
       !totals ||
@@ -326,7 +327,7 @@ export async function quoteCardBasket(config: CardConfig, products: CardProduct[
   const quoteId = createHash('sha256')
     .update(
       JSON.stringify([
-        config.mode === 'sandbox' ? config.merchantId : 'preview',
+        config.mode === 'clover' ? config.merchantId : 'preview',
         orderCart,
         lines,
         taxCents,

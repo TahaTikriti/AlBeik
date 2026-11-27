@@ -22,20 +22,21 @@ const menu: MenuItemVM[] = [
   },
 ]
 const config: CardConfig = {
-  mode: 'sandbox',
+  mode: 'clover',
+  env: 'sandbox',
   merchantId: 'TEST',
   publicKey: 'public',
   privateKey: 'private',
   restToken: 'rest',
   orderTypeId: 'PICKUP',
-  mapping: JSON.stringify([
-    {
-      slug: 'chicken-tawouk-sandwich',
-      itemId: 'COMBO',
-      extras: [{ groupId: 'SAUCES', modifierId: 'GARLIC' }],
-    },
-  ]),
 }
+const mapping = JSON.stringify([
+  {
+    slug: 'chicken-tawouk-sandwich',
+    itemId: 'COMBO',
+    extras: [{ groupId: 'SAUCES', modifierId: 'GARLIC' }],
+  },
+])
 const line = { optionId: 'COMBO', extraIds: ['GARLIC'], quantity: 2 }
 const item = {
   id: 'COMBO',
@@ -72,7 +73,7 @@ afterEach(() => vi.unstubAllGlobals())
 describe('pickup menu sync and pricing', () => {
   it('keeps site descriptions and sends exact Clover inventory and modifier IDs for every unit', async () => {
     const request = mockClover()
-    const products = await loadCardProducts(config, menu)
+    const products = await loadCardProducts(config, menu, mapping)
     expect(products[0]).toMatchObject({
       name: 'Tawouk',
       description: 'Site description',
@@ -108,13 +109,13 @@ describe('pickup menu sync and pricing', () => {
 
   it('reloads current prices and taxes and changes the reviewed quote when Clover changes', async () => {
     mockClover()
-    const first = await quoteCardBasket(config, await loadCardProducts(config, menu), [line])
+    const first = await quoteCardBasket(config, await loadCardProducts(config, menu, mapping), [line])
     mockClover({ ...item, price: 1820 }, modifier, {
       subtotal: 3740,
       totalTaxAmount: 374,
       total: 4114,
     })
-    const next = await quoteCardBasket(config, await loadCardProducts(config, menu), [line])
+    const next = await quoteCardBasket(config, await loadCardProducts(config, menu, mapping), [line])
     expect(next.quote.totalCents).toBe(4114)
     expect(next.quote.quoteId).not.toBe(first.quote.quoteId)
   })
@@ -122,26 +123,26 @@ describe('pickup menu sync and pricing', () => {
   it('refuses unconfirmed totals, sold-out inventory, and unavailable or unassociated extras', async () => {
     mockClover(item, modifier, { ...totals, total: 1 })
     await expect(
-      quoteCardBasket(config, await loadCardProducts(config, menu), [line]),
+      quoteCardBasket(config, await loadCardProducts(config, menu, mapping), [line]),
     ).rejects.toMatchObject({ status: 409 })
     mockClover({ ...item, available: false })
     await expect(
-      quoteCardBasket(config, await loadCardProducts(config, menu), [line]),
+      quoteCardBasket(config, await loadCardProducts(config, menu, mapping), [line]),
     ).rejects.toMatchObject({ status: 409 })
     mockClover(item, { ...modifier, available: false })
     await expect(
-      quoteCardBasket(config, await loadCardProducts(config, menu), [line]),
+      quoteCardBasket(config, await loadCardProducts(config, menu, mapping), [line]),
     ).rejects.toMatchObject({ status: 409 })
     const request = mockClover({ ...item, modifierGroups: { elements: [] } })
     await expect(
-      quoteCardBasket(config, await loadCardProducts(config, menu), [line]),
+      quoteCardBasket(config, await loadCardProducts(config, menu, mapping), [line]),
     ).rejects.toMatchObject({ status: 409 })
     expect(request).toHaveBeenCalledTimes(1)
   })
 
   it('checks stock across differently customized units and rejects duplicate or forged lines', async () => {
     mockClover()
-    const products = await loadCardProducts(config, menu)
+    const products = await loadCardProducts(config, menu, mapping)
     await expect(
       quoteCardBasket(config, products, [line, { ...line, extraIds: [] }]),
     ).rejects.toMatchObject({ status: 409 })
@@ -169,8 +170,8 @@ describe('pickup menu sync and pricing', () => {
     ])
     expect(quote).toMatchObject({ subtotalCents: 1799, taxCents: 144, totalCents: 1943 })
     expect(request).not.toHaveBeenCalled()
-    await expect(loadCardProducts(config, menu)).rejects.toMatchObject({ status: 503 })
-    await expect(loadCardProducts({ ...config, mapping: 'invalid' }, menu)).rejects.toMatchObject({
+    await expect(loadCardProducts(config, menu, mapping)).rejects.toMatchObject({ status: 503 })
+    await expect(loadCardProducts(config, menu, 'invalid')).rejects.toMatchObject({
       status: 503,
     })
   })
