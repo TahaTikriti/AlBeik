@@ -90,6 +90,7 @@ export function toMenuItem(doc: MenuItem, ctx: ItemContext): MenuItemVM | null {
     tags: doc.tags ?? [],
     category: { slug: doc.category.slug, name: doc.category.name },
     orderLinks: resolveOrderLinks(doc, ctx.store),
+    pickup: null,
   }
 }
 

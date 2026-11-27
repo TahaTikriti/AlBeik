@@ -68,6 +68,8 @@ export type MenuItemVM = {
   category: CategoryRef
   /** Already resolved through the fallback chain; empty means "hide ordering". */
   orderLinks: OrderLink[]
+  /** Clover options for online pickup; null unless online pickup is on and the dish is linked. */
+  pickup: { options: { label: string; cloverItemId: string }[] } | null
 }
 
 export type CategoryVM = {

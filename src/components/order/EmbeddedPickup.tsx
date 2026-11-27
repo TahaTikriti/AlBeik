@@ -25,7 +25,7 @@ import { PickupCardMenuItem } from './PickupCardMenu'
 import { PickupProgress } from './PickupProgress'
 
 const money = (cents: number) => formatPrice(cents / 100)
-const lineKey = (line: CardLine) => JSON.stringify([line.optionId, line.extraIds])
+const lineKey = (line: CardLine) => JSON.stringify([line.optionId, line.modifierIds])
 type Props = { products: CardProduct[]; client: CardClient }
 
 export function EmbeddedPickup({ products, client }: Props) {
@@ -113,7 +113,9 @@ export function EmbeddedPickup({ products, client }: Props) {
   const bag = lines.flatMap((line) => {
     const option = options.find((option) => option.id === line.optionId)
     if (!option) return []
-    const extras = option.extras.filter((extra) => line.extraIds.includes(extra.id))
+    const extras = option.groups
+      .flatMap((group) => group.modifiers)
+      .filter((extra) => line.modifierIds.includes(extra.id))
     return [
       {
         ...line,

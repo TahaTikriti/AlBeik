@@ -1,21 +1,41 @@
 import type { ImageVM } from '@/lib/data/types'
 
+/** A dish's link to Clover: one Clover item per option (Sandwich, Combo, Half portion…). */
+export type PickupLink = { slug: string; options: { label: string; cloverItemId: string }[] }
+
+export type CardModifier = { id: string; name: string; priceCents: number }
+
+/** A Clover modifier group as the customer chooses from it. `max: null` = no limit. */
+export type CardModifierGroup = {
+  id: string
+  name: string
+  min: number
+  max: number | null
+  modifiers: CardModifier[]
+}
+
+export type CardOption = {
+  /** The Clover item ID. */
+  id: string
+  /** The site's word for it: "Sandwich", "Combo". */
+  label: string
+  /** Clover's item name, used on the kitchen ticket and receipt. */
+  name: string
+  priceCents: number
+  available: boolean
+  stockLimit?: number
+  groups: CardModifierGroup[]
+}
+
 export type CardProduct = {
   slug: string
   name: string
   description: string | null
   image: ImageVM | null
-  options: {
-    id: string
-    name: string
-    priceCents: number
-    available: boolean
-    stockLimit?: number
-    extras: { id: string; name: string; priceCents: number }[]
-  }[]
+  options: CardOption[]
 }
 
-export type CardLine = { optionId: string; extraIds: string[]; quantity: number }
+export type CardLine = { optionId: string; modifierIds: string[]; quantity: number }
 export type CardQuote = {
   subtotalCents: number
   taxCents: number

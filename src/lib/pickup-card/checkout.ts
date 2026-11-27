@@ -8,11 +8,11 @@ import { CardError } from './types'
 
 export async function currentProducts(config: CardConfig) {
   const menu = await getMenuPageData({ draft: false })
+  const items = menu.categories.flatMap((category) => category.items)
   return loadCardProducts(
     config,
-    menu.categories.flatMap((category) => category.items),
-    // Temporary until dishes carry their Clover links (plan Task 3/4).
-    process.env.CLOVER_PICKUP_MAPPING,
+    items.flatMap((item) => (item.pickup ? [{ slug: item.slug, options: item.pickup.options }] : [])),
+    items,
   )
 }
 

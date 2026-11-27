@@ -65,6 +65,7 @@ const items: MenuItemVM[] = content.menuItems.map((item, i) => {
       name: item.category,
     },
     orderLinks: storeLinks,
+    pickup: null,
   }
 })
 

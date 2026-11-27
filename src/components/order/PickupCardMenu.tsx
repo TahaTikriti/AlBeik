@@ -26,8 +26,10 @@ export function PickupCardMenuItem({
   const option =
     product.options.find((item) => item.id === optionId && item.available) ??
     product.options.find((item) => item.available)
-  const extra = option?.extras.find((extra) => extra.id === extraId)
-  const singleExtra = option?.extras.length === 1 ? option.extras[0] : null
+  // Spike UI, replaced by the Add sheet (plan Task 6): extras from every group.
+  const extrasOf = (o: typeof option) => o?.groups.flatMap((group) => group.modifiers) ?? []
+  const extra = extrasOf(option).find((extra) => extra.id === extraId)
+  const singleExtra = extrasOf(option).length === 1 ? extrasOf(option)[0] : null
   const total = (option?.priceCents ?? 0) + (extra?.priceCents ?? 0)
   const atLimit = option && remaining.get(option.id) === 0
 
@@ -93,7 +95,7 @@ export function PickupCardMenuItem({
                 />
                 {singleExtra.name} · +{formatPrice(singleExtra.priceCents / 100)}
               </label>
-            ) : option.extras.length > 1 ? (
+            ) : extrasOf(option).length > 1 ? (
               <fieldset className="min-w-0" disabled={disabled}>
                 <legend className="mb-1.5 text-small text-ink-muted">Optional extra</legend>
                 <div className="flex flex-wrap gap-2">
@@ -103,7 +105,7 @@ export function PickupCardMenuItem({
                     selected={!extra}
                     onChange={() => setExtraId('')}
                   />
-                  {option.extras.map((choice) => (
+                  {extrasOf(option).map((choice) => (
                     <PickupChoice
                       key={choice.id}
                       group={product.slug + '-extra'}
@@ -123,7 +125,7 @@ export function PickupCardMenuItem({
               onClick={() =>
                 onAdd({
                   optionId: option.id,
-                  extraIds: extra ? [extra.id] : [],
+                  modifierIds: extra ? [extra.id] : [],
                   quantity: 1,
                 })
               }
