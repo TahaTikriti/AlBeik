@@ -2,6 +2,8 @@ import type { GlobalConfig } from 'payload'
 
 import { DAYS, isValidTime } from '@/lib/hours'
 import { normalizeCloverPickupUrl } from '@/lib/order/clover'
+import { syncDishesWithClover } from '@/lib/pickup-card/clover-sync'
+import { CardError } from '@/lib/pickup-card/types'
 
 import { anyone, authenticated } from '../access'
 import { revalidateSite } from '../hooks/revalidateSite'
@@ -37,6 +39,24 @@ export const SiteSettings: GlobalConfig = {
   hooks: {
     afterChange: [revalidateSite.globalAfterChange],
   },
+  endpoints: [
+    {
+      // POST /api/globals/site-settings/clover-sync (the button under Ordering).
+      path: '/clover-sync',
+      method: 'post',
+      handler: async (req) => {
+        if (!req.user) return Response.json({ error: 'Log in first.' }, { status: 401 })
+        try {
+          return Response.json(await syncDishesWithClover(req))
+        } catch (error) {
+          const status = error instanceof CardError ? error.status : 502
+          const message =
+            error instanceof CardError ? error.message : 'Clover did not answer. Try again.'
+          return Response.json({ error: message }, { status })
+        }
+      },
+    },
+  ],
   fields: [
     {
       type: 'tabs',
@@ -71,6 +91,11 @@ export const SiteSettings: GlobalConfig = {
         {
           label: 'Ordering',
           fields: [
+            {
+              name: 'cloverSync',
+              type: 'ui',
+              admin: { components: { Field: '/payload/admin/CloverSync#CloverSync' } },
+            },
             {
               name: 'onlinePickup',
               label: 'Online pickup on the website',

@@ -300,3 +300,19 @@
     background: var(--theme-elevation-100);
   }
 }
+
+// Site settings → Ordering: the Clover sync button.
+.clover-sync {
+  margin: 0 0 calc(var(--base) * 1.5);
+  &__lead {
+    max-width: 60ch;
+    color: var(--theme-elevation-600);
+  }
+  &__error {
+    color: var(--theme-error-500);
+  }
+  &__result ul {
+    margin: 0.25rem 0 0;
+    padding-left: 1.25rem;
+  }
+}
