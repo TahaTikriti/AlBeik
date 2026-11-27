@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { type OpeningHours, pickupWindow } from './index'
+import { type OpeningHours, pickupWindow, startOfDay } from './index'
 
 const TZ = 'America/Chicago' // CST in late November: UTC−6
 const hours: OpeningHours[] = [
@@ -43,5 +43,16 @@ describe('pickupWindow', () => {
 
   it('is closed with no known opening when there are no hours', () => {
     expect(pickupWindow([], TZ, 20, chicago(23, 12, 0))).toEqual({ open: false, opensAt: null })
+  })
+})
+
+describe('startOfDay', () => {
+  it('is local midnight in the restaurant’s time zone', () => {
+    expect(startOfDay(TZ, chicago(23, 20, 39))).toEqual(chicago(23, 0, 0))
+  })
+
+  it('stays on the local date just before midnight UTC rolls over', () => {
+    // 23:30 Chicago on the 23rd is 05:30 UTC on the 24th.
+    expect(startOfDay(TZ, chicago(23, 23, 30))).toEqual(chicago(23, 0, 0))
   })
 })

@@ -34,7 +34,15 @@ export default buildConfig({
         Icon: '/payload/admin/Icon#Icon',
       },
       // The admin's home page: what's live, quick actions, every section.
-      views: { dashboard: { Component: '/payload/admin/Dashboard#Dashboard' } },
+      views: {
+        dashboard: { Component: '/payload/admin/Dashboard#Dashboard' },
+        // Today's website orders, live (polled), with a chime.
+        webOrders: {
+          Component: '/payload/admin/WebOrdersView#WebOrdersView',
+          path: '/web-orders',
+          meta: { title: 'Web orders' },
+        },
+      },
     },
     // Matches the sizes the site is checked at.
     livePreview: {

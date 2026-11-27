@@ -316,3 +316,129 @@
     padding-left: 1.25rem;
   }
 }
+
+// Web orders (WebOrdersLive.tsx): one card per order, newest first.
+.ab-orders {
+  display: grid;
+  gap: calc(var(--base) * 1.25);
+}
+
+.ab-orders__sound {
+  min-height: 2.75rem;
+  padding: 0 1.1rem;
+  border: 1px solid var(--ab-line);
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+
+  &.is-on {
+    background: var(--ab-red);
+    border-color: var(--ab-red);
+    color: #fff;
+  }
+}
+
+.ab-orders__list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.ab-orders__row {
+  display: grid;
+  grid-template-columns: 7.5rem minmax(9rem, 1fr) minmax(12rem, 2fr) auto;
+  grid-template-areas: 'when who items money' 'note note note note';
+  gap: 0.5rem 1.25rem;
+  align-items: start;
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--ab-line);
+  border-radius: 10px;
+  background: var(--ab-card);
+
+  &.is-declined,
+  &.is-stopped {
+    opacity: 0.55;
+  }
+
+  &.is-review {
+    border-color: var(--ab-red);
+  }
+
+  &.is-new {
+    border-color: var(--ab-red);
+    animation: ab-orders-flash 1s ease-in-out 6;
+  }
+
+  @media (max-width: 760px) {
+    grid-template-columns: 1fr auto;
+    grid-template-areas: 'who money' 'when money' 'items items' 'note note';
+  }
+}
+
+.ab-orders__when {
+  grid-area: when;
+}
+.ab-orders__who {
+  grid-area: who;
+}
+.ab-orders__items {
+  grid-area: items;
+}
+.ab-orders__money {
+  grid-area: money;
+}
+
+@keyframes ab-orders-flash {
+  50% {
+    background: color-mix(in srgb, var(--ab-red) 22%, var(--ab-card));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ab-orders__row.is-new {
+    animation: none;
+    background: color-mix(in srgb, var(--ab-red) 14%, var(--ab-card));
+  }
+}
+
+.ab-orders__when,
+.ab-orders__who,
+.ab-orders__money {
+  display: grid;
+  gap: 0.15rem;
+
+  span,
+  a {
+    color: var(--ab-muted);
+    font-size: 0.9rem;
+  }
+
+  a {
+    text-decoration: underline !important;
+    text-underline-offset: 3px;
+  }
+}
+
+.ab-orders__money {
+  justify-items: end;
+  text-align: right;
+}
+
+.ab-orders__status {
+  font-weight: 600;
+  color: inherit !important;
+}
+
+.ab-orders__items {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.ab-orders__note {
+  grid-area: note;
+  margin: 0;
+  color: var(--ab-red);
+  font-weight: 600;
+}

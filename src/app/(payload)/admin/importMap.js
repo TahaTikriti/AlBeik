@@ -17,6 +17,7 @@ import { CloverSync as CloverSync_3aa710656649d351e37000202140ba53 } from '../..
 import { Icon as Icon_8b6b60c766c5071addaf46f9ffe18536 } from '../../../payload/admin/Icon'
 import { Logo as Logo_3cd692343be5ea03e13bd9af21cbda1d } from '../../../payload/admin/Logo'
 import { Dashboard as Dashboard_fc7b3c28f7af7a7ce2ddde1f00b6dd10 } from '../../../payload/admin/Dashboard'
+import { WebOrdersView as WebOrdersView_0b2e6408b6e1004b16f3b7400772ac5f } from '../../../payload/admin/WebOrdersView'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e } from '@payloadcms/storage-vercel-blob/client'
 
@@ -41,6 +42,7 @@ export const importMap = {
   "/payload/admin/Icon#Icon": Icon_8b6b60c766c5071addaf46f9ffe18536,
   "/payload/admin/Logo#Logo": Logo_3cd692343be5ea03e13bd9af21cbda1d,
   "/payload/admin/Dashboard#Dashboard": Dashboard_fc7b3c28f7af7a7ce2ddde1f00b6dd10,
+  "/payload/admin/WebOrdersView#WebOrdersView": WebOrdersView_0b2e6408b6e1004b16f3b7400772ac5f,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1,
   "@payloadcms/storage-vercel-blob/client#VercelBlobClientUploadHandler": VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e
 }

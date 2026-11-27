@@ -2,6 +2,8 @@ import { Gutter } from '@payloadcms/ui'
 import type { AdminViewServerProps } from 'payload'
 import type { ReactNode } from 'react'
 
+import { startOfDay } from '@/lib/hours'
+
 import './dashboard.scss'
 
 /**
@@ -14,6 +16,7 @@ import './dashboard.scss'
 const ADMIN = '/admin'
 const DISHES = `${ADMIN}/collections/menu-items`
 const SETTINGS = `${ADMIN}/globals/site-settings`
+const WEB_ORDERS = `${ADMIN}/web-orders`
 
 const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
 
@@ -63,6 +66,23 @@ export async function Dashboard({ payload, user }: AdminViewServerProps) {
 
   const timeZone = settings.timezone || 'America/Chicago'
   const banner = bannerStatus(settings.banner, timeZone)
+  const online = Boolean(settings.onlinePickup)
+  const today = online
+    ? await payload.find({
+        collection: 'web-orders',
+        where: {
+          and: [
+            { status: { equals: 'paid' } },
+            { createdAt: { greater_than_equal: startOfDay(timeZone).toISOString() } },
+          ],
+        },
+        limit: 500,
+        depth: 0,
+        pagination: false,
+        select: { totalCents: true },
+      })
+    : null
+  const todayTotal = today?.docs.reduce((sum, o) => sum + (o.totalCents ?? 0), 0) ?? 0
   const name =
     (user && 'name' in user && typeof user.name === 'string' && user.name.trim()) ||
     (user?.email ? String(user.email).split('@')[0] : '')
@@ -107,6 +127,16 @@ export async function Dashboard({ payload, user }: AdminViewServerProps) {
           Right now
         </h2>
         <ul className="ab-dash__stats">
+          {today ? (
+            <Stat
+              href={WEB_ORDERS}
+              label="Web orders today"
+              value={today.docs.length}
+              note={today.docs.length ? `${money.format(todayTotal / 100)} paid` : 'none yet'}
+              accent={today.docs.length > 0}
+              muted={!today.docs.length}
+            />
+          ) : null}
           <Stat
             href={`${DISHES}?where[available][equals]=true`}
             label="On the menu"
@@ -144,6 +174,14 @@ export async function Dashboard({ payload, user }: AdminViewServerProps) {
           Quick actions
         </h2>
         <ul className="ab-dash__actions">
+          {online ? (
+            <Action
+              href={WEB_ORDERS}
+              icon="bag"
+              title="See today’s web orders"
+              hint="Live list with a chime for each new paid order."
+            />
+          ) : null}
           <Action
             href={DISHES}
             icon="tag"
@@ -217,6 +255,14 @@ export async function Dashboard({ payload, user }: AdminViewServerProps) {
               create
             />
             <Item href={SETTINGS} title="Site settings" text="Prices, banner, hours, links" />
+          </Group>
+          <Group title="Orders">
+            <Item href={WEB_ORDERS} title="Web orders today" text="Live, with a chime" />
+            <Item
+              href={`${ADMIN}/collections/web-orders`}
+              title="All web orders"
+              text="Every pickup order from the website"
+            />
           </Group>
           <Group title="Admin">
             <Item
@@ -331,6 +377,7 @@ const ICONS = {
   image: 'M4 5h16v14H4zM4 16l5-5 4 4 2-2 5 5M15.5 9.5h.01',
   userPlus: 'M15 19c0-3-2.7-5-6-5s-6 2-6 5M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm10-3v6m3-3h-6',
   plus: 'M12 5v14M5 12h14',
+  bag: 'M5 8h14l-1 12H6L5 8Zm4 0V6a3 3 0 0 1 6 0v2',
   external: 'M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5',
   alert:
     'M12 9v4m0 4h.01M10.3 3.9 2.6 17a2 2 0 0 0 1.7 3h15.4a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z',

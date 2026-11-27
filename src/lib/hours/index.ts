@@ -162,3 +162,9 @@ export function pickupWindow(
   }
   return { open: false, opensAt }
 }
+
+/** Midnight at the start of `now`'s date in `timeZone` (for "today's orders"). */
+export function startOfDay(timeZone: string, now: Date = new Date()): Date {
+  const p = zonedParts(now, timeZone)
+  return zonedInstant(p.year, p.month, p.day, '00:00', timeZone)
+}
