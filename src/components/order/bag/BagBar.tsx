@@ -18,8 +18,10 @@ export const BAG_PATH = '/order/pickup'
  * steps aside.
  */
 export function BagBarSwitch({ children }: { children: ReactNode }) {
-  const { count, subtotalCents } = useBag()
+  const { count, subtotalCents, online } = useBag()
   const pathname = usePathname()
+  // The checkout and its confirmation have their own Pay / call buttons.
+  if (online && pathname.startsWith(BAG_PATH)) return null
   if (!count) return children
   if (pathname === BAG_PATH) return null
   return (

@@ -83,8 +83,17 @@ export function resolveOrderLinks(item: ItemOrderUrls | null, store: StoreOrderU
   return links
 }
 
-/** Clover owns pickup when configured. Marketplaces are the pickup fallback. */
-export function linksForMode(links: OrderLink[], mode: OrderMode): ModeLink[] {
+/**
+ * Clover owns pickup when configured. Marketplaces are the pickup fallback.
+ * With `online` (pickup ordered on this website) there's no app to open:
+ * callers send pickup to /order/pickup.
+ */
+export function linksForMode(
+  links: OrderLink[],
+  mode: OrderMode,
+  { online = false }: { online?: boolean } = {},
+): ModeLink[] {
+  if (mode === 'pickup' && online) return []
   if (mode === 'pickup') {
     const clover = links.find((link) => link.platform === 'clover')
     if (clover) return [{ ...clover, mode, preset: true }]

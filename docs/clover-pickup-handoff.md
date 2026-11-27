@@ -1,5 +1,12 @@
 # AlBeik pickup checkout handoff
 
+> **Superseded (2026-11-27).** The spike described below was replaced by the
+> production build in [the online pickup plan](superpowers/plans/2026-11-27-online-pickup.md)
+> ([design](superpowers/specs/2026-11-27-clover-pickup-design.md)). Its routes
+> (`/order/pickup-spike`, `/order/pickup-card-spike`) and `src/lib/pickup-spike`
+> are gone; links below to those files point at history. Ordering now lives at
+> `/order/pickup`, with the admin's live screen at `/admin/web-orders`.
+
 ## Handoff to Hive
 
 This is AlBeik’s local proof of concept for direct pickup. It verified on-site checkout, one Clover sandbox payment on the same itemized order, sync to a virtual Clover register, and a manually printed kitchen ticket. The implementation and test cases are available as reference. Hive can choose the production architecture and how much of the spike to reuse.

@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useId, useRef, type PointerEvent, type Ref } from 'react'
 
 import type { ModeLink, OrderMode } from '@/lib/data/types'
@@ -16,6 +17,8 @@ type Props = {
   onModeChange: (mode: OrderMode) => void
   item: { slug: string; name: string } | null
   onChoose: (link: ModeLink) => void
+  /** Pickup is ordered on this site: the pickup tab offers that instead of apps. */
+  online?: boolean
 }
 
 const MODES: OrderMode[] = ['delivery', 'pickup']
@@ -29,7 +32,7 @@ const DISMISS_PX = 80
  * Esc, a tap on the backdrop, or dragging the red band down closes it. Links
  * open in the same tab so the platform's app can take over.
  */
-export function OrderSheet({ ref, links, mode, onModeChange, item, onChoose }: Props) {
+export function OrderSheet({ ref, links, mode, onModeChange, item, onChoose, online = false }: Props) {
   const titleId = useId()
   const drag = useRef<{ startY: number; dy: number } | null>(null)
 
@@ -122,6 +125,18 @@ export function OrderSheet({ ref, links, mode, onModeChange, item, onChoose }: P
               ))}
             </div>
           </div>
+          {online && mode === 'pickup' ? (
+            <div className="grid gap-2">
+              <Link
+                href="/order/pickup"
+                className="btn btn-red min-h-14 w-full text-lg"
+                onClick={(event) => event.currentTarget.closest('dialog')?.close()}
+              >
+                {copy.order.pickupHere}
+              </Link>
+              <p className="text-center text-small text-ink-muted">{copy.order.pickupHereNote}</p>
+            </div>
+          ) : null}
           <ul className="grid gap-3">
             {links.map((link) => (
               <li key={link.platform}>

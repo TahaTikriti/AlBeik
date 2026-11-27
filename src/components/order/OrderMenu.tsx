@@ -6,6 +6,7 @@ import type { OrderLink, OrderMode } from '@/lib/data/types'
 import { linksForMode, toOrderAction } from '@/lib/order'
 import { copy } from '@/theme/copy'
 
+import { usePickupOnline } from './bag/BagProvider'
 import { OrderButton, useOrderSheet } from './OrderButton'
 
 const BUTTON = 'btn min-h-11 px-4 text-[1.1rem] shadow-none'
@@ -27,6 +28,7 @@ export function OrderMenu({ links }: { links: OrderLink[] }) {
   const panelId = useId()
   const [open, setOpen] = useState(false)
   const action = toOrderAction(links)
+  const online = usePickupOnline()
   const sheet = useOrderSheet({ links, placement: 'header' })
 
   useEffect(() => {
@@ -49,7 +51,8 @@ export function OrderMenu({ links }: { links: OrderLink[] }) {
     }
   }, [open])
 
-  if (action.kind !== 'choose') {
+  // With online pickup there are always two journeys: the apps and this site.
+  if (action.kind !== 'choose' && !online) {
     return (
       <OrderButton
         links={links}
@@ -92,7 +95,7 @@ export function OrderMenu({ links }: { links: OrderLink[] }) {
         className="order-menu absolute end-0 top-[calc(100%+0.75rem)] w-44 gap-2 rounded-card border border-line bg-surface p-2 shadow-raised"
       >
         {OPTIONS.map(({ mode, className }) =>
-          linksForMode(links, mode).length <= 1 ? (
+          linksForMode(links, mode, { online }).length <= 1 ? (
             <OrderButton
               key={mode}
               links={links}

@@ -8,7 +8,7 @@ import type { CardReceipt } from '@/lib/pickup-card/types'
 import { copy } from '@/theme/copy'
 
 import { useBag } from './bag/BagProvider'
-import { attempts, type CheckoutError, checkoutPath, postCheckout } from './pickupCardClient'
+import { attempts, type CheckoutError, checkoutPath, postCheckout } from './bag/checkoutClient'
 import { PickupProgress } from './PickupProgress'
 
 type Status =

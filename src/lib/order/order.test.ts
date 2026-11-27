@@ -211,3 +211,24 @@ describe('linkForMode', () => {
     expect(linkForMode(dd, 'delivery')).toEqual({ ...dd, mode: 'delivery', preset: true })
   })
 })
+
+describe('linksForMode with online pickup', () => {
+  const links = resolveOrderLinks(null, {
+    doordashStoreUrl: DD_STORE,
+    uberEatsStoreUrl: UE_STORE,
+    cloverPickupUrl: CLOVER,
+  })
+
+  it('sends pickup to the website instead of an app', () => {
+    expect(linksForMode(links, 'pickup', { online: true })).toEqual([])
+  })
+
+  it('keeps the apps for pickup when online pickup is off', () => {
+    expect(linksForMode(links, 'pickup', { online: false })).toEqual(linksForMode(links, 'pickup'))
+    expect(linksForMode(links, 'pickup')).toHaveLength(1)
+  })
+
+  it('leaves delivery alone either way', () => {
+    expect(linksForMode(links, 'delivery', { online: true })).toEqual(linksForMode(links, 'delivery'))
+  })
+})

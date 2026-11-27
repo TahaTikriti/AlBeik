@@ -15,7 +15,10 @@ export function SiteShell({ site, children }: { site: SiteVM; children: ReactNod
   const canOrder = site.storeOrderLinks.length > 0 || site.pickup.enabled
   const location = site.locations[0]
   return (
-    <BagProvider contact={{ phone: location?.phone ?? null, phoneHref: location?.phoneHref ?? null }}>
+    <BagProvider
+      contact={{ phone: location?.phone ?? null, phoneHref: location?.phoneHref ?? null }}
+      online={site.pickup.enabled}
+    >
       <a href="#main" className="skip-link">
         {copy.skipToContent}
       </a>

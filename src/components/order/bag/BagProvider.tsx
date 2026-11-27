@@ -21,6 +21,8 @@ type Bag = {
   dispatch: Dispatch<BagAction>
   /** For "call us" when ordering online fails. */
   contact: Contact
+  /** Online pickup is on: pickup is ordered on this site, not in an app. */
+  online: boolean
 }
 
 type Contact = { phone: string | null; phoneHref: string | null }
@@ -28,7 +30,15 @@ type Contact = { phone: string | null; phoneHref: string | null }
 const BagContext = createContext<Bag | null>(null)
 
 /** The pickup bag, kept in this browser so it survives a reload or a closed tab. */
-export function BagProvider({ children, contact }: { children: ReactNode; contact: Contact }) {
+export function BagProvider({
+  children,
+  contact,
+  online,
+}: {
+  children: ReactNode
+  contact: Contact
+  online: boolean
+}) {
   const [state, dispatch] = useReducer(
     (s: { lines: BagLine[]; ready: boolean }, action: BagAction | { type: 'restored'; lines: BagLine[] }) =>
       action.type === 'restored'
@@ -72,8 +82,14 @@ export function BagProvider({ children, contact }: { children: ReactNode; contac
     ready: state.ready,
     dispatch: dispatch as Dispatch<BagAction>,
     contact,
+    online,
   }
   return <BagContext value={value}>{children}</BagContext>
+}
+
+/** True when pickup is ordered on this site (false outside the site shell). */
+export function usePickupOnline(): boolean {
+  return useContext(BagContext)?.online ?? false
 }
 
 export function useBag(): Bag {

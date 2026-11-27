@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useRef, useState, type MouseEvent } from 'react'
 
 import { track, type Placement } from '@/lib/analytics'
@@ -8,6 +9,8 @@ import { linksForMode } from '@/lib/order'
 import { copy } from '@/theme/copy'
 
 import { ui } from '../ui/classes'
+import { BAG_PATH } from './bag/BagBar'
+import { usePickupOnline } from './bag/BagProvider'
 import { emberBurst } from './emberBurst'
 import { OrderSheet } from './OrderSheet'
 
@@ -44,6 +47,8 @@ export function useOrderSheet({
   const dialog = useRef<HTMLDialogElement>(null)
   const [mode, setMode] = useState<OrderMode>('delivery')
   const itemKey = item?.slug ?? 'store'
+  // A dish not sold online keeps its apps for pickup; the store-level sheet sends pickup here.
+  const online = usePickupOnline() && !item
 
   const onChoose = (link: ModeLink) =>
     track('order_click', {
@@ -69,7 +74,8 @@ export function useOrderSheet({
   const sheet = (
     <OrderSheet
       ref={dialog}
-      links={linksForMode(links, mode)}
+      links={linksForMode(links, mode, { online })}
+      online={online}
       mode={mode}
       onModeChange={setMode}
       item={item}
@@ -94,10 +100,25 @@ export function OrderButton({
   ariaLabel,
   className = ui.buttonPrimary,
 }: Props) {
+  const online = usePickupOnline() && !item
   const startMode = mode ?? (linksForMode(links, 'delivery').length ? 'delivery' : 'pickup')
-  const modeLinks = linksForMode(links, startMode)
+  const modeLinks = linksForMode(links, startMode, { online })
   const canChoose = (mode ? modeLinks : links).length > 1
   const { open, sheet, onChoose } = useOrderSheet({ links, item, placement })
+
+  // Pickup on this site: one tap to the checkout.
+  if (online && startMode === 'pickup') {
+    return (
+      <Link
+        href={BAG_PATH}
+        className={className}
+        aria-label={ariaLabel}
+        onClick={() => track('order_click', { item: 'store', platform: 'web', level: 'store', placement, mode: 'pickup' })}
+      >
+        {label ?? copy.order.pickupHere}
+      </Link>
+    )
+  }
 
   const [link] = modeLinks
   if (!link) return null

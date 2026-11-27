@@ -25,7 +25,8 @@ export type AnalyticsEvents = {
   order_sheet_open: { item: string; placement: Placement; mode: OrderMode }
   order_click: {
     item: string
-    platform: PlatformId
+    /** `web`: pickup ordered on this site. */
+    platform: PlatformId | 'web'
     level: OrderLink['level']
     placement: Placement
     mode: OrderMode

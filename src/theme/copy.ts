@@ -47,6 +47,9 @@ export const copy = {
     },
     modeLabel: 'Delivery or pickup',
     pickupInApp: (platform: string) => `Choose Pickup in ${platform}`,
+    // Online pickup on: pickup is ordered and paid on this site.
+    pickupHere: 'Order pickup here',
+    pickupHereNote: 'Pay online, skip the line. No app needed.',
     // Each journey's own page (/order/delivery, /order/pickup).
     page: {
       delivery: 'Order *delivery*',

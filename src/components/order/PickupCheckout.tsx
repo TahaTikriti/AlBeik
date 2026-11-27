@@ -12,7 +12,7 @@ import { copy } from '@/theme/copy'
 import { useBag } from './bag/BagProvider'
 import { Stepper } from './bag/Stepper'
 import { PickupCardFields, type TokenizePickupCard } from './PickupCardFields'
-import { attempts, type CheckoutError, DETAILS_KEY, donePath, postCheckout } from './pickupCardClient'
+import { attempts, type CheckoutError, DETAILS_KEY, donePath, postCheckout } from './bag/checkoutClient'
 import { PickupProgress } from './PickupProgress'
 
 const money = (cents: number) => formatPrice(cents / 100)
