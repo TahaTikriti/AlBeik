@@ -7,10 +7,12 @@ import sharp from 'sharp'
 import { fileURLToPath } from 'url'
 
 import { Categories } from './payload/collections/Categories'
+import { CheckoutSteps } from './payload/collections/CheckoutSteps'
 import { Media } from './payload/collections/Media'
 import { MenuItems } from './payload/collections/MenuItems'
 import { Testimonials } from './payload/collections/Testimonials'
 import { Users } from './payload/collections/Users'
+import { WebOrders } from './payload/collections/WebOrders'
 import { About } from './payload/globals/About'
 import { Homepage } from './payload/globals/Homepage'
 import { SiteSettings } from './payload/globals/SiteSettings'
@@ -43,7 +45,7 @@ export default buildConfig({
       ],
     },
   },
-  collections: [MenuItems, Categories, Testimonials, Media, Users],
+  collections: [MenuItems, Categories, Testimonials, WebOrders, Media, Users, CheckoutSteps],
   globals: [Homepage, About, SiteSettings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

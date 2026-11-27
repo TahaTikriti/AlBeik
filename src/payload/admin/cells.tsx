@@ -15,3 +15,8 @@ export function AvailableCell({ cellData }: DefaultServerCellComponentProps) {
     <span>Yes</span>
   )
 }
+
+/** Totals stored in cents (web orders) shown as dollars. */
+export function CentsCell({ cellData }: DefaultServerCellComponentProps) {
+  return <span>{typeof cellData === 'number' ? USD.format(cellData / 100) : '–'}</span>
+}

@@ -1,11 +1,12 @@
 import { randomUUID } from 'node:crypto'
-import { mkdtemp, readFile, readdir, rm } from 'node:fs/promises'
-import { tmpdir } from 'node:os'
-import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { CardConfig } from './config'
-import { lookupCardPayment, reconcileCardPayment, submitCardPayment } from './payment'
-import { paymentDirectory } from './payment-store'
+import {
+  lookupCardPayment as lookup,
+  reconcileCardPayment as reconcile,
+  submitCardPayment as submit,
+} from './payment'
+import { memoryStore } from './store'
 
 const config: CardConfig = {
   mode: 'clover',
@@ -77,15 +78,19 @@ function mockClover(replace?: (path: string, init: RequestInit) => Response | un
   )
   return requests
 }
-let store: string
-beforeEach(async () => {
-  store = await mkdtemp(join(tmpdir(), 'albeik-payment-test-'))
-  vi.stubEnv('PICKUP_CARD_SPIKE_STORE', store)
+let store = memoryStore()
+const submitCardPayment = (...args: DropStore<Parameters<typeof submit>>) =>
+  submit(args[0], store, args[1], args[2])
+const lookupCardPayment = (config: CardConfig, attemptId: string) => lookup(config, store, attemptId)
+const reconcileCardPayment = (config: CardConfig, attemptId: string) =>
+  reconcile(config, store, attemptId)
+type DropStore<T> = T extends [infer A, unknown, ...infer R] ? [A, ...R] : never
+beforeEach(() => {
+  store = memoryStore()
 })
-afterEach(async () => {
+afterEach(() => {
   vi.unstubAllGlobals()
   vi.unstubAllEnvs()
-  await rm(store, { recursive: true, force: true })
 })
 
 describe('pickup card payment', () => {
@@ -116,9 +121,15 @@ describe('pickup card payment', () => {
     expect(JSON.parse(posts[1]!.body)).toMatchObject({ source: input.source, amount: 1080 })
     expect(posts[1]!.headers.get('x-forwarded-for')).toBe('127.0.0.1')
     expect(JSON.parse(posts[2]!.body)).toEqual({ orderRef: { id: 'ORDER1' } })
-    const dir = paymentDirectory(config, input.attemptId)
-    for (const name of await readdir(dir))
-      expect(await readFile(join(dir, name), 'utf8')).not.toContain(input.source)
+    for (const value of store.steps.values()) expect(value).not.toContain(input.source)
+    expect(JSON.stringify([...store.summaries.values()])).not.toContain(input.source)
+    expect(store.summaries.get('M1:' + input.attemptId)).toMatchObject({
+      status: 'paid',
+      printStatus: 'requested',
+      cloverOrderId: 'ORDER1',
+      totalCents: 1080,
+      pickupName: 'Test',
+    })
     await expect(
       submitCardPayment(config, { ...input, fingerprint: 'other' }, prepare),
     ).rejects.toMatchObject({ status: 409 })

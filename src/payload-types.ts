@@ -70,8 +70,10 @@ export interface Config {
     'menu-items': MenuItem;
     categories: Category;
     testimonials: Testimonial;
+    'web-orders': WebOrder;
     media: Media;
     users: User;
+    'checkout-steps': CheckoutStep;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -86,8 +88,10 @@ export interface Config {
     'menu-items': MenuItemsSelect<false> | MenuItemsSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
+    'web-orders': WebOrdersSelect<false> | WebOrdersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
+    'checkout-steps': CheckoutStepsSelect<false> | CheckoutStepsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -285,6 +289,36 @@ export interface Testimonial {
   createdAt: string;
 }
 /**
+ * Pickup orders placed on the website. Refunds and changes are made in Clover; this list is for keeping an eye on them.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "web-orders".
+ */
+export interface WebOrder {
+  id: number;
+  attemptId: string;
+  status: 'pending' | 'paid' | 'declined' | 'review' | 'stopped';
+  printStatus: 'requested' | 'unconfirmed' | 'not-requested';
+  pickupName?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  totalCents?: number | null;
+  lines?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  readyAt?: string | null;
+  cloverOrderId?: string | null;
+  ipHash?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * People who can sign in here and change the website. To add someone, press Create new, type their email and a starting password, and send them both; they can change the password under Account once signed in.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -315,6 +349,27 @@ export interface User {
     | null;
   password?: string | null;
   collection: 'users';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "checkout-steps".
+ */
+export interface CheckoutStep {
+  id: number;
+  key: string;
+  attemptId: string;
+  step: string;
+  value?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -353,12 +408,20 @@ export interface PayloadLockedDocument {
         value: number | Testimonial;
       } | null)
     | ({
+        relationTo: 'web-orders';
+        value: number | WebOrder;
+      } | null)
+    | ({
         relationTo: 'media';
         value: number | Media;
       } | null)
     | ({
         relationTo: 'users';
         value: number | User;
+      } | null)
+    | ({
+        relationTo: 'checkout-steps';
+        value: number | CheckoutStep;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -462,6 +525,25 @@ export interface TestimonialsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "web-orders_select".
+ */
+export interface WebOrdersSelect<T extends boolean = true> {
+  attemptId?: T;
+  status?: T;
+  printStatus?: T;
+  pickupName?: T;
+  phone?: T;
+  email?: T;
+  totalCents?: T;
+  lines?: T;
+  readyAt?: T;
+  cloverOrderId?: T;
+  ipHash?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
@@ -503,6 +585,18 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "checkout-steps_select".
+ */
+export interface CheckoutStepsSelect<T extends boolean = true> {
+  key?: T;
+  attemptId?: T;
+  step?: T;
+  value?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

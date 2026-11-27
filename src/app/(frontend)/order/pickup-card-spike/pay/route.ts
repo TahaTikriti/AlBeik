@@ -1,3 +1,4 @@
+import { checkoutStore } from '@/lib/pickup-card/checkout-store'
 import {
   checkoutResponse,
   currentQuote,
@@ -19,7 +20,7 @@ export async function POST(request: Request) {
         throw error
       }
     })()
-    return submitCardPayment(config, input, async () => {
+    return submitCardPayment(config, await checkoutStore(), input, async () => {
       const prepared = await currentQuote(config, body.lines).catch((error: unknown) => {
         if (error instanceof CardError)
           throw new CardError(error.message, error.status, 'not_submitted')

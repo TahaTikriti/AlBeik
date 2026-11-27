@@ -16,6 +16,7 @@ next-env.d.ts
 
 # testing
 /coverage
+/.pickup-orders/
 /.pickup-card-spike/
 
 # misc

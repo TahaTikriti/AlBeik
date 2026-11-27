@@ -1,9 +1,7 @@
-// Server-only by construction: this module uses the Node filesystem for its journal.
+// Server-only: orchestrates one Clover order and one charge per checkout attempt.
 import { isIP } from 'node:net'
-import { basename } from 'node:path'
+
 import type { CardConfig } from './config'
-import type { CardQuote, CardReceipt } from './types'
-import { CardError } from './types'
 import {
   CloverHttpError,
   confirmedCharge,
@@ -13,7 +11,9 @@ import {
   printOrder,
   readPayment,
 } from './payment-clover'
-import { paymentDirectory, readMilestone, recordMilestone } from './payment-store'
+import type { CheckoutStore, WebOrderSummary } from './store'
+import type { CardQuote, CardReceipt } from './types'
+import { CardError } from './types'
 
 type Attempt = { fingerprint: string; totalCents: number }
 type Input = {
@@ -22,26 +22,46 @@ type Input = {
   source: string
   fingerprint: string
   clientIp: string
+  /** Shown in the admin's Web orders list. */
+  details?: Pick<WebOrderSummary, 'phone' | 'email' | 'readyAt' | 'ipHash'>
 }
 type Prepared = { orderCart: Record<string, unknown>; quote: CardQuote }
 type BeforePayError = { message: string; status: number }
 
+/** Preview and each merchant keep separate attempts. */
+function scoped(config: CardConfig, attemptId: string) {
+  return (config.mode === 'preview' ? 'preview' : config.merchantId) + ':' + attemptId
+}
+
+/** Mirror the receipt into the admin's Web orders list. */
+async function report(store: CheckoutStore, id: string, result: CardReceipt) {
+  // In review without an order, the receipt's ID is only our support reference.
+  const cloverOrderId = await store.read<string>(id, 'order')
+  await store.summarize(id, {
+    status: result.status,
+    printStatus: result.printStatus === 'simulated' ? 'requested' : result.printStatus,
+    ...(cloverOrderId ? { cloverOrderId } : {}),
+  })
+  return result
+}
+
 async function receipt(
   config: CardConfig,
-  dir: string,
+  store: CheckoutStore,
+  id: string,
   attempt: Attempt,
   persistRecovery = false,
 ): Promise<CardReceipt> {
   const [orderId, paid, declined, stopped, payStarted, printed, printStarted, review] =
     await Promise.all([
-      readMilestone<string>(dir, 'order'),
-      readMilestone<string>(dir, 'paid'),
-      readMilestone<boolean>(dir, 'declined'),
-      readMilestone<BeforePayError>(dir, 'stopped'),
-      readMilestone<boolean>(dir, 'pay-started'),
-      readMilestone<string>(dir, 'print-event'),
-      readMilestone<boolean>(dir, 'print-started'),
-      readMilestone<boolean>(dir, 'needs-review'),
+      store.read<string>(id, 'order'),
+      store.read<string>(id, 'paid'),
+      store.read<boolean>(id, 'declined'),
+      store.read<BeforePayError>(id, 'stopped'),
+      store.read<boolean>(id, 'pay-started'),
+      store.read<string>(id, 'print-event'),
+      store.read<boolean>(id, 'print-started'),
+      store.read<boolean>(id, 'needs-review'),
     ])
   if (stopped) throw new CardError(stopped.message, stopped.status, 'not_submitted')
   let verified = Boolean(paid)
@@ -49,10 +69,11 @@ async function receipt(
     // Recover an ambiguous charge via a read, including after a server restart.
     const charge = await readPayment(config, orderId, attempt.totalCents).catch(() => null)
     verified = Boolean(charge)
-    if (charge && persistRecovery) await recordMilestone(dir, 'paid', charge)
+    if (charge && persistRecovery) await store.claim(id, 'paid', charge)
   }
+  const reference = id.slice(id.indexOf(':') + 1, id.indexOf(':') + 9).toUpperCase()
   return {
-    orderId: orderId || (review ? basename(dir).slice(0, 8).toUpperCase() : ''),
+    orderId: orderId || (review ? reference : ''),
     totalCents: attempt.totalCents,
     status: verified ? 'paid' : declined ? 'declined' : review ? 'review' : 'pending',
     printStatus: printed
@@ -67,52 +88,65 @@ async function receipt(
 
 export async function lookupCardPayment(
   config: CardConfig,
+  store: CheckoutStore,
   attemptId: string,
 ): Promise<CardReceipt | null> {
-  const dir = paymentDirectory(config, attemptId)
-  const attempt = await readMilestone<Attempt>(dir, 'attempt')
-  return attempt ? receipt(config, dir, attempt) : null
+  const id = scoped(config, attemptId)
+  const attempt = await store.read<Attempt>(id, 'attempt')
+  return attempt ? receipt(config, store, id, attempt) : null
 }
 
 export async function reconcileCardPayment(
   config: CardConfig,
+  store: CheckoutStore,
   attemptId: string,
 ): Promise<CardReceipt | null> {
-  const dir = paymentDirectory(config, attemptId)
-  const attempt = await readMilestone<Attempt>(dir, 'attempt')
-  return attempt ? finish(config, dir, attempt) : null
+  const id = scoped(config, attemptId)
+  const attempt = await store.read<Attempt>(id, 'attempt')
+  return attempt ? finish(config, store, id, attempt) : null
 }
 
-async function finish(config: CardConfig, dir: string, attempt: Attempt): Promise<CardReceipt> {
-  const result = await receipt(config, dir, attempt, true)
-  if (result.status !== 'paid' || result.printStatus !== 'not-requested') return result
-  if (!(await recordMilestone(dir, 'print-started', true))) return receipt(config, dir, attempt)
+async function finish(
+  config: CardConfig,
+  store: CheckoutStore,
+  id: string,
+  attempt: Attempt,
+): Promise<CardReceipt> {
+  const result = await receipt(config, store, id, attempt, true)
+  if (result.status !== 'paid' || result.printStatus !== 'not-requested')
+    return report(store, id, result)
+  if (!(await store.claim(id, 'print-started', true)))
+    return report(store, id, await receipt(config, store, id, attempt))
   try {
     const eventId =
       config.mode === 'preview' ? 'fixture-event' : await printOrder(config, result.orderId)
-    await recordMilestone(dir, 'print-event', eventId)
-    return { ...result, printStatus: config.mode === 'preview' ? 'simulated' : 'requested' }
+    await store.claim(id, 'print-event', eventId)
+    return report(store, id, {
+      ...result,
+      printStatus: config.mode === 'preview' ? 'simulated' : 'requested',
+    })
   } catch {
-    return { ...result, printStatus: 'unconfirmed' }
+    return report(store, id, { ...result, printStatus: 'unconfirmed' })
   }
 }
 
-async function replay(config: CardConfig, dir: string, input: Input) {
-  const previous = await readMilestone<Attempt>(dir, 'attempt')
+async function replay(config: CardConfig, store: CheckoutStore, id: string, input: Input) {
+  const previous = await store.read<Attempt>(id, 'attempt')
   if (!previous) return null
   if (previous.fingerprint !== input.fingerprint) {
     throw new CardError('This checkout reference already belongs to a different basket.', 409)
   }
-  return finish(config, dir, previous)
+  return finish(config, store, id, previous)
 }
 
 export async function submitCardPayment(
   config: CardConfig,
+  store: CheckoutStore,
   input: Input,
   prepare: () => Promise<Prepared>,
 ): Promise<CardReceipt> {
-  const dir = paymentDirectory(config, input.attemptId)
-  const previous = await replay(config, dir, input)
+  const id = scoped(config, input.attemptId)
+  const previous = await replay(config, store, id, input)
   if (previous) return previous
   const validSource =
     config.mode === 'preview'
@@ -128,11 +162,19 @@ export async function submitCardPayment(
 
   const { quote, orderCart } = await prepare()
   const attempt = { fingerprint: input.fingerprint, totalCents: quote.totalCents }
-  if (!(await recordMilestone(dir, 'attempt', attempt))) {
-    const concurrent = await replay(config, dir, input)
-    if (!concurrent) throw new Error('Checkout journal is unavailable')
+  if (!(await store.claim(id, 'attempt', attempt))) {
+    const concurrent = await replay(config, store, id, input)
+    if (!concurrent) throw new Error('Checkout store is unavailable')
     return concurrent
   }
+  await store.summarize(id, {
+    status: 'pending',
+    printStatus: 'not-requested',
+    totalCents: quote.totalCents,
+    pickupName: input.pickupName,
+    lines: quote.lines.map(({ name, quantity }) => ({ name, quantity })),
+    ...input.details,
+  })
 
   let orderId: string
   try {
@@ -146,35 +188,37 @@ export async function submitCardPayment(
         message: 'Clover rejected this pickup order. No payment was submitted.',
         status: 502,
       }
-      await recordMilestone(dir, 'stopped', stopped)
+      await store.claim(id, 'stopped', stopped)
+      await store.summarize(id, { status: 'stopped', printStatus: 'not-requested' })
       throw new CardError(stopped.message, stopped.status, 'not_submitted')
     }
     // The create request may already have reached Clover. Never create another order for this attempt.
-    await recordMilestone(dir, 'needs-review', true)
-    return receipt(config, dir, attempt)
+    await store.claim(id, 'needs-review', true)
+    return report(store, id, await receipt(config, store, id, attempt))
   }
-  await recordMilestone(dir, 'order', orderId)
+  await store.claim(id, 'order', orderId)
   if (config.mode === 'preview') {
-    await recordMilestone(dir, 'paid', 'fixture-charge')
-    return finish(config, dir, attempt)
+    await store.claim(id, 'paid', 'fixture-charge')
+    return finish(config, store, id, attempt)
   }
 
   const matched = await orderMatches(config, orderId, orderCart, attempt.totalCents).catch(
     () => null,
   )
   if (matched === null) {
-    await recordMilestone(dir, 'needs-review', true)
-    return receipt(config, dir, attempt)
+    await store.claim(id, 'needs-review', true)
+    return report(store, id, await receipt(config, store, id, attempt))
   }
   if (!matched) {
     const stopped = {
       message: 'The Clover order could not be matched to your basket. No payment was submitted.',
       status: 409,
     }
-    await recordMilestone(dir, 'stopped', stopped)
+    await store.claim(id, 'stopped', stopped)
+    await store.summarize(id, { status: 'stopped', printStatus: 'not-requested', cloverOrderId: orderId })
     throw new CardError(stopped.message, stopped.status, 'not_submitted')
   }
-  await recordMilestone(dir, 'pay-started', true)
+  await store.claim(id, 'pay-started', true)
   let chargeId: string | null = null
   try {
     const response = await payOrder(
@@ -189,10 +233,10 @@ export async function submitCardPayment(
   } catch (error) {
     if (error instanceof CloverHttpError && error.code === 'card_declined') {
       chargeId = await readPayment(config, orderId, attempt.totalCents).catch(() => null)
-      if (!chargeId) await recordMilestone(dir, 'declined', true)
+      if (!chargeId) await store.claim(id, 'declined', true)
     }
     // Any other error may have happened after charging. finish() reads the original order.
   }
-  if (chargeId) await recordMilestone(dir, 'paid', chargeId)
-  return finish(config, dir, attempt)
+  if (chargeId) await store.claim(id, 'paid', chargeId)
+  return finish(config, store, id, attempt)
 }

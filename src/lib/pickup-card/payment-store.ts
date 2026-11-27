@@ -1,24 +1,22 @@
-// Immutable, atomically published milestones for this single-host sandbox spike.
+// File-backed checkout store for local development without a database.
+// Steps are immutable and published atomically: a hard link either claims the
+// step name or fails because another process already did. One host only.
 import { randomUUID } from 'node:crypto'
-import { link, mkdir, open, readFile, unlink } from 'node:fs/promises'
+import { link, mkdir, open, readFile, unlink, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import type { CardConfig } from './config'
+
+import type { CheckoutStore, WebOrderSummary } from './store'
 import { CardError } from './types'
 
-export function paymentDirectory(config: CardConfig, attemptId: string) {
-  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(attemptId)) {
-    throw new CardError('Invalid checkout reference.', 400)
-  }
-  const scope =
-    config.mode === 'preview' ? 'preview' : 'sandbox-' + encodeURIComponent(config.merchantId)
-  return join(
-    process.env.PICKUP_CARD_SPIKE_STORE || join(process.cwd(), '.pickup-card-spike'),
-    scope,
-    attemptId.toLowerCase(),
-  )
+const SCOPED_ID = /^([A-Za-z0-9_-]{1,40}):([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$/
+
+function attemptDirectory(root: string, attemptId: string) {
+  const match = SCOPED_ID.exec(attemptId)
+  if (!match) throw new CardError('Invalid checkout reference.', 400)
+  return join(root, match[1]!, match[2]!)
 }
 
-export async function readMilestone<T>(dir: string, name: string): Promise<T | null> {
+async function readStep<T>(dir: string, name: string): Promise<T | null> {
   try {
     return JSON.parse(await readFile(join(dir, name + '.json'), 'utf8')) as T
   } catch (error) {
@@ -29,7 +27,7 @@ export async function readMilestone<T>(dir: string, name: string): Promise<T | n
 
 // Publish after flush. Only the winner of a hard-link claim may issue its side effect;
 // a process that loses the provider response must reconcile, never repeat that POST.
-export async function recordMilestone(dir: string, name: string, value: unknown): Promise<boolean> {
+async function claimStep(dir: string, name: string, value: unknown): Promise<boolean> {
   await mkdir(dir, { recursive: true, mode: 0o700 })
   const temporary = join(dir, randomUUID() + '.tmp')
   const file = await open(temporary, 'wx', 0o600)
@@ -55,5 +53,22 @@ export async function recordMilestone(dir: string, name: string, value: unknown)
     return true
   } finally {
     await unlink(temporary)
+  }
+}
+
+export function fileStore(root: string): CheckoutStore {
+  return {
+    claim: (attemptId, step, value) => claimStep(attemptDirectory(root, attemptId), step, value),
+    read: (attemptId, step) => readStep(attemptDirectory(root, attemptId), step),
+    async summarize(attemptId, summary: WebOrderSummary) {
+      try {
+        const dir = attemptDirectory(root, attemptId)
+        const previous = (await readStep<WebOrderSummary>(dir, 'summary')) ?? {}
+        await mkdir(dir, { recursive: true, mode: 0o700 })
+        await writeFile(join(dir, 'summary.json'), JSON.stringify({ ...previous, ...summary }))
+      } catch {
+        // The summary is for people; checkout never waits on it.
+      }
+    },
   }
 }
