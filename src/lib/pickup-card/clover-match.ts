@@ -17,7 +17,7 @@ export function normalizeName(name: string) {
 }
 
 /** "Sandwich" for a sandwich sold beside its combo; "Regular" otherwise. */
-function baseLabel(dishName: string, hasCombo: boolean) {
+export function baseLabel(dishName: string, hasCombo: boolean) {
   if (!hasCombo) return 'Regular'
   const last = normalizeName(dishName).split(' ').at(-1) ?? ''
   return ['sandwich', 'burger', 'wrap', 'shawarma'].includes(last)

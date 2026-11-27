@@ -49,6 +49,29 @@ describe('dish view model with online pickup', () => {
   })
 })
 
+describe('dish view model in preview mode', () => {
+  const unlinked = { ...doc, pickupOptions: [] } as unknown as MenuItem
+  const ctx = { store, showPrices: false, pickup: true, demo: true }
+
+  it('gives an unlinked dish stable demo options, with its combo', () => {
+    const first = toMenuItem(unlinked, ctx)?.pickup
+    expect(first?.options.map((o) => o.label)).toEqual(['Sandwich', 'Combo'])
+    for (const option of first!.options) expect(option.cloverItemId).toMatch(/^DEMO[A-Z0-9]{9}$/)
+    expect(new Set(first!.options.map((o) => o.cloverItemId)).size).toBe(2)
+    expect(toMenuItem(unlinked, ctx)?.pickup).toEqual(first)
+  })
+
+  it('offers a dish without a combo in its sizes', () => {
+    const sized = { ...unlinked, comboPrice: null, sizes: [{ label: 'Family', price: 30 }] } as unknown as MenuItem
+    expect(toMenuItem(sized, ctx)?.pickup?.options.map((o) => o.label)).toEqual(['Regular', 'Family'])
+  })
+
+  it('keeps real links, and gives nothing when online pickup is off', () => {
+    expect(toMenuItem(doc, ctx)?.pickup?.options[0]?.cloverItemId).toBe('ABCDEFGHJKMN1')
+    expect(toMenuItem(unlinked, { ...ctx, pickup: false })?.pickup).toBeNull()
+  })
+})
+
 describe('site view model with online pickup', () => {
   const settings = {
     siteName: 'AlBeik',

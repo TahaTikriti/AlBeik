@@ -98,6 +98,7 @@ async function findItems(where: Where | null, { draft }: LoadOptions): Promise<M
     store: settings,
     showPrices: settings.showPrices ?? false,
     pickup: Boolean(settings.onlinePickup) && Boolean(process.env.PICKUP_MODE),
+    demo: process.env.PICKUP_MODE?.trim() === 'preview',
   }
   return docs.flatMap((doc) => toMenuItem(doc, ctx) ?? [])
 }

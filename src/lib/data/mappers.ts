@@ -2,6 +2,7 @@ import { completeHours, formatHours } from '@/lib/hours'
 import { resolveOrderLinks, type StoreOrderUrls } from '@/lib/order'
 import { parseEmphasis, plainText } from '@/lib/text'
 import type { Category, Homepage, Media, MenuItem, SiteSetting, Testimonial } from '@/payload-types'
+import { baseLabel } from '@/lib/pickup-card/clover-match'
 
 import type {
   BannerVM,
@@ -67,6 +68,24 @@ export type ItemContext = {
   showPrices: boolean
   /** Online pickup is on: linked dishes get their Clover options. */
   pickup: boolean
+  /** Preview mode: dishes not linked to Clover yet get demo options, so the whole menu can be tried. */
+  demo?: boolean
+}
+
+/** A stable stand-in Clover ID for a dish's nth option in preview mode. */
+function demoId(slug: string, index: number) {
+  let hash = 2166136261
+  for (const char of slug + '#' + index) hash = Math.imul(hash ^ char.charCodeAt(0), 16777619) >>> 0
+  return ('DEMO' + index + hash.toString(36).toUpperCase() + '00000000').slice(0, 13)
+}
+
+function demoOptions(doc: MenuItem) {
+  const combo = typeof doc.comboPrice === 'number'
+  const labels = [
+    baseLabel(doc.name, combo),
+    ...(combo ? ['Combo'] : (doc.sizes ?? []).flatMap(({ label }) => (label?.trim() ? [label.trim()] : []))),
+  ]
+  return labels.map((label, index) => ({ label, cloverItemId: demoId(doc.slug, index) }))
 }
 
 function pickupOptions(doc: MenuItem, ctx: ItemContext): MenuItemVM['pickup'] {
@@ -74,6 +93,7 @@ function pickupOptions(doc: MenuItem, ctx: ItemContext): MenuItemVM['pickup'] {
   const options = (doc.pickupOptions ?? []).flatMap(({ label, cloverItemId }) =>
     label?.trim() && cloverItemId ? [{ label: label.trim(), cloverItemId }] : [],
   )
+  if (!options.length && ctx.demo) return { options: demoOptions(doc) }
   return options.length ? { options } : null
 }
 
