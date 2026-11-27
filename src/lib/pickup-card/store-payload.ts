@@ -6,13 +6,10 @@ import type { CheckoutStore, WebOrderSummary } from './store'
 /** Postgres unique violation, however Payload / Drizzle wrap it. */
 function isUniqueViolation(error: unknown): boolean {
   for (let e: unknown = error, depth = 0; e && depth < 5; depth++) {
-    const err = e as { code?: string; name?: string; data?: { errors?: { message?: string }[] }; cause?: unknown }
+    const err = e as { code?: string; data?: { errors?: { message?: string }[] }; cause?: unknown }
     if (err.code === '23505') return true
-    if (
-      err.name === 'ValidationError' &&
-      err.data?.errors?.some((item) => /unique|already/i.test(item.message ?? ''))
-    )
-      return true
+    // Payload's ValidationError; matched by its data, since production builds minify class names.
+    if (err.data?.errors?.some((item) => /unique|already/i.test(item.message ?? ''))) return true
     e = err.cause
   }
   return false

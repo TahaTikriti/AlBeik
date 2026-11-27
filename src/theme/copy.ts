@@ -25,6 +25,7 @@ export const copy = {
     ctaForOn: (item: string, platform: string) => `Order on ${platform}: ${item}`,
     on: (platform: string) => `Order on ${platform}`,
     sheetTitle: 'Pick your app',
+    sheetTitlePickup: 'Order ahead',
     sheetIntro: 'Spice bomb is waiting.',
     sheetIntroFor: (item: string) => `${item}. Coming right up.`,
     storeLevelNote: 'Opens AlBeik’s page',

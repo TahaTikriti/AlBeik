@@ -84,3 +84,35 @@ describe.skipIf(!enabled)('payload checkout store', () => {
     expect(await store.countRecent(ip, new Date(Date.now() + 60_000))).toBe(0)
   })
 })
+
+describe('payload checkout store, duplicate keys', () => {
+  // A production build minifies Payload's error classes, so the error's
+  // name is not "ValidationError" there: only its data says what happened.
+  function duplicate(name: string) {
+    return Object.assign(new Error('The following field is invalid: key'), {
+      name,
+      status: 400,
+      data: { collection: 'checkout-steps', errors: [{ message: 'Value must be unique', path: 'key' }] },
+    })
+  }
+
+  it('treats a minified duplicate-key error as already claimed', async () => {
+    const payload = {
+      create: async () => {
+        throw duplicate('a')
+      },
+    } as unknown as Payload
+    await expect(payloadStore(payload).claim('test:x', 'alerted', true)).resolves.toBe(false)
+  })
+
+  it('still throws other validation errors', async () => {
+    const payload = {
+      create: async () => {
+        throw Object.assign(duplicate('a'), {
+          data: { errors: [{ message: 'This field is required.', path: 'step' }] },
+        })
+      },
+    } as unknown as Payload
+    await expect(payloadStore(payload).claim('test:x', 'alerted', true)).rejects.toThrow()
+  })
+})

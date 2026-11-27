@@ -37,6 +37,7 @@ export async function checkoutResponse(action: (config: CardConfig) => Promise<u
         { status: error.status, headers },
       )
     }
+    console.error('[pickup] Checkout failed', error)
     return Response.json(
       {
         error: 'Checkout is temporarily unavailable. Check your order status before trying again.',

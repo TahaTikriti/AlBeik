@@ -84,7 +84,7 @@ export function OrderSheet({ ref, links, mode, onModeChange, item, onChoose, onl
         <div className="grid gap-5 px-gutter pt-6 pb-[calc(1.5rem+var(--safe-bottom))]">
           <div className="grid gap-2">
             <h2 id={titleId} className="text-display-2">
-              {copy.order.sheetTitle}
+              {online && mode === 'pickup' ? copy.order.sheetTitlePickup : copy.order.sheetTitle}
             </h2>
             <p className="text-ink-muted">
               {item && links[0]?.platform !== 'clover'
