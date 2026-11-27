@@ -11,6 +11,7 @@ import { Mustache } from '@/theme/motifs'
 
 import { ui } from '../../ui/classes'
 import { useBag } from './BagProvider'
+import { Stepper } from './Stepper'
 
 const money = (cents: number) => formatPrice(cents / 100)
 
@@ -256,43 +257,5 @@ function Choice({
         {price ? <span className="text-ink-muted tabular-nums">{price}</span> : null}
       </span>
     </label>
-  )
-}
-
-export function Stepper({
-  value,
-  max,
-  min = 1,
-  onChange,
-}: {
-  value: number
-  max: number
-  min?: number
-  onChange: (value: number) => void
-}) {
-  return (
-    <div className="inline-flex items-center gap-1 rounded-full bg-black p-1">
-      <button
-        type="button"
-        aria-label={copy.bag.fewer}
-        className="grid size-10 place-items-center rounded-full text-xl disabled:opacity-40"
-        disabled={value <= min}
-        onClick={() => onChange(value - 1)}
-      >
-        −
-      </button>
-      <span aria-live="polite" className="min-w-8 text-center font-display text-xl tabular-nums">
-        {value}
-      </span>
-      <button
-        type="button"
-        aria-label={copy.bag.more}
-        className="grid size-10 place-items-center rounded-full text-xl disabled:opacity-40"
-        disabled={value >= max}
-        onClick={() => onChange(value + 1)}
-      >
-        +
-      </button>
-    </div>
   )
 }

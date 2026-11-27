@@ -285,4 +285,30 @@ describe('pickup card payment', () => {
     expect(await lookupCardPayment(config, input.attemptId)).toBeNull()
     expect(fetch).not.toHaveBeenCalled()
   })
+
+  it('puts the phone and ready time on the Clover order and sends an email only when given', async () => {
+    const requests = mockClover()
+    const note = 'Pickup for Test · (816) 216-1703 · ready ~6:40 PM'
+    const readyAt = '2026-11-28T00:40:00.000Z'
+    const input = { ...makeInput(), note, details: { phone: '+18162161703', email: 'rami@example.com', readyAt } }
+    expect(await submitCardPayment(config, input, prepare)).toMatchObject({ status: 'paid', readyAt })
+    const posts = requests.filter((r) => r.method === 'POST')
+    expect(JSON.parse(posts[0]!.body).orderCart.note).toBe(note)
+    expect(JSON.parse(posts[1]!.body).email).toBe('rami@example.com')
+
+    const again = mockClover()
+    await submitCardPayment(config, { ...makeInput(), note }, prepare)
+    expect(JSON.parse(again.find((r) => r.path.endsWith('/pay'))!.body)).not.toHaveProperty('email')
+  })
+
+  it('declines the preview decline fixture without charging or printing', async () => {
+    const fetch = vi.fn()
+    vi.stubGlobal('fetch', fetch)
+    const input = { ...makeInput(), source: 'preview-decline' }
+    expect(await submitCardPayment({ mode: 'preview' }, input, prepare)).toMatchObject({
+      status: 'declined',
+      printStatus: 'not-requested',
+    })
+    expect(fetch).not.toHaveBeenCalled()
+  })
 })

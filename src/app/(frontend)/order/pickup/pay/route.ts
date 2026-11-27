@@ -1,0 +1,62 @@
+import { getSite } from '@/lib/data'
+import { checkoutStore } from '@/lib/pickup-card/checkout-store'
+import {
+  assertOrderingOpen,
+  checkoutResponse,
+  clockTime,
+  currentQuote,
+  displayPhone,
+  readCheckoutBody,
+  readPayment,
+} from '@/lib/pickup-card/checkout'
+import { submitCardPayment } from '@/lib/pickup-card/payment'
+import { CardError } from '@/lib/pickup-card/types'
+
+/** Every refusal before Clover is reached says so, so the browser can retry safely. */
+function notSubmitted(error: unknown): never {
+  if (error instanceof CardError)
+    throw new CardError(error.message, error.status, error.code === 'closed' ? 'closed' : 'not_submitted')
+  throw error
+}
+
+export async function POST(request: Request) {
+  return checkoutResponse(async (config) => {
+    const body = await readCheckoutBody(request).catch(notSubmitted)
+    const input = (() => {
+      try {
+        return readPayment(body, config, request)
+      } catch (error) {
+        notSubmitted(error)
+      }
+    })()
+    const site = await getSite()
+    const now = new Date()
+    const readyAt = new Date(now.getTime() + site.pickup.prepMinutes * 60_000)
+    const store = await checkoutStore()
+    return submitCardPayment(
+      config,
+      store,
+      {
+        ...input,
+        note: `Pickup for ${input.pickupName} · ${displayPhone(input.phone)} · ready ~${clockTime(readyAt, site.timezone)}`,
+        details: { phone: input.phone, email: input.email, readyAt: readyAt.toISOString() },
+      },
+      async () => {
+        // Only a new attempt is checked against the clock; a replay returns its receipt.
+        try {
+          assertOrderingOpen(site, now)
+        } catch (error) {
+          notSubmitted(error)
+        }
+        const prepared = await currentQuote(config, body.lines).catch((error: unknown) => {
+          if (error instanceof CardError) notSubmitted(error)
+          throw new CardError('Your bag could not be checked. Please try again.', 503, 'not_submitted')
+        })
+        if (prepared.quote.quoteId !== body.quoteId) {
+          throw new CardError('Prices changed. Check the new total, then pay.', 409, 'requote')
+        }
+        return prepared
+      },
+    )
+  })
+}

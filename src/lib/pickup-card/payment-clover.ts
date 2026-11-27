@@ -59,14 +59,9 @@ function platform(config: Sandbox) {
   return cloverUrls(config.env).platform + encodeURIComponent(config.merchantId)
 }
 
-export async function createOrder(config: Sandbox, cart: JObject, name: string, attemptId: string) {
+export async function createOrder(config: Sandbox, cart: JObject, name: string, note: string) {
   const order = await request(platform(config) + '/atomic_order/orders', config.restToken, {
-    orderCart: {
-      ...cart,
-      groupLineItems: false,
-      title: 'Pickup · ' + name,
-      note: 'Pickup for ' + name + ' (' + attemptId.slice(0, 8) + ')',
-    },
+    orderCart: { ...cart, groupLineItems: false, title: 'Pickup · ' + name, note },
   })
   return id(order)
 }
@@ -111,11 +106,12 @@ export async function payOrder(
   source: string,
   attemptId: string,
   clientIp: string,
+  email: string | null,
 ) {
   return request(
     cloverUrls(config.env).ecommerce + encodeURIComponent(orderId) + '/pay',
     config.privateKey,
-    { source, amount, currency: 'usd', ecomind: 'ecom', email: 'pickup-test@example.com' },
+    { source, amount, currency: 'usd', ecomind: 'ecom', ...(email ? { email } : {}) },
     { 'X-Forwarded-For': clientIp, 'Idempotency-Key': attemptId },
   )
 }

@@ -1,17 +1,14 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useEffect, useRef, useState } from 'react'
 
-import type { CardClient, CardReceipt } from '@/lib/pickup-card/types'
-import { formatPrice } from '@/lib/text'
+import type { CardReceipt } from '@/lib/pickup-card/types'
+import { copy } from '@/theme/copy'
 
-import { ui } from '../ui/classes'
-import {
-  checkoutAttemptKey,
-  pickupCardPath,
-  pickupPaymentRetryPath,
-  postPickupCard,
-} from './pickupCardClient'
+import { useBag } from './bag/BagProvider'
+import { attempts, type CheckoutError, checkoutPath, postCheckout } from './pickupCardClient'
 import { PickupProgress } from './PickupProgress'
 
 type Status =
@@ -20,18 +17,25 @@ type Status =
   | { kind: 'stopped'; message: string }
   | { kind: 'receipt'; receipt: CardReceipt }
 
-export function PickupWaiting({
-  client,
-  phone,
-}: {
-  client: CardClient
-  phone: { label: string; href: string } | null
-}) {
-  const key = checkoutAttemptKey(client)
+export type PickupPlace = {
+  name: string
+  addressLines: string[]
+  mapUrl: string | null
+  phone: string | null
+  phoneHref: string | null
+}
+
+/**
+ * The confirmation: asks the server for this tab's last order until Clover
+ * settles it. Never shows the kitchen ticket's print status.
+ */
+export function PickupWaiting({ timeZone, place }: { timeZone: string; place: PickupPlace | null }) {
+  const router = useRouter()
+  const { dispatch } = useBag()
   const [status, setStatus] = useState<Status>({ kind: 'checking' })
-  const [cycle, setCycle] = useState(0)
   const [polling, setPolling] = useState(true)
-  const preview = client.mode === 'preview'
+  const [cycle, setCycle] = useState(0)
+  const cleared = useRef(false)
 
   useEffect(() => {
     let cancelled = false
@@ -39,176 +43,138 @@ export function PickupWaiting({
 
     async function check(attemptId: string, checksLeft: number) {
       try {
-        const receipt = await postPickupCard<CardReceipt>('/status', { attemptId })
+        const receipt = await postCheckout<CardReceipt>('/status', { attemptId })
         if (cancelled) return
         setStatus({ kind: 'receipt', receipt })
         if (receipt.status !== 'pending') {
+          attempts.settle()
           setPolling(false)
           return
         }
       } catch (error) {
         if (cancelled) return
-        if (error instanceof Error && 'code' in error && error.code === 'not_submitted') {
-          setStatus({ kind: 'stopped', message: error.message })
+        if ((error as CheckoutError).code === 'not_submitted') {
+          attempts.settle()
+          setStatus({ kind: 'stopped', message: (error as Error).message })
           setPolling(false)
           return
         }
       }
-      if (checksLeft > 1) {
-        timer = setTimeout(() => void check(attemptId, checksLeft - 1), 2500)
-      } else {
-        setPolling(false)
-      }
+      if (checksLeft > 1) timer = setTimeout(() => void check(attemptId, checksLeft - 1), 2500)
+      else setPolling(false)
     }
 
-    // Defer the initial check until hydration so browser storage stays client-only.
+    // After hydration: the attempt lives in this tab's storage.
     timer = setTimeout(() => {
-      try {
-        const attemptId = sessionStorage.getItem(key)
-        if (attemptId) {
-          void check(attemptId, 6)
-          return
-        }
-      } catch {
-        // Storage is unavailable in this browser.
+      const attemptId = attempts.last()
+      if (attemptId) void check(attemptId, 8)
+      else {
+        setStatus({ kind: 'missing' })
+        setPolling(false)
       }
-      setStatus({ kind: 'missing' })
-      setPolling(false)
     }, 0)
     return () => {
       cancelled = true
       clearTimeout(timer)
     }
-  }, [cycle, key])
-
-  function continueCheckout() {
-    if (status.kind !== 'missing') sessionStorage.removeItem(key)
-    if (status.kind === 'receipt' && status.receipt.status === 'paid') {
-      sessionStorage.removeItem(key + '.bag')
-      sessionStorage.removeItem(key + '.name')
-    }
-    window.location.replace(
-      status.kind === 'receipt' && status.receipt.status === 'declined'
-        ? pickupPaymentRetryPath
-        : pickupCardPath,
-    )
-  }
+  }, [cycle])
 
   const receipt = status.kind === 'receipt' ? status.receipt : null
-  const needsReview = receipt?.status === 'review'
-  const waiting = status.kind === 'checking' || receipt?.status === 'pending'
-  const title = waiting
-    ? polling
-      ? 'Confirming your order'
-      : 'Payment still pending'
-    : receipt?.status === 'paid'
-      ? preview
-        ? 'Pickup preview complete'
-        : 'Pickup order confirmed'
-      : receipt?.status === 'declined'
-        ? 'Payment declined'
-        : needsReview
-          ? 'Pickup order needs review'
-          : status.kind === 'stopped'
-            ? 'Order could not be placed'
-            : 'No pickup order to show'
+
+  // Paid: the bag has done its job.
+  useEffect(() => {
+    if (receipt?.status === 'paid' && !cleared.current) {
+      cleared.current = true
+      dispatch({ type: 'clear' })
+    }
+  }, [receipt?.status, dispatch])
+
+  const pending = status.kind === 'checking' || receipt?.status === 'pending'
+  const readyTime = receipt?.readyAt
+    ? new Date(receipt.readyAt).toLocaleTimeString('en-US', { timeZone, hour: 'numeric', minute: '2-digit' })
+    : null
+
+  let title: string
+  let body: string | null = null
+  if (pending) title = polling ? copy.checkout.confirming : copy.checkout.pendingTitle
+  else if (receipt?.status === 'paid') title = copy.checkout.inTitle(receipt.orderId.slice(-4).toUpperCase())
+  else if (receipt?.status === 'declined') {
+    title = copy.checkout.declinedTitle
+    body = copy.checkout.declined
+  } else if (receipt?.status === 'review') {
+    title = copy.checkout.reviewTitle
+    body = copy.checkout.reviewBody(receipt.orderId)
+  } else if (status.kind === 'stopped') {
+    title = copy.checkout.stoppedTitle
+    body = status.message
+  } else title = copy.checkout.missingTitle
+  if (pending && !polling) body = copy.checkout.pendingBody
 
   return (
-    <div data-page="pickup-spike" className={ui.container + ' grid gap-6 pt-8 pb-section sm:pt-14'}>
-      <p className="label text-red-text">
-        {preview ? 'Local preview' : 'Clover'} · State Line Rd
-      </p>
-      <section
-        aria-labelledby="pickup-status-title"
-        aria-live="polite"
-        className="grid w-full max-w-2xl gap-4 rounded-card bg-surface-raised p-6 text-ink sm:p-8"
-      >
-        <h1 id="pickup-status-title" className="text-display-2">
-          {title}
-        </h1>
-        {waiting && polling && <PickupProgress label="Checking with Clover…" />}
-        {waiting && !polling && (
-          <>
-            <p className="text-ink-muted">
-              We’re still waiting for payment confirmation. Check the status of this order before
-              paying again.
-            </p>
-            {receipt?.orderId && (
-              <p className="text-small text-ink-muted">
-                Order reference <strong className="text-ink">{receipt.orderId}</strong>
-              </p>
-            )}
-          </>
-        )}
-        {receipt?.status === 'paid' && (
-          <>
-            <p className="text-ink-muted">
-              {preview
-                ? 'Your simulated order is complete. You can try another pickup order.'
-                : 'Clover confirmed payment for this pickup order.'}
-            </p>
-            <dl className="grid gap-3 border-t border-white/15 pt-4 text-small">
-              <div className="flex justify-between gap-4">
-                <dt>Order reference</dt>
-                <dd className="break-all font-semibold">{receipt.orderId}</dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <dt>{preview ? 'Simulated total' : 'Test payment total'}</dt>
-                <dd className="font-semibold tabular-nums">
-                  {formatPrice(receipt.totalCents / 100)}
-                </dd>
-              </div>
-              {!preview && (
-                <div className="flex justify-between gap-4">
-                  <dt>Kitchen ticket</dt>
-                  <dd>
-                    {receipt.printStatus === 'requested'
-                      ? 'Printing requested'
-                      : 'Print unconfirmed'}
-                  </dd>
-                </div>
-              )}
-            </dl>
-          </>
-        )}
-        {receipt?.status === 'declined' && (
-          <p className="text-ink-muted">
-            Try a different card or call AlBeik to place your pickup order.
-          </p>
-        )}
-        {status.kind === 'stopped' && <p className="text-ink-muted">{status.message}</p>}
-        {needsReview && (
-          <p className="text-ink-muted">
-            Payment was never submitted. Ask the restaurant to check pickup reference{' '}
-            <strong>{receipt.orderId}</strong> before placing another order.
-          </p>
-        )}
-        {waiting
-          ? !polling && (
-              <button
-                type="button"
-                className={ui.buttonPrimary + ' justify-self-start'}
-                onClick={() => {
-                  setPolling(true)
-                  setCycle((previous) => previous + 1)
-                }}
-              >
-                Check payment status
-              </button>
-            )
-          : !needsReview && (
-              <div className="flex flex-wrap items-center gap-3">
-                <button type="button" className={ui.buttonPrimary} onClick={continueCheckout}>
-                  {receipt?.status === 'declined' ? 'Try another card' : 'Back to pickup menu'}
-                </button>
-                {receipt?.status === 'declined' && phone && (
-                  <a href={phone.href} className={ui.buttonSecondary}>
-                    Call {phone.label}
-                  </a>
-                )}
-              </div>
-            )}
-      </section>
-    </div>
+    <section aria-live="polite" className="grid max-w-xl gap-5">
+      <h1 className="text-display-2">{title}</h1>
+      {pending && polling ? <PickupProgress label={copy.checkout.confirming} /> : null}
+      {receipt?.status === 'paid' && readyTime ? (
+        <p className="text-lg">{copy.checkout.readyAt(readyTime)}</p>
+      ) : null}
+      {body ? <p className="text-ink-muted">{body}</p> : null}
+
+      {receipt?.status === 'paid' && place ? (
+        <div className="grid gap-3 rounded-card border border-white/15 p-5">
+          <p className="label text-[0.7rem] text-ink-muted">{copy.checkout.pickupAt}</p>
+          <address className="not-italic">
+            <span className="font-semibold">{place.name}</span>
+            {place.addressLines.map((line) => (
+              <span key={line} className="block">
+                {line}
+              </span>
+            ))}
+          </address>
+          <div className="flex flex-wrap gap-2">
+            {place.mapUrl ? (
+              <a href={place.mapUrl} target="_blank" rel="noopener noreferrer" className="btn btn-red min-h-11 px-5">
+                {copy.checkout.directions}
+              </a>
+            ) : null}
+            {place.phoneHref ? (
+              <a href={place.phoneHref} className="btn btn-ghost min-h-11 px-5 text-white">
+                {place.phone}
+              </a>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
+
+      <div className="flex flex-wrap gap-3">
+        {pending && !polling ? (
+          <button
+            type="button"
+            className="btn btn-red"
+            onClick={() => {
+              setPolling(true)
+              setCycle((n) => n + 1)
+            }}
+          >
+            {copy.checkout.checkAgain}
+          </button>
+        ) : null}
+        {receipt?.status === 'declined' || status.kind === 'stopped' ? (
+          <button type="button" className="btn btn-red" onClick={() => router.replace(checkoutPath)}>
+            {copy.checkout.tryAgain}
+          </button>
+        ) : null}
+        {(receipt?.status === 'declined' || receipt?.status === 'review' || (pending && !polling)) &&
+        place?.phoneHref ? (
+          <a href={place.phoneHref} className="btn btn-ghost text-white">
+            {copy.bag.call}
+          </a>
+        ) : null}
+        {!pending ? (
+          <Link href="/menu" className="btn btn-ghost text-white">
+            {receipt?.status === 'paid' ? copy.checkout.orderMore : copy.checkout.backToMenu}
+          </Link>
+        ) : null}
+      </div>
+    </section>
   )
 }

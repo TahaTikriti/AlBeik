@@ -49,6 +49,8 @@ export type CardReceipt = {
   status: 'paid' | 'pending' | 'declined' | 'review'
   printStatus: 'simulated' | 'requested' | 'unconfirmed' | 'not-requested'
   totalCents: number
+  /** ISO time the order should be ready. */
+  readyAt?: string
 }
 
 export type CardClient =

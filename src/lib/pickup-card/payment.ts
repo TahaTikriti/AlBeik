@@ -15,14 +15,16 @@ import type { CheckoutStore, WebOrderSummary } from './store'
 import type { CardQuote, CardReceipt } from './types'
 import { CardError } from './types'
 
-type Attempt = { fingerprint: string; totalCents: number }
+type Attempt = { fingerprint: string; totalCents: number; readyAt?: string }
 type Input = {
   attemptId: string
   pickupName: string
   source: string
   fingerprint: string
   clientIp: string
-  /** Shown in the admin's Web orders list. */
+  /** The Clover order's note for the kitchen: name, phone, ready time. */
+  note?: string
+  /** Shown in the admin's Web orders list; the email also goes on Clover's receipt. */
   details?: Pick<WebOrderSummary, 'phone' | 'email' | 'readyAt' | 'ipHash'>
 }
 type Prepared = { orderCart: Record<string, unknown>; quote: CardQuote }
@@ -75,6 +77,7 @@ async function receipt(
   return {
     orderId: orderId || (review ? reference : ''),
     totalCents: attempt.totalCents,
+    ...(attempt.readyAt ? { readyAt: attempt.readyAt } : {}),
     status: verified ? 'paid' : declined ? 'declined' : review ? 'review' : 'pending',
     printStatus: printed
       ? config.mode === 'preview'
@@ -150,7 +153,7 @@ export async function submitCardPayment(
   if (previous) return previous
   const validSource =
     config.mode === 'preview'
-      ? input.source === 'preview'
+      ? input.source === 'preview' || input.source === 'preview-decline'
       : /^clv_[A-Za-z0-9_-]{1,256}$/.test(input.source)
   if (!validSource || (config.mode === 'clover' && !isIP(input.clientIp))) {
     throw new CardError(
@@ -161,7 +164,11 @@ export async function submitCardPayment(
   }
 
   const { quote, orderCart } = await prepare()
-  const attempt = { fingerprint: input.fingerprint, totalCents: quote.totalCents }
+  const attempt: Attempt = {
+    fingerprint: input.fingerprint,
+    totalCents: quote.totalCents,
+    ...(input.details?.readyAt ? { readyAt: input.details.readyAt } : {}),
+  }
   if (!(await store.claim(id, 'attempt', attempt))) {
     const concurrent = await replay(config, store, id, input)
     if (!concurrent) throw new Error('Checkout store is unavailable')
@@ -181,7 +188,12 @@ export async function submitCardPayment(
     orderId =
       config.mode === 'preview'
         ? 'TEST-' + input.attemptId.slice(0, 8).toUpperCase()
-        : await createOrder(config, orderCart, input.pickupName, input.attemptId)
+        : await createOrder(
+            config,
+            orderCart,
+            input.pickupName,
+            input.note ?? 'Pickup for ' + input.pickupName + ' (' + input.attemptId.slice(0, 8) + ')',
+          )
   } catch (error) {
     if (error instanceof CloverHttpError && [400, 401, 403, 404, 422].includes(error.status)) {
       const stopped = {
@@ -198,7 +210,8 @@ export async function submitCardPayment(
   }
   await store.claim(id, 'order', orderId)
   if (config.mode === 'preview') {
-    await store.claim(id, 'paid', 'fixture-charge')
+    if (input.source === 'preview-decline') await store.claim(id, 'declined', true)
+    else await store.claim(id, 'paid', 'fixture-charge')
     return finish(config, store, id, attempt)
   }
 
@@ -228,6 +241,7 @@ export async function submitCardPayment(
       input.source,
       input.attemptId,
       input.clientIp,
+      input.details?.email ?? null,
     )
     chargeId = confirmedCharge(response, orderId, attempt.totalCents)
   } catch (error) {

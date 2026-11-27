@@ -1,44 +1,50 @@
-import type { CardClient, CardLine } from '@/lib/pickup-card/types'
-import { MAX_ITEM_QUANTITY } from '@/lib/pickup-spike/basket'
+export const checkoutPath = '/order/pickup'
+export const donePath = checkoutPath + '/done'
 
-export const pickupCardPath = '/order/pickup-card-spike'
-export const pickupPaymentRetryPath = pickupCardPath + '?retry=payment'
+// The attempt in flight (until Clover settles it) and the last one, for the
+// confirmation page. Per tab: a second tab can't resubmit this one.
+const PENDING = 'albeik.pickup.attempt'
+const LAST = 'albeik.pickup.last'
+/** Name, phone and email, remembered on this device for the next order. */
+export const DETAILS_KEY = 'albeik.pickup.details'
 
-export function checkoutAttemptKey(client: CardClient) {
-  return 'albeik.pickup-card.' + (client.mode === 'preview' ? 'preview' : client.merchantId)
+function session(action: (storage: Storage) => string | null | void) {
+  try {
+    return action(sessionStorage) ?? null
+  } catch {
+    return null
+  }
 }
 
-export function restorePickupBag(key: string, optionIds: Set<string>): CardLine[] {
-  const lines: unknown = JSON.parse(sessionStorage.getItem(key) ?? '[]')
-  if (!Array.isArray(lines) || lines.length > 50) return []
-  return lines.filter(
-    (line): line is CardLine =>
-      line &&
-      typeof line.optionId === 'string' &&
-      optionIds.has(line.optionId) &&
-      Number.isInteger(line.quantity) &&
-      line.quantity >= 1 &&
-      line.quantity <= MAX_ITEM_QUANTITY &&
-      Array.isArray(line.extraIds) &&
-      line.extraIds.length <= 1 &&
-      line.extraIds.every((id: unknown) => typeof id === 'string'),
-  )
+export const attempts = {
+  pending: () => session((s) => s.getItem(PENDING)),
+  last: () => session((s) => s.getItem(PENDING) ?? s.getItem(LAST)),
+  start: (id: string) =>
+    session((s) => {
+      s.setItem(PENDING, id)
+      s.setItem(LAST, id)
+    }),
+  /** Clover has answered: the next Pay is a new attempt. */
+  settle: () => session((s) => s.removeItem(PENDING)),
 }
 
-export async function postPickupCard<T>(
+export type CheckoutError = Error & { code?: string }
+
+export async function postCheckout<T>(
   route: '/quote' | '/pay' | '/status',
   data: unknown,
+  signal?: AbortSignal,
 ): Promise<T> {
-  const response = await fetch(pickupCardPath + route, {
+  const response = await fetch(checkoutPath + route, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
-    signal: AbortSignal.timeout(35000),
+    signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(35000)]) : AbortSignal.timeout(35000),
   })
-  const body = await response.json()
+  const body = await response.json().catch(() => ({}))
   if (!response.ok) {
-    throw Object.assign(new Error(body.error || 'The request could not be completed.'), {
-      code: body.code,
+    throw Object.assign(new Error(body.error || 'Something went wrong. Please try again.'), {
+      code: body.code as string | undefined,
     })
   }
   return body
