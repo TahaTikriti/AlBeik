@@ -73,4 +73,14 @@ describe.skipIf(!enabled)('payload checkout store', () => {
     expect(docs).toHaveLength(1)
     expect(docs[0]).toMatchObject({ status: 'paid', printStatus: 'requested', cloverOrderId: 'ORDER1' })
   })
+
+  it('counts recent attempts per hashed address', async () => {
+    const ip = 'test-ip-' + randomUUID().slice(0, 8)
+    const before = new Date(Date.now() - 1000)
+    await store.summarize(attempt(), { status: 'pending', printStatus: 'not-requested', ipHash: ip })
+    await store.summarize(attempt(), { status: 'pending', printStatus: 'not-requested', ipHash: ip })
+    await store.summarize(attempt(), { status: 'pending', printStatus: 'not-requested', ipHash: 'other' })
+    expect(await store.countRecent(ip, before)).toBe(2)
+    expect(await store.countRecent(ip, new Date(Date.now() + 60_000))).toBe(0)
+  })
 })

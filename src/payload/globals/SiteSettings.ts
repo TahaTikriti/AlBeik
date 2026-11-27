@@ -125,6 +125,8 @@ export const SiteSettings: GlobalConfig = {
                   name: 'orderAlertEmail',
                   label: 'Email new orders to',
                   type: 'email',
+                  // Settings are public (the site reads them); this address isn't.
+                  access: { read: ({ req }) => Boolean(req.user) },
                   admin: {
                     description: 'Optional. Sends an email for every paid web order.',
                   },

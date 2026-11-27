@@ -71,6 +71,14 @@ const getSettings = cache(async () => {
   return payload.findGlobal({ slug: 'site-settings', depth: 1, overrideAccess: false })
 })
 
+/** Where the paid-order email goes (admin-only field); null in demo mode or when unset. */
+export async function getOrderAlertEmail(): Promise<string | null> {
+  if (!cmsEnabled) return null
+  const payload = await getPayloadClient()
+  const settings = await payload.findGlobal({ slug: 'site-settings', depth: 0, overrideAccess: true })
+  return settings.orderAlertEmail || null
+}
+
 export const getSite = cache(async (): Promise<SiteVM> =>
   cmsEnabled ? toSite(await getSettings(), SERVER_URL) : demoSite(SERVER_URL),
 )

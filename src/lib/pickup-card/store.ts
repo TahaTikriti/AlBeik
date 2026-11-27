@@ -31,12 +31,15 @@ export interface CheckoutStore {
   read<T>(attemptId: string, step: string): Promise<T | null>
   /** Upsert the admin-facing summary. Best effort: never throws into checkout. */
   summarize(attemptId: string, summary: WebOrderSummary): Promise<void>
+  /** Attempts recorded from this hashed address since `since` (for the pay limit). */
+  countRecent(ipHash: string, since: Date): Promise<number>
 }
 
-/** In-process store for tests. */
-export function memoryStore() {
+/** In-process store for tests. `now` dates each attempt's first summary. */
+export function memoryStore(now: () => Date = () => new Date()) {
   const steps = new Map<string, string>()
   const summaries = new Map<string, WebOrderSummary>()
+  const created = new Map<string, number>()
   const store: CheckoutStore & {
     steps: Map<string, string>
     summaries: Map<string, WebOrderSummary>
@@ -54,7 +57,14 @@ export function memoryStore() {
       return raw === undefined ? null : (JSON.parse(raw) as T)
     },
     async summarize(attemptId, summary) {
+      if (!created.has(attemptId)) created.set(attemptId, now().getTime())
       summaries.set(attemptId, { ...summaries.get(attemptId), ...summary })
+    },
+    async countRecent(ipHash, since) {
+      let count = 0
+      for (const [id, summary] of summaries)
+        if (summary.ipHash === ipHash && (created.get(id) ?? 0) >= since.getTime()) count++
+      return count
     },
   }
   return store

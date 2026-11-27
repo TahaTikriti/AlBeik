@@ -1,4 +1,7 @@
+import { after } from 'next/server'
+
 import { getSite } from '@/lib/data'
+import { orderAlert } from '@/lib/pickup-card/alert-hook'
 import { checkoutStore } from '@/lib/pickup-card/checkout-store'
 import {
   assertOrderingOpen,
@@ -9,6 +12,7 @@ import {
   readCheckoutBody,
   readPayment,
 } from '@/lib/pickup-card/checkout'
+import { checkPayLimit, hashIp } from '@/lib/pickup-card/limits'
 import { submitCardPayment } from '@/lib/pickup-card/payment'
 import { CardError } from '@/lib/pickup-card/types'
 
@@ -33,18 +37,20 @@ export async function POST(request: Request) {
     const now = new Date()
     const readyAt = new Date(now.getTime() + site.pickup.prepMinutes * 60_000)
     const store = await checkoutStore()
+    const ipHash = hashIp(input.clientIp, process.env.PAYLOAD_SECRET || 'dev')
     return submitCardPayment(
       config,
       store,
       {
         ...input,
         note: `Pickup for ${input.pickupName} · ${displayPhone(input.phone)} · ready ~${clockTime(readyAt, site.timezone)}`,
-        details: { phone: input.phone, email: input.email, readyAt: readyAt.toISOString() },
+        details: { phone: input.phone, email: input.email, readyAt: readyAt.toISOString(), ipHash },
       },
       async () => {
-        // Only a new attempt is checked against the clock; a replay returns its receipt.
+        // Only a new attempt is checked against the clock and the limit; a replay returns its receipt.
         try {
           assertOrderingOpen(site, now)
+          await checkPayLimit(store, ipHash, now)
         } catch (error) {
           notSubmitted(error)
         }
@@ -57,6 +63,7 @@ export async function POST(request: Request) {
         }
         return prepared
       },
+      orderAlert(after, site.timezone),
     )
   })
 }

@@ -311,4 +311,27 @@ describe('pickup card payment', () => {
     })
     expect(fetch).not.toHaveBeenCalled()
   })
+
+  it('announces a paid order once, however many times it is finished', async () => {
+    mockClover()
+    const notify = vi.fn()
+    const input = { ...makeInput(), details: { phone: '+18162161703', readyAt: '2026-11-28T00:40:00.000Z' } }
+    await submit(config, store, input, prepare, notify)
+    await reconcile(config, store, input.attemptId, notify)
+    await reconcile(config, store, input.attemptId, notify)
+    expect(notify).toHaveBeenCalledTimes(1)
+    expect(notify.mock.calls[0]![0]).toMatchObject({ status: 'paid', pickupName: 'Test', totalCents: 1080, phone: '+18162161703' })
+  })
+
+  it('announces a paid preview order', async () => {
+    const notify = vi.fn()
+    await submit({ mode: 'preview' }, store, { ...makeInput(), source: 'preview' }, prepare, notify)
+    expect(notify).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not announce a declined order', async () => {
+    const notify = vi.fn()
+    await submit({ mode: 'preview' }, store, { ...makeInput(), source: 'preview-decline' }, prepare, notify)
+    expect(notify).not.toHaveBeenCalled()
+  })
 })

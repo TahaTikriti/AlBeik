@@ -28,6 +28,8 @@ type Input = {
   details?: Pick<WebOrderSummary, 'phone' | 'email' | 'readyAt' | 'ipHash'>
 }
 type Prepared = { orderCart: Record<string, unknown>; quote: CardQuote }
+/** Told once about each paid order (the email alert). Must not throw or block. */
+export type Notify = (order: WebOrderSummary) => void
 type BeforePayError = { message: string; status: number }
 
 /** Preview and each merchant keep separate attempts. */
@@ -103,13 +105,37 @@ export async function reconcileCardPayment(
   config: CardConfig,
   store: CheckoutStore,
   attemptId: string,
+  notify?: Notify,
 ): Promise<CardReceipt | null> {
   const id = scoped(config, attemptId)
   const attempt = await store.read<Attempt>(id, 'attempt')
-  return attempt ? finish(config, store, id, attempt) : null
+  return attempt ? finish(config, store, id, attempt, notify) : null
 }
 
 async function finish(
+  config: CardConfig,
+  store: CheckoutStore,
+  id: string,
+  attempt: Attempt,
+  notify?: Notify,
+): Promise<CardReceipt> {
+  return announce(store, id, await settle(config, store, id, attempt), notify)
+}
+
+/** Tell `notify` about a paid order, once per attempt across every process. */
+async function announce(store: CheckoutStore, id: string, result: CardReceipt, notify?: Notify) {
+  if (notify && result.status === 'paid' && (await store.claim(id, 'alerted', true))) {
+    const order = await store.read<WebOrderSummary>(id, 'details')
+    try {
+      notify({ ...order, status: 'paid', printStatus: result.printStatus === 'simulated' ? 'requested' : result.printStatus, cloverOrderId: result.orderId })
+    } catch (error) {
+      console.error('[pickup] Order alert failed', error)
+    }
+  }
+  return result
+}
+
+async function settle(
   config: CardConfig,
   store: CheckoutStore,
   id: string,
@@ -133,13 +159,13 @@ async function finish(
   }
 }
 
-async function replay(config: CardConfig, store: CheckoutStore, id: string, input: Input) {
+async function replay(config: CardConfig, store: CheckoutStore, id: string, input: Input, notify?: Notify) {
   const previous = await store.read<Attempt>(id, 'attempt')
   if (!previous) return null
   if (previous.fingerprint !== input.fingerprint) {
     throw new CardError('This checkout reference already belongs to a different basket.', 409)
   }
-  return finish(config, store, id, previous)
+  return finish(config, store, id, previous, notify)
 }
 
 export async function submitCardPayment(
@@ -147,9 +173,10 @@ export async function submitCardPayment(
   store: CheckoutStore,
   input: Input,
   prepare: () => Promise<Prepared>,
+  notify?: Notify,
 ): Promise<CardReceipt> {
   const id = scoped(config, input.attemptId)
-  const previous = await replay(config, store, id, input)
+  const previous = await replay(config, store, id, input, notify)
   if (previous) return previous
   const validSource =
     config.mode === 'preview'
@@ -170,18 +197,21 @@ export async function submitCardPayment(
     ...(input.details?.readyAt ? { readyAt: input.details.readyAt } : {}),
   }
   if (!(await store.claim(id, 'attempt', attempt))) {
-    const concurrent = await replay(config, store, id, input)
+    const concurrent = await replay(config, store, id, input, notify)
     if (!concurrent) throw new Error('Checkout store is unavailable')
     return concurrent
   }
-  await store.summarize(id, {
+  const details: WebOrderSummary = {
     status: 'pending',
     printStatus: 'not-requested',
     totalCents: quote.totalCents,
     pickupName: input.pickupName,
     lines: quote.lines.map(({ name, quantity }) => ({ name, quantity })),
     ...input.details,
-  })
+  }
+  // Kept with the attempt so a later status check can still announce the order.
+  await store.claim(id, 'details', details)
+  await store.summarize(id, details)
 
   let orderId: string
   try {
@@ -212,7 +242,7 @@ export async function submitCardPayment(
   if (config.mode === 'preview') {
     if (input.source === 'preview-decline') await store.claim(id, 'declined', true)
     else await store.claim(id, 'paid', 'fixture-charge')
-    return finish(config, store, id, attempt)
+    return finish(config, store, id, attempt, notify)
   }
 
   const matched = await orderMatches(config, orderId, orderCart, attempt.totalCents).catch(
@@ -252,5 +282,5 @@ export async function submitCardPayment(
     // Any other error may have happened after charging. finish() reads the original order.
   }
   if (chargeId) await store.claim(id, 'paid', chargeId)
-  return finish(config, store, id, attempt)
+  return finish(config, store, id, attempt, notify)
 }

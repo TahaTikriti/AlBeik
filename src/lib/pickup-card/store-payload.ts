@@ -74,5 +74,13 @@ export function payloadStore(payload: Payload): CheckoutStore {
         console.error('[pickup] Web order summary failed', error)
       }
     },
+    async countRecent(ipHash, since) {
+      const { totalDocs } = await payload.count({
+        collection: 'web-orders',
+        overrideAccess: true,
+        where: { and: [{ ipHash: { equals: ipHash } }, { createdAt: { greater_than_equal: since.toISOString() } }] },
+      })
+      return totalDocs
+    },
   }
 }

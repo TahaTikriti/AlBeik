@@ -6,6 +6,7 @@ import type { SiteVM } from '@/lib/data/types'
 import { pickupWindow } from '@/lib/hours'
 import { loadCardProducts, quoteCardBasket } from './catalog'
 import { type CardConfig, getCardConfig } from './config'
+import { normalizePhone } from './phone'
 import { CardError } from './types'
 
 export async function currentProducts(config: CardConfig) {
@@ -97,19 +98,7 @@ export function attemptIdFrom(value: unknown) {
   return value.toLowerCase()
 }
 
-/** A US number as E.164 (+1XXXXXXXXXX), or null. */
-export function normalizePhone(value: unknown): string | null {
-  if (typeof value !== 'string' || value.length > 32) return null
-  const digits = value.replace(/\D/g, '')
-  const local = digits.length === 11 && digits.startsWith('1') ? digits.slice(1) : digits
-  return /^[2-9]\d{2}[2-9]\d{6}$/.test(local) ? '+1' + local : null
-}
-
-/** "(816) 216-1703", for the kitchen ticket. */
-export function displayPhone(e164: string) {
-  const d = e164.slice(2)
-  return `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`
-}
+export { displayPhone, normalizePhone } from './phone'
 
 function readEmail(value: unknown): string | null {
   const email = typeof value === 'string' ? value.trim() : ''
