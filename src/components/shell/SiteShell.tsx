@@ -18,6 +18,7 @@ export function SiteShell({ site, children }: { site: SiteVM; children: ReactNod
     <BagProvider
       contact={{ phone: location?.phone ?? null, phoneHref: location?.phoneHref ?? null }}
       online={site.pickup.enabled}
+      prepMinutes={site.pickup.prepMinutes}
     >
       <a href="#main" className="skip-link">
         {copy.skipToContent}

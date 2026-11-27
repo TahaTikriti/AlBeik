@@ -1,27 +1,33 @@
+import Link from 'next/link'
+
 import { PickupCheckout } from '@/components/order/PickupCheckout'
-import { PunchLine } from '@/components/ui/PunchLine'
 import { ui } from '@/components/ui/classes'
 import type { SiteVM } from '@/lib/data/types'
 import type { CardClient } from '@/lib/pickup-card/types'
 import { copy } from '@/theme/copy'
 
-/** /order/pickup with online ordering on: the bag, details and payment on one screen. */
+/** /order/pickup with online ordering on: when, the order, who, and payment on one screen. */
 export function PickupCheckoutView({ site, client }: { site: SiteVM; client: CardClient }) {
-  const place = site.locations[0]
+  const location = site.locations[0]
+  const place = {
+    name: location?.name || site.name,
+    address: location?.addressLines[0] ?? null,
+    mapUrl: location?.mapUrl ?? null,
+  }
   return (
-    <div className={`${ui.container} grid gap-8 pt-10 pb-section md:pt-16`}>
-      <header className="grid max-w-xl gap-2">
-        <p className="label text-red-text">
-          {copy.checkout.eyebrow}
-          {place?.addressLines[0] ? ` · ${place.addressLines[0]}` : ''}
-        </p>
-        <h1 className="text-display-1">
-          <PunchLine text={copy.checkout.title} />
+    <div className={`${ui.container} grid max-w-5xl gap-6 pt-6 pb-[calc(9rem+var(--safe-bottom))] md:pt-10 md:pb-section`}>
+      <header className="grid gap-3">
+        <Link
+          href="/menu"
+          className="label inline-flex min-h-tap items-center gap-2 justify-self-start text-[0.7rem] text-ink-muted hover:text-white"
+        >
+          <span aria-hidden>←</span> {copy.checkout.back}
+        </Link>
+        <h1 className="font-display text-[2.4rem] leading-none uppercase md:text-[3rem]">
+          {copy.checkout.title}
         </h1>
       </header>
-      <div className="max-w-xl">
-        <PickupCheckout client={client} timeZone={site.timezone} />
-      </div>
+      <PickupCheckout client={client} timeZone={site.timezone} place={place} />
     </div>
   )
 }

@@ -32,6 +32,13 @@ describe.each(stores)('%s checkout store', (_name, make) => {
     expect(await store.claim(ATTEMPT, 'order', 'B')).toBe(false)
   })
 
+  it('claims a rate-limit slot once', async () => {
+    const store = await make()
+    const window = 'limit:quote:' + 'a1'.repeat(16) + ':29912345'
+    expect(await store.claim(window, '0', true)).toBe(true)
+    expect(await store.claim(window, '0', true)).toBe(false)
+  })
+
   it('keeps the first value after a losing claim', async () => {
     const store = await make()
     await store.claim(ATTEMPT, 'order', 'A')

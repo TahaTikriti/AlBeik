@@ -163,6 +163,25 @@ export function pickupWindow(
   return { open: false, opensAt }
 }
 
+const QUARTER = 15 * 60_000
+
+/**
+ * The later pickup times a customer can choose while ordering is open: every
+ * quarter hour from at least 15 minutes after the ASAP time, until 15 minutes
+ * before closing.
+ */
+export function pickupSlots(
+  window: { lastOrderAt: Date },
+  prepMinutes: number,
+  now: Date,
+): Date[] {
+  const last = window.lastOrderAt.getTime() + prepMinutes * 60_000 - QUARTER
+  let at = Math.ceil((now.getTime() + prepMinutes * 60_000 + QUARTER) / QUARTER) * QUARTER
+  const slots: Date[] = []
+  for (; at <= last; at += QUARTER) slots.push(new Date(at))
+  return slots
+}
+
 /** Midnight at the start of `now`'s date in `timeZone` (for "today's orders"). */
 export function startOfDay(timeZone: string, now: Date = new Date()): Date {
   const p = zonedParts(now, timeZone)

@@ -7,6 +7,7 @@ import type { ModeLink, OrderMode } from '@/lib/data/types'
 import { copy } from '@/theme/copy'
 import { Mustache } from '@/theme/motifs'
 
+import { useStartPickup } from './bag/BagBar'
 import { linkNotes, PlatformLink } from './PlatformLink'
 
 type Props = {
@@ -35,6 +36,7 @@ const DISMISS_PX = 80
 export function OrderSheet({ ref, links, mode, onModeChange, item, onChoose, online = false }: Props) {
   const titleId = useId()
   const drag = useRef<{ startY: number; dy: number } | null>(null)
+  const startPickup = useStartPickup()
 
   const onDragStart = (event: PointerEvent<HTMLDivElement>) => {
     drag.current = { startY: event.clientY, dy: 0 }
@@ -128,9 +130,12 @@ export function OrderSheet({ ref, links, mode, onModeChange, item, onChoose, onl
           {online && mode === 'pickup' ? (
             <div className="grid gap-2">
               <Link
-                href="/order/pickup"
+                href={startPickup.href}
                 className="btn btn-red min-h-14 w-full text-lg"
-                onClick={(event) => event.currentTarget.closest('dialog')?.close()}
+                onClick={(event) => {
+                  event.currentTarget.closest('dialog')?.close()
+                  startPickup.onClick?.(event)
+                }}
               >
                 {copy.order.pickupHere}
               </Link>

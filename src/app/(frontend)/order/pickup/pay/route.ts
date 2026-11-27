@@ -11,6 +11,7 @@ import {
   displayPhone,
   readCheckoutBody,
   readPayment,
+  readPickupTime,
 } from '@/lib/pickup-card/checkout'
 import { hashIp, takeSlot } from '@/lib/pickup-card/limits'
 import { submitCardPayment } from '@/lib/pickup-card/payment'
@@ -38,7 +39,15 @@ export async function POST(request: Request) {
     })()
     const site = await getSite()
     const now = new Date()
-    const readyAt = new Date(now.getTime() + site.pickup.prepMinutes * 60_000)
+    // For the kitchen's note. A new attempt's time is checked in the gate below;
+    // a replay returns its receipt even once that time has passed.
+    const chosen = typeof body.pickupAt === 'string' ? new Date(body.pickupAt) : null
+    const pickup =
+      chosen && !Number.isNaN(chosen.getTime())
+        ? { readyAt: chosen, scheduled: true }
+        : { readyAt: new Date(now.getTime() + site.pickup.prepMinutes * 60_000), scheduled: false }
+    const readyAt = pickup.readyAt
+    const when = clockTime(readyAt, site.timezone)
     const store = await checkoutStore()
     const ipHash = hashIp(input.clientIp, process.env.PAYLOAD_SECRET || 'dev')
     return submitCardPayment(
@@ -46,13 +55,14 @@ export async function POST(request: Request) {
       store,
       {
         ...input,
-        note: `Pickup for ${input.pickupName} · ${displayPhone(input.phone)} · ready ~${clockTime(readyAt, site.timezone)}`,
+        note: `Pickup for ${input.pickupName} · ${displayPhone(input.phone)} · ${pickup.scheduled ? `SCHEDULED for ${when}` : `ASAP, ready ~${when}`}`,
         details: { phone: input.phone, email: input.email, readyAt: readyAt.toISOString(), ipHash },
       },
       async () => {
         // Only a new attempt is checked against the clock and the limit; a replay returns its receipt.
         try {
           assertOrderingOpen(site, now)
+          readPickupTime(body.pickupAt, site, now)
           await takeSlot(store, 'pay', ipHash, now)
         } catch (error) {
           notSubmitted(error)

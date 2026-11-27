@@ -3,11 +3,15 @@
 import {
   createContext,
   type Dispatch,
+  lazy,
   type ReactNode,
+  Suspense,
+  useCallback,
   useContext,
   useEffect,
   useReducer,
   useRef,
+  useState,
 } from 'react'
 
 import { BAG_STORAGE_KEY, type BagAction, type BagLine, bagCount, bagReducer, bagSubtotal, restoreBag } from './bag'
@@ -23,22 +27,32 @@ type Bag = {
   contact: Contact
   /** Online pickup is on: pickup is ordered on this site, not in an app. */
   online: boolean
+  prepMinutes: number
+  /** Opens the bag over the current page. */
+  openBag: () => void
 }
 
 type Contact = { phone: string | null; phoneHref: string | null }
 
 const BagContext = createContext<Bag | null>(null)
 
+const importBagSheet = () => import('./BagSheet')
+const BagSheet = lazy(importBagSheet)
+
 /** The pickup bag, kept in this browser so it survives a reload or a closed tab. */
 export function BagProvider({
   children,
   contact,
   online,
+  prepMinutes,
 }: {
   children: ReactNode
   contact: Contact
   online: boolean
+  prepMinutes: number
 }) {
+  const [bagOpen, setBagOpen] = useState(false)
+  const openBag = useCallback(() => setBagOpen(true), [])
   const [state, dispatch] = useReducer(
     (s: { lines: BagLine[]; ready: boolean }, action: BagAction | { type: 'restored'; lines: BagLine[] }) =>
       action.type === 'restored'
@@ -75,6 +89,12 @@ export function BagProvider({
     }
   }, [state])
 
+  // The bag's code loads in the background once something is in it.
+  const hasLines = state.lines.length > 0
+  useEffect(() => {
+    if (hasLines) void importBagSheet()
+  }, [hasLines])
+
   const value: Bag = {
     lines: state.lines,
     count: bagCount(state.lines),
@@ -83,8 +103,24 @@ export function BagProvider({
     dispatch: dispatch as Dispatch<BagAction>,
     contact,
     online,
+    prepMinutes,
+    openBag,
   }
-  return <BagContext value={value}>{children}</BagContext>
+  return (
+    <BagContext value={value}>
+      {children}
+      {bagOpen ? (
+        <Suspense fallback={null}>
+          <BagSheet onClose={() => setBagOpen(false)} />
+        </Suspense>
+      ) : null}
+    </BagContext>
+  )
+}
+
+/** The bag, or null outside the site shell. */
+export function useOptionalBag(): Bag | null {
+  return useContext(BagContext)
 }
 
 /** True when pickup is ordered on this site (false outside the site shell). */

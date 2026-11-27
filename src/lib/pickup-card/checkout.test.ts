@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import type { SiteVM } from '@/lib/data/types'
-import { assertOrderingOpen, readPayment } from './checkout'
+import { assertOrderingOpen, pickupPlan, readPayment, readPickupTime } from './checkout'
 import { CardError } from './types'
 
 const preview = { mode: 'preview' } as const
@@ -51,6 +51,12 @@ describe('readPayment', () => {
     expect(a).not.toBe(b)
   })
 
+  it('changes the fingerprint when the pickup time changes', () => {
+    const a = readPayment(body(), preview, request()).fingerprint
+    const b = readPayment(body({ pickupAt: '2026-11-24T00:30:00.000Z' }), preview, request()).fingerprint
+    expect(a).not.toBe(b)
+  })
+
   it('accepts the preview decline fixture', () => {
     expect(readPayment(body({ source: 'preview-decline' }), preview, request()).source).toBe('preview-decline')
   })
@@ -86,5 +92,38 @@ describe('assertOrderingOpen', () => {
 
   it('refuses when online pickup is switched off', () => {
     expect(failure(() => assertOrderingOpen(site(false), chicago(23, 12, 0))).code).toBe('closed')
+  })
+})
+
+describe('pickup time', () => {
+  const now = chicago(23, 18, 2)
+
+  it('offers ASAP and the later quarter hours today', () => {
+    const plan = pickupPlan(site(), now)
+    expect(plan.readyAt).toEqual(chicago(23, 18, 22))
+    expect(plan.slots[0]).toEqual(chicago(23, 18, 45))
+    expect(plan.slots.at(-1)).toEqual(chicago(23, 20, 45))
+  })
+
+  it('is ASAP when none is chosen', () => {
+    expect(readPickupTime(undefined, site(), now)).toEqual({ readyAt: chicago(23, 18, 22), scheduled: false })
+  })
+
+  it('takes a later quarter hour today', () => {
+    expect(readPickupTime(chicago(23, 19, 30).toISOString(), site(), now)).toEqual({
+      readyAt: chicago(23, 19, 30),
+      scheduled: true,
+    })
+  })
+
+  it('refuses a chosen time that is now too soon, so the customer picks again', () => {
+    const error = failure(() => readPickupTime(chicago(23, 18, 15).toISOString(), site(), now))
+    expect(error.status).toBe(409)
+    expect(error.message).toMatch(/choose another/i)
+  })
+
+  it('refuses a time off the quarter hour, after closing, or not a time', () => {
+    for (const value of [chicago(23, 19, 10).toISOString(), chicago(23, 21, 0).toISOString(), 'soon', 42])
+      expect(failure(() => readPickupTime(value, site(), now)).status).toBe(409)
   })
 })

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { type OpeningHours, pickupWindow, startOfDay } from './index'
+import { type OpeningHours, pickupSlots, pickupWindow, startOfDay } from './index'
 
 const TZ = 'America/Chicago' // CST in late November: UTC−6
 const hours: OpeningHours[] = [
@@ -54,5 +54,33 @@ describe('startOfDay', () => {
   it('stays on the local date just before midnight UTC rolls over', () => {
     // 23:30 Chicago on the 23rd is 05:30 UTC on the 24th.
     expect(startOfDay(TZ, chicago(23, 23, 30))).toEqual(chicago(23, 0, 0))
+  })
+})
+
+describe('pickupSlots', () => {
+  const open = (now: Date) => {
+    const window = pickupWindow(hours, TZ, 20, now)
+    if (!window.open) throw new Error('closed')
+    return window
+  }
+
+  it('offers every quarter hour after the ASAP time, until 15 minutes before closing', () => {
+    const now = chicago(23, 18, 2)
+    const slots = pickupSlots(open(now), 20, now)
+    expect(slots[0]).toEqual(chicago(23, 18, 45))
+    expect(slots.at(-1)).toEqual(chicago(23, 20, 45))
+    expect(slots).toHaveLength(9)
+  })
+
+  it('offers no later time close to closing: only ASAP', () => {
+    const now = chicago(23, 20, 20)
+    expect(pickupSlots(open(now), 20, now)).toEqual([])
+  })
+
+  it('runs past midnight on a late night', () => {
+    const now = chicago(27, 23, 50) // Friday, open until 2 AM
+    const slots = pickupSlots(open(now), 20, now)
+    expect(slots[0]).toEqual(chicago(28, 0, 30))
+    expect(slots.at(-1)).toEqual(chicago(28, 1, 45))
   })
 })

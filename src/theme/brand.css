@@ -502,6 +502,20 @@
       background-color: rgb(0 0 0 / 0);
     }
   }
+  /* The bag: a bottom sheet on phones, a panel from the right from tablets up. */
+  @media (min-width: 48rem) {
+    .sheet.drawer {
+      translate: 100% 0;
+    }
+    .sheet.drawer[open] {
+      translate: 0 0;
+    }
+    @starting-style {
+      .sheet.drawer[open] {
+        translate: 100% 0;
+      }
+    }
+  }
 }
 
 /* ── Motion (only when the visitor hasn't asked for less) ─────────────── */

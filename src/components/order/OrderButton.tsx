@@ -9,7 +9,7 @@ import { linksForMode } from '@/lib/order'
 import { copy } from '@/theme/copy'
 
 import { ui } from '../ui/classes'
-import { BAG_PATH } from './bag/BagBar'
+import { useStartPickup } from './bag/BagBar'
 import { usePickupOnline } from './bag/BagProvider'
 import { emberBurst } from './emberBurst'
 import { OrderSheet } from './OrderSheet'
@@ -105,15 +105,19 @@ export function OrderButton({
   const modeLinks = linksForMode(links, startMode, { online })
   const canChoose = (mode ? modeLinks : links).length > 1
   const { open, sheet, onChoose } = useOrderSheet({ links, item, placement })
+  const startPickup = useStartPickup()
 
-  // Pickup on this site: one tap to the checkout.
+  // Pickup on this site: the menu to start an order, or the bag if it has one.
   if (online && startMode === 'pickup') {
     return (
       <Link
-        href={BAG_PATH}
+        href={startPickup.href}
         className={className}
         aria-label={ariaLabel}
-        onClick={() => track('order_click', { item: 'store', platform: 'web', level: 'store', placement, mode: 'pickup' })}
+        onClick={(event) => {
+          track('order_click', { item: 'store', platform: 'web', level: 'store', placement, mode: 'pickup' })
+          startPickup.onClick?.(event)
+        }}
       >
         {label ?? copy.order.pickupHere}
       </Link>

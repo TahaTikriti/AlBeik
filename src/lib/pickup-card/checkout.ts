@@ -3,7 +3,7 @@ import { isIP } from 'node:net'
 
 import { getMenuPageData } from '@/lib/data'
 import type { SiteVM } from '@/lib/data/types'
-import { pickupWindow } from '@/lib/hours'
+import { pickupSlots, pickupWindow } from '@/lib/hours'
 import { loadCardProducts, quoteCardBasket } from './catalog'
 import { type CardConfig, getCardConfig } from './config'
 import { normalizePhone } from './phone'
@@ -119,7 +119,7 @@ export function readPayment(body: Record<string, unknown>, config: CardConfig, r
   const phone = normalizePhone(body.phone)
   if (!phone) throw new CardError('Enter a 10-digit phone number so we can reach you.', 400)
   const email = readEmail(body.email)
-  const { source, quoteId, lines } = body
+  const { source, quoteId, lines, pickupAt } = body
   if (
     typeof source !== 'string' ||
     (config.mode === 'preview'
@@ -135,7 +135,7 @@ export function readPayment(body: Record<string, unknown>, config: CardConfig, r
   // and contact details too so a replay with other contents cannot return another
   // basket's receipt.
   const fingerprint = createHash('sha256')
-    .update(JSON.stringify([pickupName, phone, email, quoteId, lines]))
+    .update(JSON.stringify([pickupName, phone, email, quoteId, lines, pickupAt ?? null]))
     .digest('hex')
   const forwarded = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
   const host = new URL(request.url).hostname
@@ -171,6 +171,32 @@ export function assertOrderingOpen(site: SiteVM, now: Date) {
     409,
     'closed',
   )
+}
+
+/** When an order placed now would be ready, and the later times today a customer can choose. */
+export function pickupPlan(site: SiteVM, now: Date) {
+  const window = assertOrderingOpen(site, now)
+  const prep = site.pickup.prepMinutes
+  return { readyAt: new Date(now.getTime() + prep * 60_000), slots: pickupSlots(window, prep, now) }
+}
+
+/** The customer's pickup time: ASAP when none is chosen, else one of today's later slots. */
+export function readPickupTime(value: unknown, site: SiteVM, now: Date) {
+  const plan = pickupPlan(site, now)
+  if (value === undefined || value === null || value === '') return { readyAt: plan.readyAt, scheduled: false }
+  const at = typeof value === 'string' ? new Date(value) : null
+  const last = plan.slots.at(-1)
+  const quarter = 15 * 60_000
+  if (
+    !at ||
+    Number.isNaN(at.getTime()) ||
+    at.getTime() % quarter !== 0 ||
+    at < plan.readyAt ||
+    !last ||
+    at > last
+  )
+    throw new CardError('That pickup time isn’t available any more. Choose another.', 409)
+  return { readyAt: at, scheduled: true }
 }
 
 /** "6:40 PM" in the restaurant's time zone. */

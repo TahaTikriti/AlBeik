@@ -10,10 +10,15 @@ import { CardError } from './types'
 
 const SCOPED_ID = /^([A-Za-z0-9_-]{1,40}):([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$/
 
+// A rate-limit window (see limits.ts): limit:<kind>:<hashed address>:<window number>.
+const LIMIT_ID = /^limit:([a-z]{1,20}):([0-9a-f]{1,64}):(\d{1,16})$/
+
 function attemptDirectory(root: string, attemptId: string) {
   const match = SCOPED_ID.exec(attemptId)
-  if (!match) throw new CardError('Invalid checkout reference.', 400)
-  return join(root, match[1]!, match[2]!)
+  if (match) return join(root, match[1]!, match[2]!)
+  const limit = LIMIT_ID.exec(attemptId)
+  if (limit) return join(root, 'limits', limit[1]!, limit[2]! + '-' + limit[3]!)
+  throw new CardError('Invalid checkout reference.', 400)
 }
 
 async function readStep<T>(dir: string, name: string): Promise<T | null> {

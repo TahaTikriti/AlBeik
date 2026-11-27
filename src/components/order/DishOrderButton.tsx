@@ -5,7 +5,7 @@ import { AddButton } from './bag/AddButton'
 import { OrderButton } from './OrderButton'
 
 type Props = {
-  item: Pick<MenuItemVM, 'slug' | 'name' | 'orderLinks' | 'pickup'>
+  item: Pick<MenuItemVM, 'slug' | 'name' | 'orderLinks' | 'pickup'> & Partial<Pick<MenuItemVM, 'image' | 'description'>>
   placement: Placement
   className: string
   label?: string
