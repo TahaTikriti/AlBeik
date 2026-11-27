@@ -18,6 +18,18 @@ export const WebOrders: CollectionConfig = {
     pagination: { defaultLimit: 50 },
   },
   defaultSort: '-createdAt',
+  endpoints: [
+    {
+      // The live screen calls this each poll: orders the customer stopped watching still settle.
+      path: '/reconcile',
+      method: 'post',
+      handler: async (req) => {
+        if (!req.user) return Response.json({ error: 'Unauthorized' }, { status: 401 })
+        const { reconcileWebOrders } = await import('@/lib/pickup-card/reconcile-web-orders')
+        return Response.json({ checked: await reconcileWebOrders(req.payload) })
+      },
+    },
+  ],
   access: {
     read: authenticated,
     create: () => false,

@@ -133,6 +133,18 @@ export async function readPayment(config: Sandbox, orderId: string, amount: numb
   return confirmedCharge(order, orderId, amount)
 }
 
+/** Removes an unpaid order, so a declined attempt leaves nothing for the kitchen. */
+export async function cancelOrder(config: Sandbox, orderId: string) {
+  const response = await fetch(platform(config) + '/orders/' + encodeURIComponent(orderId), {
+    method: 'DELETE',
+    headers: { Accept: 'application/json', Authorization: 'Bearer ' + config.restToken, 'User-Agent': userAgent },
+    redirect: 'error',
+    cache: 'no-store',
+    signal: AbortSignal.timeout(10_000),
+  })
+  if (!response.ok) throw new CloverHttpError(response.status)
+}
+
 export async function printOrder(config: Sandbox, orderId: string) {
   const event = await request(platform(config) + '/print_event', config.restToken, {
     orderRef: { id: orderId },

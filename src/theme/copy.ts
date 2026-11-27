@@ -124,6 +124,7 @@ export const copy = {
     checkAgain: 'Check again',
     declinedTitle: 'Payment declined',
     tryAgain: 'Try another card',
+    retryQuote: 'Try again',
     reviewTitle: 'We need to check this order',
     reviewBody: (ref: string) =>
       `No payment was taken. Please call us and mention reference ${ref} before ordering again.`,

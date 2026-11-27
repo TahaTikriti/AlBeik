@@ -3,6 +3,7 @@ import { isIP } from 'node:net'
 
 import type { CardConfig } from './config'
 import {
+  cancelOrder,
   CloverHttpError,
   confirmedCharge,
   createOrder,
@@ -15,7 +16,7 @@ import type { CheckoutStore, WebOrderSummary } from './store'
 import type { CardQuote, CardReceipt } from './types'
 import { CardError } from './types'
 
-type Attempt = { fingerprint: string; totalCents: number; readyAt?: string }
+type Attempt = { fingerprint: string; totalCents: number; readyAt?: string; startedAt?: string }
 type Input = {
   attemptId: string
   pickupName: string
@@ -31,6 +32,28 @@ type Prepared = { orderCart: Record<string, unknown>; quote: CardQuote }
 /** Told once about each paid order (the email alert). Must not throw or block. */
 export type Notify = (order: WebOrderSummary) => void
 type BeforePayError = { message: string; status: number }
+
+/** Longer than any pay request can run: past this, an unsettled attempt is closed. */
+const SETTLE_DEADLINE_MS = 5 * 60_000
+const ABANDONED = 'abandoned'
+const notCharged: Record<'refused' | 'lost' | 'abandoned', BeforePayError> = {
+  refused: { message: 'Clover could not take this payment. You were not charged.', status: 402 },
+  lost: { message: "This order didn't go through. You were not charged.", status: 409 },
+  abandoned: { message: "This order didn't reach us. You were not charged.", status: 409 },
+}
+
+/** Best effort: an unpaid Clover order left open could be cooked by mistake. */
+async function cancelUnpaid(config: CardConfig, orderId: string) {
+  if (config.mode !== 'clover') return
+  await cancelOrder(config, orderId).catch((error: unknown) =>
+    console.error('[pickup] Could not cancel unpaid Clover order', orderId, error),
+  )
+}
+
+async function stop(store: CheckoutStore, id: string, reason: BeforePayError, cloverOrderId?: string) {
+  await store.claim(id, 'stopped', reason)
+  await store.summarize(id, { status: 'stopped', printStatus: 'not-requested', ...(cloverOrderId ? { cloverOrderId } : {}) })
+}
 
 /** Preview and each merchant keep separate attempts. */
 function scoped(config: CardConfig, attemptId: string) {
@@ -75,12 +98,26 @@ async function receipt(
     verified = Boolean(charge)
     if (charge && persistRecovery) await store.claim(id, 'paid', charge)
   }
+  let inReview = Boolean(review)
+  const expired =
+    !verified && !declined && !review && attempt.startedAt
+      ? Date.now() - Date.parse(attempt.startedAt) > SETTLE_DEADLINE_MS
+      : false
+  if (expired && payStarted) {
+    // Clover never confirmed the charge either way: a person has to look.
+    if (persistRecovery) await store.claim(id, 'needs-review', true)
+    inReview = true
+  } else if (expired) {
+    // The server stopped before asking Clover to charge.
+    if (persistRecovery) await stop(store, id, notCharged.lost, orderId ?? undefined)
+    throw new CardError(notCharged.lost.message, notCharged.lost.status, 'not_submitted')
+  }
   const reference = id.slice(id.indexOf(':') + 1, id.indexOf(':') + 9).toUpperCase()
   return {
-    orderId: orderId || (review ? reference : ''),
+    orderId: orderId || (inReview ? reference : ''),
     totalCents: attempt.totalCents,
     ...(attempt.readyAt ? { readyAt: attempt.readyAt } : {}),
-    status: verified ? 'paid' : declined ? 'declined' : review ? 'review' : 'pending',
+    status: verified ? 'paid' : declined ? 'declined' : inReview ? 'review' : 'pending',
     printStatus: printed
       ? config.mode === 'preview'
         ? 'simulated'
@@ -107,9 +144,31 @@ export async function reconcileCardPayment(
   attemptId: string,
   notify?: Notify,
 ): Promise<CardReceipt | null> {
-  const id = scoped(config, attemptId)
+  return reconcileStoredPayment(config, store, scoped(config, attemptId), notify)
+}
+
+/** The admin list's reconcile, by the stored (scoped) ID; null for another merchant's. */
+export async function reconcileStoredPayment(
+  config: CardConfig,
+  store: CheckoutStore,
+  id: string,
+  notify?: Notify,
+): Promise<CardReceipt | null> {
+  if (!id.startsWith(scoped(config, ''))) return null
   const attempt = await store.read<Attempt>(id, 'attempt')
   return attempt ? finish(config, store, id, attempt, notify) : null
+}
+
+/**
+ * The confirmation page found no record of its attempt: close it, so a pay
+ * request still on its way is refused instead of charging later. False when
+ * the attempt exists.
+ */
+export async function abandonCardPayment(config: CardConfig, store: CheckoutStore, attemptId: string) {
+  const id = scoped(config, attemptId)
+  if (!(await store.claim(id, 'attempt', { fingerprint: ABANDONED, totalCents: 0 } satisfies Attempt))) return false
+  await store.claim(id, 'stopped', notCharged.abandoned)
+  return true
 }
 
 async function finish(
@@ -162,6 +221,8 @@ async function settle(
 async function replay(config: CardConfig, store: CheckoutStore, id: string, input: Input, notify?: Notify) {
   const previous = await store.read<Attempt>(id, 'attempt')
   if (!previous) return null
+  if (previous.fingerprint === ABANDONED)
+    throw new CardError(notCharged.abandoned.message, notCharged.abandoned.status, 'not_submitted')
   if (previous.fingerprint !== input.fingerprint) {
     throw new CardError('This checkout reference already belongs to a different basket.', 409)
   }
@@ -195,6 +256,7 @@ export async function submitCardPayment(
     fingerprint: input.fingerprint,
     totalCents: quote.totalCents,
     ...(input.details?.readyAt ? { readyAt: input.details.readyAt } : {}),
+    startedAt: new Date().toISOString(),
   }
   if (!(await store.claim(id, 'attempt', attempt))) {
     const concurrent = await replay(config, store, id, input, notify)
@@ -257,8 +319,8 @@ export async function submitCardPayment(
       message: 'The Clover order could not be matched to your basket. No payment was submitted.',
       status: 409,
     }
-    await store.claim(id, 'stopped', stopped)
-    await store.summarize(id, { status: 'stopped', printStatus: 'not-requested', cloverOrderId: orderId })
+    await stop(store, id, stopped, orderId)
+    await cancelUnpaid(config, orderId)
     throw new CardError(stopped.message, stopped.status, 'not_submitted')
   }
   await store.claim(id, 'pay-started', true)
@@ -275,9 +337,19 @@ export async function submitCardPayment(
     )
     chargeId = confirmedCharge(response, orderId, attempt.totalCents)
   } catch (error) {
-    if (error instanceof CloverHttpError && error.code === 'card_declined') {
+    // A decline, or a request Clover refused outright (a bad email, a used token…).
+    const declined = error instanceof CloverHttpError && error.code === 'card_declined'
+    const refused =
+      error instanceof CloverHttpError &&
+      [400, 422].includes(error.status) &&
+      error.code !== 'order_already_paid'
+    if (declined || refused) {
       chargeId = await readPayment(config, orderId, attempt.totalCents).catch(() => null)
-      if (!chargeId) await store.claim(id, 'declined', true)
+      if (!chargeId) {
+        if (declined) await store.claim(id, 'declined', true)
+        else await stop(store, id, notCharged.refused, orderId)
+        await cancelUnpaid(config, orderId)
+      }
     }
     // Any other error may have happened after charging. finish() reads the original order.
   }

@@ -74,6 +74,8 @@ export function WebOrdersLive({ timeZone }: { timeZone: string }) {
       limit: '200',
     })
     try {
+      // Settle any order still waiting on Clover first; a failure here only delays that.
+      await fetch('/api/web-orders/reconcile', { method: 'POST', credentials: 'include' }).catch(() => null)
       const response = await fetch('/api/web-orders?' + query, { credentials: 'include', cache: 'no-store' })
       if (!response.ok) throw new Error(String(response.status))
       const { docs } = (await response.json()) as { docs: WebOrder[] }

@@ -1,4 +1,6 @@
 import { getSite } from '@/lib/data'
+import { requestAddress, takeSlot } from '@/lib/pickup-card/limits'
+import { checkoutStore } from '@/lib/pickup-card/checkout-store'
 import { assertOrderingOpen, checkoutResponse, currentQuote, readCheckoutBody } from '@/lib/pickup-card/checkout'
 
 /** The bag's live Clover price and tax, and when it would be ready. */
@@ -8,6 +10,7 @@ export async function POST(request: Request) {
     const site = await getSite()
     const now = new Date()
     assertOrderingOpen(site, now)
+    await takeSlot(await checkoutStore(), 'quote', requestAddress(request), now)
     const { quote } = await currentQuote(config, body.lines)
     return { ...quote, readyAt: new Date(now.getTime() + site.pickup.prepMinutes * 60_000).toISOString() }
   })

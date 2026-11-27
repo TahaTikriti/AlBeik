@@ -2,7 +2,9 @@ import { randomUUID } from 'node:crypto'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { CardConfig } from './config'
 import {
+  abandonCardPayment,
   lookupCardPayment as lookup,
+  reconcileStoredPayment,
   reconcileCardPayment as reconcile,
   submitCardPayment as submit,
 } from './payment'
@@ -146,6 +148,7 @@ describe('pickup card payment', () => {
         status: 409,
       })
       expect(requests.some((r) => r.path.endsWith('/pay'))).toBe(false)
+      expect(requests.filter((r) => r.method === 'DELETE').map((r) => r.path)).toEqual(['/v3/merchants/M1/orders/ORDER1'])
     }
   })
   it('recovers a lost response by reading the same paid order and never charging again', async () => {
@@ -333,5 +336,99 @@ describe('pickup card payment', () => {
     const notify = vi.fn()
     await submit({ mode: 'preview' }, store, { ...makeInput(), source: 'preview-decline' }, prepare, notify)
     expect(notify).not.toHaveBeenCalled()
+  })
+
+  it('stops an attempt Clover refuses outright, without charging, and cancels its order', async () => {
+    const requests = mockClover((path) => {
+      if (path.endsWith('/pay')) return json({ error: { code: 'email_invalid' } }, 400)
+      if (path.startsWith('/v1/orders/')) return json({ ...paid, status: 'created', amount_paid: 0 })
+    })
+    const input = makeInput()
+    await expect(submitCardPayment(config, input, prepare)).rejects.toMatchObject({ code: 'not_submitted' })
+    await expect(reconcileCardPayment(config, input.attemptId)).rejects.toMatchObject({ code: 'not_submitted' })
+    expect(requests.filter((r) => r.method === 'DELETE').map((r) => r.path)).toEqual(['/v3/merchants/M1/orders/ORDER1'])
+  })
+  it('cancels the unpaid Clover order after a decline', async () => {
+    const requests = mockClover((path) => {
+      if (path.endsWith('/pay')) return json({ error: { code: 'card_declined' } }, 400)
+      if (path.startsWith('/v1/orders/')) return json({ ...paid, status: 'created', amount_paid: 0 })
+    })
+    expect((await submitCardPayment(config, makeInput(), prepare)).status).toBe('declined')
+    expect(requests.filter((r) => r.method === 'DELETE').map((r) => r.path)).toEqual(['/v3/merchants/M1/orders/ORDER1'])
+  })
+  it('still declines when cancelling the unpaid order fails', async () => {
+    mockClover((path, init) => {
+      if (init.method === 'DELETE') return json({}, 500)
+      if (path.endsWith('/pay')) return json({ error: { code: 'card_declined' } }, 400)
+      if (path.startsWith('/v1/orders/')) return json({ ...paid, status: 'created', amount_paid: 0 })
+    })
+    expect((await submitCardPayment(config, makeInput(), prepare)).status).toBe('declined')
+  })
+
+  describe('an attempt that never settles', () => {
+    afterEach(() => vi.useRealTimers())
+
+    it('goes to review once the charge has stayed unknown for five minutes', async () => {
+      vi.useFakeTimers({ toFake: ['Date'] })
+      vi.setSystemTime(new Date('2026-11-27T17:00:00Z'))
+      mockClover((path) => {
+        if (path.endsWith('/pay')) return json({ error: { code: 'rate_limit' } }, 429)
+        if (path.startsWith('/v1/orders/')) return json({}, 429)
+      })
+      const input = makeInput()
+      expect((await submitCardPayment(config, input, prepare)).status).toBe('pending')
+      vi.setSystemTime(new Date('2026-11-27T17:04:00Z'))
+      expect((await reconcileCardPayment(config, input.attemptId))?.status).toBe('pending')
+      vi.setSystemTime(new Date('2026-11-27T17:06:00Z'))
+      expect((await reconcileCardPayment(config, input.attemptId))?.status).toBe('review')
+    })
+
+    it('stops when the server died before asking Clover to charge', async () => {
+      vi.useFakeTimers({ toFake: ['Date'] })
+      vi.setSystemTime(new Date('2026-11-27T17:00:00Z'))
+      const fetch = vi.fn()
+      vi.stubGlobal('fetch', fetch)
+      const attemptId = randomUUID()
+      await store.claim('M1:' + attemptId, 'attempt', {
+        fingerprint: 'basket-hash',
+        totalCents: 1080,
+        startedAt: new Date().toISOString(),
+      })
+      expect((await reconcileCardPayment(config, attemptId))?.status).toBe('pending')
+      vi.setSystemTime(new Date('2026-11-27T17:06:00Z'))
+      await expect(reconcileCardPayment(config, attemptId)).rejects.toMatchObject({ code: 'not_submitted' })
+      expect(fetch).not.toHaveBeenCalled()
+    })
+  })
+
+  it('abandons an attempt whose payment never arrived, so a late one is refused', async () => {
+    const requests = mockClover()
+    const input = makeInput()
+    expect(await abandonCardPayment(config, store, input.attemptId)).toBe(true)
+    await expect(reconcileCardPayment(config, input.attemptId)).rejects.toMatchObject({ code: 'not_submitted' })
+    await expect(submitCardPayment(config, input, prepare)).rejects.toBeTruthy()
+    expect(requests).toHaveLength(0)
+  })
+  it('does not abandon an attempt that arrived', async () => {
+    mockClover()
+    const input = makeInput()
+    await submitCardPayment(config, input, prepare)
+    expect(await abandonCardPayment(config, store, input.attemptId)).toBe(false)
+    expect((await reconcileCardPayment(config, input.attemptId))?.status).toBe('paid')
+  })
+
+  it('reconciles a stored attempt for the admin list, only within this merchant', async () => {
+    let paidOrderVisible = false
+    mockClover((path) => {
+      if (path.endsWith('/pay')) return json({ error: { code: 'rate_limit' } }, 429)
+      if (path.startsWith('/v1/orders/') && !paidOrderVisible) return json({}, 429)
+    })
+    const input = makeInput()
+    await submitCardPayment(config, input, prepare)
+    paidOrderVisible = true
+    const notify = vi.fn()
+    expect(await reconcileStoredPayment(config, store, 'OTHER:' + input.attemptId, notify)).toBeNull()
+    expect(await reconcileStoredPayment(config, store, 'M1:' + input.attemptId, notify)).toMatchObject({ status: 'paid' })
+    expect(notify).toHaveBeenCalledTimes(1)
   })
 })

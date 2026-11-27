@@ -61,6 +61,8 @@ export class CardError extends Error {
     message: string,
     readonly status: number,
     readonly code?: string,
+    /** Sent to the browser with the message, e.g. which bag lines to drop. */
+    readonly detail?: Record<string, unknown>,
   ) {
     super(message)
   }

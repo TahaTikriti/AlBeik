@@ -2,7 +2,7 @@
 // Steps are immutable and published atomically: a hard link either claims the
 // step name or fails because another process already did. One host only.
 import { randomUUID } from 'node:crypto'
-import { link, mkdir, open, readdir, readFile, unlink, writeFile } from 'node:fs/promises'
+import { link, mkdir, open, readFile, unlink, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
 import type { CheckoutStore, WebOrderSummary } from './store'
@@ -71,20 +71,6 @@ export function fileStore(root: string): CheckoutStore {
       } catch {
         // The summary is for people; checkout never waits on it.
       }
-    },
-    // Development only: reads every summary. Fine for a handful of local attempts.
-    async countRecent(ipHash, since) {
-      let count = 0
-      for (const scope of await readdir(root).catch(() => [])) {
-        for (const attempt of await readdir(join(root, scope)).catch(() => [])) {
-          const summary = await readStep<WebOrderSummary & { createdAt?: string }>(
-            join(root, scope, attempt),
-            'summary',
-          ).catch(() => null)
-          if (summary?.ipHash === ipHash && summary.createdAt && new Date(summary.createdAt) >= since) count++
-        }
-      }
-      return count
     },
   }
 }

@@ -12,9 +12,12 @@ import {
   readCheckoutBody,
   readPayment,
 } from '@/lib/pickup-card/checkout'
-import { checkPayLimit, hashIp } from '@/lib/pickup-card/limits'
+import { hashIp, takeSlot } from '@/lib/pickup-card/limits'
 import { submitCardPayment } from '@/lib/pickup-card/payment'
 import { CardError } from '@/lib/pickup-card/types'
+
+// A quote, an order, a charge and a print, each with a 10 s Clover timeout: never cut one short.
+export const maxDuration = 60
 
 /** Every refusal before Clover is reached says so, so the browser can retry safely. */
 function notSubmitted(error: unknown): never {
@@ -50,7 +53,7 @@ export async function POST(request: Request) {
         // Only a new attempt is checked against the clock and the limit; a replay returns its receipt.
         try {
           assertOrderingOpen(site, now)
-          await checkPayLimit(store, ipHash, now)
+          await takeSlot(store, 'pay', ipHash, now)
         } catch (error) {
           notSubmitted(error)
         }

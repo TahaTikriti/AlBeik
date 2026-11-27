@@ -38,6 +38,11 @@ export function PickupCheckout({ client, timeZone }: Props) {
   const [details, setDetails] = useState<Details>(NO_DETAILS)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+  const [dropped, setDropped] = useState(0)
+  const latestLines = useRef(lines)
+  useEffect(() => {
+    latestLines.current = lines
+  }, [lines])
   const [fieldsReady, setFieldsReady] = useState(false)
   const tokenize = useRef<TokenizePickupCard | null>(null)
   const previewSource = useRef<'preview' | 'preview-decline'>('preview')
@@ -83,14 +88,22 @@ export function PickupCheckout({ client, timeZone }: Props) {
           setQuoteError(null)
         })
         .catch((e: CheckoutError) => {
-          if (!controller.signal.aborted) setQuoteError({ key, message: e.message, code: e.code })
+          if (controller.signal.aborted) return
+          const gone = e.code === 'unavailable' && Array.isArray(e.detail?.lines) ? new Set(e.detail.lines) : null
+          if (gone?.size) {
+            // Sold out or off the menu since the bag was filled: drop just those, then re-price.
+            dispatch({ type: 'replace', lines: latestLines.current.filter((_, index) => !gone.has(index)) })
+            setDropped((n) => n + gone.size)
+            return
+          }
+          setQuoteError({ key, message: e.message, code: e.code })
         })
     }, 250)
     return () => {
       clearTimeout(timer)
       controller.abort()
     }
-  }, [key, ready, requote])
+  }, [key, ready, requote, dispatch])
 
   const fresh = quote?.key === key && quoteError?.key !== key ? quote.value : null
   const closed = quoteError?.key === key && quoteError.code === 'closed' ? quoteError.message : null
@@ -107,11 +120,17 @@ export function PickupCheckout({ client, timeZone }: Props) {
   const pay = useCallback(
     async (walletToken?: string): Promise<boolean> => {
       if (lock.current || !fresh) return false
+      if (attempts.pending()) {
+        router.replace(donePath)
+        return false
+      }
       if (!form.current?.reportValidity()) return false
       lock.current = true
       setBusy(true)
       setError('')
       let sent = false
+      // Stays locked while the confirmation page loads: a tap then would be a second order.
+      let leaving = false
       try {
         const source =
           walletToken ?? (client.mode === 'preview' ? previewSource.current : await tokenize.current?.())
@@ -122,8 +141,12 @@ export function PickupCheckout({ client, timeZone }: Props) {
         } catch {
           // Not remembered; nothing else changes.
         }
-        const attemptId = crypto.randomUUID()
-        attempts.start(attemptId)
+        const attemptId = attempts.begin()
+        if (!attemptId) {
+          leaving = true
+          router.replace(donePath)
+          return false
+        }
         sent = true
         const receipt = await postCheckout<CardReceipt>('/pay', {
           attemptId,
@@ -139,6 +162,7 @@ export function PickupCheckout({ client, timeZone }: Props) {
           showError(copy.checkout.declined)
           return false
         }
+        leaving = true
         router.replace(donePath)
         return receipt.status === 'paid'
       } catch (e) {
@@ -149,14 +173,17 @@ export function PickupCheckout({ client, timeZone }: Props) {
           showError(failure.message)
           setRequote((n) => n + 1)
         } else if (sent) {
+          leaving = true
           router.replace(donePath)
         } else {
           showError(failure.message || copy.checkout.fieldsLoading)
         }
         return false
       } finally {
-        lock.current = false
-        setBusy(false)
+        if (!leaving) {
+          lock.current = false
+          setBusy(false)
+        }
       }
     },
     [client.mode, details, fresh, key, router],
@@ -251,10 +278,28 @@ export function PickupCheckout({ client, timeZone }: Props) {
             </div>
           )}
         </dl>
-        {problem ? (
-          <p role="alert" className="font-semibold text-red-text">
-            {problem}
+        {dropped ? (
+          <p role="status" className="text-small text-ink-muted">
+            {copy.bag.dropped(dropped)}
           </p>
+        ) : null}
+        {problem ? (
+          <div role="alert" className="grid gap-3">
+            <p className="font-semibold text-red-text">{problem}</p>
+            <div className="flex flex-wrap gap-2">
+              <button type="button" className="btn btn-red min-h-11 px-5" onClick={() => setRequote((n) => n + 1)}>
+                {copy.checkout.retryQuote}
+              </button>
+              {contact.phoneHref ? (
+                <a href={contact.phoneHref} className="btn btn-ghost min-h-11 px-5 text-white">
+                  {copy.bag.call}
+                </a>
+              ) : null}
+              <Link href="/order/delivery" className="btn btn-ghost min-h-11 px-5 text-white">
+                {copy.bag.apps}
+              </Link>
+            </div>
+          </div>
         ) : null}
       </section>
 

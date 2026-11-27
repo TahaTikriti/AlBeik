@@ -246,6 +246,20 @@ export async function quoteCardBasket(config: CardConfig, products: CardProduct[
   const options = new Map(
     products.flatMap((product) => product.options.map((option) => [option.id, option] as const)),
   )
+  // Everything gone since the bag was filled, at once, so the bag drops just those lines.
+  const gone = input.flatMap((line, index) => {
+    if (!isRecord(line) || typeof line.optionId !== 'string' || !Array.isArray(line.modifierIds)) return []
+    const option = options.get(line.optionId)
+    const offered = new Set(option?.groups.flatMap((g) => g.modifiers.map((m) => m.id)))
+    return option?.available && line.modifierIds.every((id) => offered.has(id as string)) ? [] : [index]
+  })
+  if (gone.length)
+    throw new CardError(
+      'An item in your bag is no longer available. Update your bag.',
+      409,
+      'unavailable',
+      { lines: gone },
+    )
   const seen = new Set<string>()
   const quantities = new Map<string, number>()
   const lines: CardQuote['lines'] = []

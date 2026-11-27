@@ -77,16 +77,17 @@ Decline → fresh card fields with the bag kept, as in the spike.
 
 ## Launch gates (all must pass before the Pickup button switches over)
 
-The code is built and checked in preview mode. Online pickup shows only where **Site settings → Online pickup on the website** is on *and* that deployment has `PICKUP_MODE` set, so the setting can be turned on early: customers see nothing new until step 6.
+The code is built and checked in preview mode. Online pickup shows only where **Site settings → Online pickup on the website** is on *and* that deployment has `PICKUP_MODE` set, so the setting can be turned on early: customers see nothing new until step 7.
 
 1. **Sandbox keys in Vercel (Preview environment only):** `PICKUP_MODE=clover`, `CLOVER_ENV=sandbox`, `CLOVER_MERCHANT_ID`, `CLOVER_PUBLIC_KEY`, `CLOVER_PRIVATE_KEY`, `CLOVER_API_TOKEN`, `CLOVER_PICKUP_ORDER_TYPE_ID`. Never in the repo. Turn on **Site settings → Online pickup on the website** (production stays off: it has no `PICKUP_MODE` yet).
 2. **Full sandbox run on a preview deployment:** a paid order, a declined card then a retry, and a refresh mid-payment. Each must leave exactly one order and one charge in the sandbox dashboard. Also Google Pay in Chrome with a test card.
 3. **Apple Pay domain verification:** register `albeik.us` for Apple Pay in the Clover dashboard (Clover's iframe Apple Pay guide names the screen) and serve the domain-association file it gives under `public/.well-known/`. Then pay once with Apple Pay in Safari.
-4. **Order alert email:** `RESEND_API_KEY` and `ORDER_ALERT_FROM` (a sender on a domain verified in Resend) in Vercel; fill **Site settings → Email new orders to**. Place a preview order and confirm the email arrives.
-5. **On-site print test before launch:** at the shop, during opening hours, with the live keys on a preview deployment (`CLOVER_ENV=production`), place one real small order with an extra. Check the Station Duo prints a correct kitchen ticket automatically and the admin **Web orders** screen shows "Printed". Refund it in Clover. If it doesn't print, stop here and fix printing. The spike could not prove automatic printing (sandbox: "default printing device is missing").
-6. **Go live:** the same live `CLOVER_*` values plus `CLOVER_ENV=production` and `PICKUP_MODE=clover` in Vercel **Production**, then redeploy. The header's Pickup, the order sheet and the menu's Add buttons switch over together. To switch off instantly, turn the Site setting off: the app links come back at once.
-7. **Staff know the fallback:** web orders appear in the Clover Orders app; the admin **Web orders** screen (sound on) lists today's orders; "Print it from Clover Orders" means the ticket did not print.
-8. **Phone check and speed:** all three steps at phone width on a real phone. Lighthouse mobile on `/menu` three times, inside the current 92–97 band.
+4. **Bot protection:** turn on Vercel BotID (or a Vercel Firewall rate rule) for `/order/pickup/pay`, `/order/pickup/quote` and `/order/pickup/options`. The site already limits each address (5 payment attempts per 10 minutes, 20 price checks a minute); this stops card testing spread over many addresses.
+5. **Order alert email:** `RESEND_API_KEY` and `ORDER_ALERT_FROM` (a sender on a domain verified in Resend) in Vercel; fill **Site settings → Email new orders to**. Place a preview order and confirm the email arrives.
+6. **On-site print test before launch:** at the shop, during opening hours, with the live keys on a preview deployment (`CLOVER_ENV=production`), place one real small order with an extra. Check the Station Duo prints a correct kitchen ticket automatically and the admin **Web orders** screen shows "Printed". Refund it in Clover. If it doesn't print, stop here and fix printing. The spike could not prove automatic printing (sandbox: "default printing device is missing").
+7. **Go live:** the same live `CLOVER_*` values plus `CLOVER_ENV=production` and `PICKUP_MODE=clover` in Vercel **Production**, then redeploy. The header's Pickup, the order sheet and the menu's Add buttons switch over together. To switch off instantly, turn the Site setting off: the app links come back at once.
+8. **Staff know the fallback:** web orders appear in the Clover Orders app; the admin **Web orders** screen (sound on) lists today's orders; "Print it from Clover Orders" means the ticket did not print.
+9. **Phone check and speed:** all three steps at phone width on a real phone. Lighthouse mobile on `/menu` three times, inside the current 92–97 band.
 
 ## Calls settled after review (mine, open to correction)
 

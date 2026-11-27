@@ -40,10 +40,12 @@ export function PickupWaiting({ timeZone, place }: { timeZone: string; place: Pi
   useEffect(() => {
     let cancelled = false
     let timer: ReturnType<typeof setTimeout>
+    const CHECKS = 8
+    let unknown = 0
 
-    async function check(attemptId: string, checksLeft: number) {
+    async function check(attemptId: string, checksLeft: number, abandon = false) {
       try {
-        const receipt = await postCheckout<CardReceipt>('/status', { attemptId })
+        const receipt = await postCheckout<CardReceipt>('/status', { attemptId, ...(abandon ? { abandon } : {}) })
         if (cancelled) return
         setStatus({ kind: 'receipt', receipt })
         if (receipt.status !== 'pending') {
@@ -59,15 +61,18 @@ export function PickupWaiting({ timeZone, place }: { timeZone: string; place: Pi
           setPolling(false)
           return
         }
+        if ((error as CheckoutError).status === 404) unknown++
       }
       if (checksLeft > 1) timer = setTimeout(() => void check(attemptId, checksLeft - 1), 2500)
+      // The payment never reached the server: close it (no charge), so the customer can retry.
+      else if (!abandon && unknown === CHECKS) void check(attemptId, 1, true)
       else setPolling(false)
     }
 
     // After hydration: the attempt lives in this tab's storage.
     timer = setTimeout(() => {
       const attemptId = attempts.last()
-      if (attemptId) void check(attemptId, 8)
+      if (attemptId) void check(attemptId, CHECKS)
       else {
         setStatus({ kind: 'missing' })
         setPolling(false)

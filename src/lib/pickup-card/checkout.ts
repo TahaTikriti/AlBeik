@@ -33,7 +33,7 @@ export async function checkoutResponse(action: (config: CardConfig) => Promise<u
   } catch (error) {
     if (error instanceof CardError) {
       return Response.json(
-        { error: error.message, code: error.code },
+        { ...error.detail, error: error.message, code: error.code },
         { status: error.status, headers },
       )
     }

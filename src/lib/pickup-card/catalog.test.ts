@@ -227,6 +227,14 @@ describe('pickup quote', () => {
     })
   })
 
+  it('names every line that is no longer on sale, so the bag can drop just those', async () => {
+    mockClover()
+    const list = await products()
+    await expect(
+      quoteCardBasket(config, list, [line, { ...line, optionId: 'GONE' }, { ...line, modifierIds: ['FRIES', 'HOT'] }]),
+    ).rejects.toMatchObject({ status: 409, code: 'unavailable', detail: { lines: [1, 2] } })
+  })
+
   it('fails closed when Clover is down', async () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('offline')))
     await expect(products()).rejects.toMatchObject({ status: 503 })
